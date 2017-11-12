@@ -1,0 +1,126 @@
+﻿<Page x:Class="DM___Client.GUIPages.GUILobbyRoom"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DM___Client.GUIPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Height="700"
+      Width="1200"
+      Title="GUILobbyRoom">
+
+    <Page.Resources>
+        <Style x:Key="buttonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+                            CornerRadius="3" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="txtChatStyle" TargetType="RichTextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RichTextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"></Image>
+        <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+        <Border Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
+            <Grid Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="900"/>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="400" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Opacity="0.1" CornerRadius="20" Margin="0,0,10,10"/>
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="0,0,10,10" BorderThickness="5" BorderBrush="Black">
+                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Margin="5,5,5,25">
+                        <StackPanel x:Name="stackRooms" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent">
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Opacity="0.3" CornerRadius="20" Margin="10,0,0,10"/>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,10" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label FontSize="18" Foreground="Black" Content="Users" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        <Separator Height="10" Background="Black"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Height="323" Margin="0,0,5,0">
+                            <ListBox x:Name="listBoxUsers" Background="Transparent" BorderThickness="0">
+                            </ListBox>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Opacity="0.2" CornerRadius="20" Margin="0,10,10,0"/>
+                <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="0,10,10,0" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel Margin="10,0,10,0">
+                        <RichTextBox x:Name="richTextboxChat" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="10" Height="103" VerticalScrollBarVisibility="Auto" FontSize="15" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
+                            <RichTextBox.Resources>
+                                <Style TargetType="{x:Type Paragraph}">
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                            </RichTextBox.Resources>
+                            <RichTextBox.Style>
+                                <StaticResource ResourceKey="txtChatStyle"/>
+                            </RichTextBox.Style>
+                        </RichTextBox>
+                        <DockPanel Margin="10,0,10,0">
+                            <Grid>
+                                <Border Background="White" Opacity="0.1"/>
+                                <TextBox HorizontalAlignment="Left" x:Name="txtTypeInChat" TextWrapping="NoWrap" AcceptsReturn="False" Background="Transparent" BorderThickness="0" Width="775" MaxLength="150" FontSize="20" KeyUp="TextBox_KeyUp"/>
+                            </Grid>
+                            <Button x:Name="btnSubmitText" Style="{StaticResource buttonStyle}" Content="Send" Cursor="Hand" Opacity="1" Background="Black" Foreground="White" FontSize="15" Margin="0" Height="30" Width="60" HorizontalAlignment="Right" Click="btnSubmitText_Click"/>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Opacity="0.2" CornerRadius="20" Margin="10,10,0,0"/>
+                <Border Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,10,0,0" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label x:Name="lblLoggedInAs" FontSize="15" Foreground="Black" Content="loading..." HorizontalAlignment="Center" FontWeight="Bold" Cursor="Hand"/>
+                        <Separator Background="Black" Height="15"></Separator>
+                        <Button x:Name="btnCreateLobbyRoom" Style="{StaticResource buttonStyle}" Content="Create room" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnCreateLobbyRoom_Click"/>
+                        <Button x:Name="btnDecks" Style="{StaticResource buttonStyle}" Content="Collection" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnDecks_Click"/>
+                        <Button x:Name="btnQuit" Style="{StaticResource buttonStyle}" Content="Quit" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnQuit_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

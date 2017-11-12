@@ -1,0 +1,65 @@
+﻿<Page x:Class="DM___Client.GUIPages.GUIPreGameRoom"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DM___Client.GUIPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Height="700"
+      Width="1200"
+      Title="GUIPreGameRoom">
+    <Page.Resources>
+        <Style x:Key="buttonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+                            CornerRadius="3" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid>
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"></Image>
+        <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+        <Border Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
+            <Grid Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="500" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="500" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="10,0,0,10"/>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,10" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label FontSize="23" Foreground="White" Content="Pick your deck" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        <Separator Height="10" Background="White"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Height="415" Margin="0,0,5,0">
+                            <StackPanel x:Name="stackDecks">
+                            </StackPanel>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+                <Button Grid.Column="1" Grid.Row="1" x:Name="btnSelectDeck" Style="{StaticResource buttonStyle}" Content="Select deck" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="30" Margin="0,0,0,0" Height="60" Width="300" HorizontalAlignment="Center" VerticalAlignment="Center" Click="btnSelectDeck_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
