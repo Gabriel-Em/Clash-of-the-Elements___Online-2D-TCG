@@ -1,0 +1,27 @@
+﻿<Window x:Class="DM___Client.GUIWindows.GUIDisconnected"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:local="clr-namespace:DM___Client.GUIWindows"
+        mc:Ignorable="d"
+        Title="You were disconnected!" Height="209" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Topmost="True">
+    <Grid Background="SkyBlue">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="102" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <DockPanel VerticalAlignment="Top" Height="100">
+                <TextBlock x:Name="messageBlock" Width ="490"  Height="Auto" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0" Text="Reason of disconnect..." TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
+                <fa:ImageAwesome Icon="ExclamationTriangle" HorizontalAlignment="Right" VerticalAlignment="Center" Height="50" Margin="0,0,25,0"></fa:ImageAwesome>
+            </DockPanel>
+            <Separator Background="Black" Margin="15,0,15,0"></Separator>
+        </StackPanel>
+        <Button Grid.Row="1" x:Name="button" Content="Reconnect" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Height="40" FontSize="20" Click="button_Click" Cursor="Hand"/>
+    </Grid>
+</Window>

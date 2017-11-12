@@ -1,0 +1,449 @@
+﻿<Page x:Class="DM___Client.GUIPages.GUICollection"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:fa="http://schemas.fontawesome.io/icons/"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:DM___Client.GUIPages"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200"
+      Height="700"
+      Width="1200"
+      Title="GUICollection">
+    <Page.Resources>
+        <Style x:Key="buttonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+                            CornerRadius="3" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="cardButtonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+ 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="txtChatStyle" TargetType="RichTextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RichTextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="arrowButton"  TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Flat ComboBox -->
+        <SolidColorBrush x:Key="ComboBoxNormalBorderBrush" Color="Black" />
+        <SolidColorBrush x:Key="ComboBoxNormalBackgroundBrush" Color="White" />
+        <SolidColorBrush x:Key="ComboBoxDisabledForegroundBrush" Color="#888" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBackgroundBrush" Color="#eee" />
+        <SolidColorBrush x:Key="ComboBoxDisabledBorderBrush" Color="#888" />
+
+        <ControlTemplate TargetType="ToggleButton" x:Key="ComboBoxToggleButtonTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="20" />
+                </Grid.ColumnDefinitions>
+                <Border Grid.ColumnSpan="2" Name="Border"
+              BorderBrush="{StaticResource ComboBoxNormalBorderBrush}" 
+              CornerRadius="0" BorderThickness="1, 1, 1, 1" 
+              Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+                <Border Grid.Column="1" Margin="1, 1, 1, 1" BorderBrush="#444" Name="ButtonBorder"
+              CornerRadius="0, 0, 0, 0" BorderThickness="0, 0, 0, 0" 
+              Background="{StaticResource ComboBoxNormalBackgroundBrush}" />
+
+                <Path Name="Arrow" Grid.Column="1" 
+            Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
+            HorizontalAlignment="Center" Fill="#444"
+            VerticalAlignment="Center" />
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger Property="UIElement.IsMouseOver" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
+                </Trigger>
+                <Trigger Property="ToggleButton.IsChecked" Value="True">
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="WhiteSmoke"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#FF8D979E"/>
+                </Trigger>
+                <Trigger Property="UIElement.IsEnabled" Value="False">
+                    <Setter Property="Panel.Background" TargetName="Border" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Panel.Background" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBackgroundBrush}"/>
+                    <Setter Property="Border.BorderBrush" TargetName="ButtonBorder" Value="{StaticResource ComboBoxDisabledBorderBrush}"/>
+                    <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                    <Setter Property="Shape.Fill" TargetName="Arrow" Value="#999"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="ComboBoxFlatStyle"  TargetType="{x:Type ComboBox}">
+            <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FrameworkElement.OverridesDefaultStyle" Value="True"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+            <Setter Property="TextElement.Foreground" Value="Black"/>
+            <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Name="ToggleButton" Grid.Column="2"
+                ClickMode="Press" Focusable="False"
+                IsChecked="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                Template="{StaticResource ComboBoxToggleButtonTemplate}"/>
+
+                            <ContentPresenter Name="ContentSite" Margin="5, 3, 23, 3" IsHitTestVisible="False"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"                              
+                              Content="{TemplateBinding ComboBox.SelectionBoxItem}" 
+                              ContentTemplate="{TemplateBinding ComboBox.SelectionBoxItemTemplate}"
+                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                            <TextBox Name="PART_EditableTextBox" Margin="3, 3, 23, 3"                     
+                     IsReadOnly="{TemplateBinding IsReadOnly}"
+                     Visibility="Hidden" Background="Transparent"
+                     HorizontalAlignment="Left" VerticalAlignment="Center"
+                     Focusable="True" >
+                                <TextBox.Template>
+                                    <ControlTemplate TargetType="TextBox" >
+                                        <Border Name="PART_ContentHost" Focusable="False" />
+                                    </ControlTemplate>
+                                </TextBox.Template>
+                            </TextBox>
+                            <!-- Popup showing items -->
+                            <Popup Name="Popup" Placement="Bottom"
+                   Focusable="False" AllowsTransparency="True"
+                   IsOpen="{TemplateBinding ComboBox.IsDropDownOpen}"
+                   PopupAnimation="Slide">
+                                <Grid Name="DropDown" SnapsToDevicePixels="True"
+                    MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
+                    MaxHeight="{TemplateBinding ComboBox.MaxDropDownHeight}">
+                                    <Border Name="DropDownBorder" Background="White" Margin="0, 1, 0, 0"
+                        CornerRadius="0" BorderThickness="1,1,1,1" 
+                        BorderBrush="{StaticResource ComboBoxNormalBorderBrush}"/>
+                                    <ScrollViewer Margin="4" SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="ItemsControl.HasItems" Value="False">
+                                <Setter Property="FrameworkElement.MinHeight" TargetName="DropDownBorder" Value="95"/>
+                            </Trigger>
+                            <Trigger Property="UIElement.IsEnabled" Value="False">
+                                <Setter Property="TextElement.Foreground" Value="{StaticResource ComboBoxDisabledForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="ItemsControl.IsGrouping" Value="True">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                            </Trigger>
+                            <Trigger Property="ComboBox.IsEditable" Value="True">
+                                <Setter Property="KeyboardNavigation.IsTabStop" Value="False"/>
+                                <Setter Property="UIElement.Visibility" TargetName="PART_EditableTextBox" Value="Visible"/>
+                                <Setter Property="UIElement.Visibility" TargetName="ContentSite" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+    <Grid x:Name="cardGrid">
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"/>
+        <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
+        <Border x:Name="CollectionBorder" Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
+            <Grid Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="400" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="0,0,0,10"/>
+                <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="0,0,0,10" BorderThickness="5" BorderBrush="Black"/>
+                <Grid>
+                    <Grid Margin="5,10,5,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Button x:Name="btnCard1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard2" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage2" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard3" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard4" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard5" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage5" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard6" Grid.Row="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage6" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard7" Grid.Row="1" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage7" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button Grid.Row="1" x:Name="btnCard8" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage8" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard9" Grid.Row="1" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage9" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                        <Button x:Name="btnCard10" Grid.Row="1" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
+                            <Image x:Name="cardImage10" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        </Button>
+                    </Grid>
+                    <Button Style="{StaticResource arrowButton}" Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="657,165,-10,172" BorderThickness="0" Click="btnArrowRight_Click">
+                    <Image Source="/DM - Client;component/Resources/arrow.png" Width="63" Height="63"/>
+                    </Button>
+                    <Button Style="{StaticResource arrowButton}"  Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="-13,165,660,172" BorderThickness="0" Click="btnArrowLeft_Click">
+                        <Image Source="/DM - Client;component/Resources/arrow.png" Width="63" Height="63"  RenderTransformOrigin="0.5,0.5">
+                            <Image.RenderTransform>
+                                <TransformGroup>
+                                    <ScaleTransform ScaleY="1" ScaleX="-1"/>
+                                    <SkewTransform AngleY="0" AngleX="0"/>
+                                    <RotateTransform Angle="0"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </Image.RenderTransform>
+                        </Image>
+                    </Button>
+                </Grid>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="10,0,0,10"/>
+                <Border Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,10" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label FontSize="18" Foreground="White" Content="Decks" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        <Separator Height="10" Background="White"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Height="323" Width="155" Margin="0,0,5,0">
+                            <StackPanel x:Name="stackDecks">
+                            </StackPanel>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="10,0,0,10"/>
+                <Border Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,10" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,10,10,0" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label FontSize="18" Foreground="White" Content="Deck contents" HorizontalAlignment="Center" FontWeight="Bold"/>
+                        <Separator Height="10" Background="White"/>
+                        <ScrollViewer x:Name="scrollDeckContents" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" Height="323" Width="Auto" Margin="0,0,5,0">
+                            <StackPanel x:Name="stackDeckContents">
+                            </StackPanel>
+                        </ScrollViewer>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="0,0,0,0"/>
+                <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel Margin="10,0,10,0">
+                        <Label FontSize="15" Foreground="White" Content="Filters" HorizontalAlignment="Center"/>
+                        <Separator Height="1" Background="White" Margin="0"/>
+                        <Separator Height="1" Background="White" Margin="0"/>
+                        <Grid Height="140">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel>
+                                <Label Content="Type:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterType" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                    <ComboBoxItem>Creature</ComboBoxItem>
+                                    <ComboBoxItem>Spell</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <Label Content="Civilization:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCivilization" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                    <ComboBoxItem>Darkness</ComboBoxItem>
+                                    <ComboBoxItem>Fire</ComboBoxItem>
+                                    <ComboBoxItem>Light</ComboBoxItem>
+                                    <ComboBoxItem>Nature</ComboBoxItem>
+                                    <ComboBoxItem>Water</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <Label Content="Cost:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <DockPanel>
+                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCostType" Height="23" Width="95" Margin="10,0,10,0" SelectionChanged="ComboBox_SelectionChanged">
+                                        <ComboBoxItem IsSelected="True">=</ComboBoxItem>
+                                        <ComboBoxItem>&lt;=</ComboBoxItem>
+                                        <ComboBoxItem>&gt;=</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCost" Height="23" Width="95" Margin="0,0,10,0" HorizontalAlignment="Right" SelectionChanged="ComboBox_SelectionChanged">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>1</ComboBoxItem>
+                                        <ComboBoxItem>2</ComboBoxItem>
+                                        <ComboBoxItem>3</ComboBoxItem>
+                                        <ComboBoxItem>4</ComboBoxItem>
+                                        <ComboBoxItem>5</ComboBoxItem>
+                                        <ComboBoxItem>6</ComboBoxItem>
+                                        <ComboBoxItem>7</ComboBoxItem>
+                                    </ComboBox>
+                                </DockPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1">
+                                <Label Content="Race:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterRace" Height="23" Margin="15,0,15,0" MaxDropDownHeight="145" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                    <ComboBoxItem>Armored Dragon</ComboBoxItem>
+                                    <ComboBoxItem>Liquid People</ComboBoxItem>
+                                    <ComboBoxItem>Ghost</ComboBoxItem>
+                                    <ComboBoxItem>Living Dead</ComboBoxItem>
+                                    <ComboBoxItem>Human</ComboBoxItem>
+                                    <ComboBoxItem>Beast Folk</ComboBoxItem>
+                                    <ComboBoxItem>Cyber Virus</ComboBoxItem>
+                                    <ComboBoxItem>Giant Insect</ComboBoxItem>
+                                    <ComboBoxItem>Demon Command</ComboBoxItem>
+                                    <ComboBoxItem>Fish</ComboBoxItem>
+                                    <ComboBoxItem>Leviathan</ComboBoxItem>
+                                    <ComboBoxItem>Rock Beast</ComboBoxItem>
+                                    <ComboBoxItem>Initiate</ComboBoxItem>
+                                    <ComboBoxItem>Balloon Mushroom</ComboBoxItem>
+                                    <ComboBoxItem>Armorloid</ComboBoxItem>
+                                    <ComboBoxItem>Starlight Tree</ComboBoxItem>
+                                    <ComboBoxItem>Tree Folk</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="1">
+                                <Label Content="Power:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <DockPanel>
+                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterPowerType" Height="23" Width="95" Margin="10,0,10,0" SelectionChanged="ComboBox_SelectionChanged">
+                                        <ComboBoxItem IsSelected="True">=</ComboBoxItem>
+                                        <ComboBoxItem>&lt;=</ComboBoxItem>
+                                        <ComboBoxItem>&gt;=</ComboBoxItem>
+                                    </ComboBox>
+                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterPower" Height="23" Width="95" Margin="0,0,10,0" MaxDropDownHeight="145" HorizontalAlignment="Right" SelectionChanged="ComboBox_SelectionChanged">
+                                        <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>1000</ComboBoxItem>
+                                        <ComboBoxItem>2000</ComboBoxItem>
+                                        <ComboBoxItem>3000</ComboBoxItem>
+                                        <ComboBoxItem>4000</ComboBoxItem>
+                                        <ComboBoxItem>5000</ComboBoxItem>
+                                        <ComboBoxItem>6000</ComboBoxItem>
+                                        <ComboBoxItem>7000</ComboBoxItem>
+                                        <ComboBoxItem>8000</ComboBoxItem>
+                                        <ComboBoxItem>9000</ComboBoxItem>
+                                        <ComboBoxItem>9500</ComboBoxItem>
+                                    </ComboBox>
+                                </DockPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Grid.Column="2">
+                                <Label Content="Set:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterSet" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
+                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                    <ComboBoxItem>Base Set</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="10,0,0,0"/>
+                <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,0" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
+                        <Label FontSize="15" Foreground="White" Content="Card information:" HorizontalAlignment="Center"/>
+                        <RichTextBox x:Name="rchCardInfo" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="2,0,2,0" Height="138" VerticalScrollBarVisibility="Auto" FontSize="13" Foreground="White" BorderBrush="White" IsReadOnly="True" SelectionBrush="Black">
+                            <RichTextBox.Resources>
+                                <Style TargetType="{x:Type Paragraph}">
+                                    <Setter Property="Margin" Value="0"/>
+                                </Style>
+                            </RichTextBox.Resources>
+                            <RichTextBox.Style>
+                                <StaticResource ResourceKey="txtChatStyle"/>
+                            </RichTextBox.Style>
+                        </RichTextBox>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="10,0,0,0"/>
+                <Border Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,0,0,0" BorderThickness="5" BorderBrush="Black">
+                    <StackPanel x:Name="sPanelButtons" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Center" Background="Transparent">
+                        <Button x:Name="btnCreateNewDeck" Style="{StaticResource buttonStyle}" Content="Create deck" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnCreateNewDeck_Click"/>
+                        <Button x:Name="btnEditSelected" Style="{StaticResource buttonStyle}" Content="Edit deck" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnEditSelected_Click"/>
+                        <Button x:Name="btnDeleteSelected" Style="{StaticResource buttonStyle}" Content="Delete deck" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnDeleteSelected_Click"/>
+                        <Button x:Name="btnBackToLobby" Style="{StaticResource buttonStyle}" Content="Back to lobby" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnBackToLobby_Click"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
