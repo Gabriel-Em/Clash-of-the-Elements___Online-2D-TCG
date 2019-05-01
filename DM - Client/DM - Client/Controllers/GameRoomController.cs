@@ -23,19 +23,72 @@ namespace DM___Client.Controllers
             GameRoomID = GameRoomID_;
             DeckID = DeckID_;
             CardCollection = CardCollection_;
+
             InitialHand = new List<CardWithGameProperties>();
-            loadedData = new List<bool>() { false, false, false };
+            loadedDataChecklist = new List<bool>() { false, false, false };
+        }
+
+        public override void loadPageData()
+        {
+            send(new ClientMessage("FETCHDECK", new List<string>() { GameRoomID.ToString(), DeckID.ToString() }));
         }
 
         public override void gameCommandProcessor(GameMessage message)
         {
             switch (message.Command)
             {
+                case "PLAYEDASMANA":
+                    processPlayedAsMana(message);
+                    break;
+                case "SETPHASE":
+                    parent.updateGameState(false, message.stringArguments[0]);
+                    break;
+                case "YOURTURN":
+                    parent.startTurn();
+                    break;
+                case "ROLLON":
+                    parent.DrawCard(getCardWithGamePropertiesByID(message.intArguments[0]));
+                    parent.addLoadEvent(new Animations.Animation(parent.loadManaPhase));
+                    break;
+                case "YOURECEIVEDCARD":
+                    processReceivedCard(message);
+                    break;
+                case "OPPRECEIVEDCARD":
+                    parent.processOppDrew();
+                    break;
+                case "SUMMON":
+                    processSummon(message);
+                    break;
+                case "ATTACKSAFEGUARDS":
+                    processAttackSafeguards(message);
+                    break;
+                case "YOURGUARDSBROKE":
+                    parent.yourGuardsBroke(message.intArguments);
+                    break;
+                case "YOUBROKEGUARDS":
+                    parent.youBrokeGuards(message.intArguments);
+                    break;
+                case "ATTACKCREATURE":
+                    processAttackCreature(message);
+                    break;
+                case "ATTACKPLAYER":
+                    processAttackPlayer(message);
+                    break;
+                case "BATTLE":
+                    processBattle(message);
+                    break;
+                case "SENDTO":
+                    processSendTo(message);
+                    break;
+                case "OPPSURRENDERED":
+                    send(new ClientMessage("CLOSEROOM", new List<string>() { GameRoomID.ToString() }));
+                    parent.loadEndGame(true);
+                    break;
                 default: break;
             }
         }
 
-        public override void commandProcessor(ClientMessage message)
+        public override void clientCommandProcessor(ClientMessage message)
         {
             switch (message.Command)
             {
@@ -46,21 +99,21 @@ namespace DM___Client.Controllers
                     parent.disconnected("Your account was logged in from a different location.", -1);
                     break;
                 case "DECKSET":
-                    loadedData[0] = true;
+                    loadedDataChecklist[0] = true;
                     send(new Models.ClientMessage("GETHAND", new List<string>() { GameRoomID.ToString() }));
                     break;
                 case "HANDRECEIVED":
-                    InitialHand = argumentsToCards(message.Arguments);
-                    loadedData[1] = true;
+                    InitialHand = argumentsToCards(message.stringArguments);
+                    loadedDataChecklist[1] = true;
                     send(new Models.ClientMessage("READYTOSTART", new List<string>() { GameRoomID.ToString() }));
                     break;
                 case "READYTOGO":
-                    loadedData[2] = true;
+                    loadedDataChecklist[2] = true;
                     break;
-                case "YOURINITTURN":
-                    parent.loadManaPhase();
+                case "YOURTURN":
+                    parent.updateGameState(true, "Mana phase");
                     break;
-                case "OPPINITTURN":
+                case "OPPTURN":
                     parent.updateGameState(false, "Mana phase");
                     break;
                 default:
@@ -68,22 +121,17 @@ namespace DM___Client.Controllers
             }
         }
 
-        public override void loadPageData()
-        {
-            send(new ClientMessage("SETDECK", new List<string>() { GameRoomID.ToString(), DeckID.ToString() }));
-        }
-
         private List<CardWithGameProperties> argumentsToCards(List<string> arguments)
         {
             List<CardWithGameProperties> list = new List<CardWithGameProperties>();
 
             foreach(string argument in arguments)
-                list.Add(new CardWithGameProperties(CardCollection.Cards[Int32.Parse(argument)-1]));
+                list.Add(new CardWithGameProperties(CardCollection.Cards[Int32.Parse(argument) - 1]));
 
             return list;
         }
 
-        public Models.CardWithGameProperties getCardFromHand()
+        public Models.CardWithGameProperties getCardFromInitialHand()
         {
             if (InitialHand.Count > 0)
             {
@@ -92,6 +140,53 @@ namespace DM___Client.Controllers
                 return card;
             }
             return null;
+        }
+
+        public Models.CardWithGameProperties getCardWithGamePropertiesByID(int cardID)
+        {
+            return new Models.CardWithGameProperties(CardCollection.getCardById(cardID));
+        }
+
+        private void processPlayedAsMana(GameMessage message)
+        {
+            parent.txtOppHand.Text = (Int32.Parse(parent.txtOppHand.Text) - 1).ToString();
+            parent.txtOppMana.Text = (Int32.Parse(parent.txtOppMana.Text) + 1).ToString();
+            parent.animatePlayAsManaOPP(message.intArguments[0]);
+        }
+
+        private void processReceivedCard(GameMessage message)
+        {
+            parent.DrawCard(new CardWithGameProperties(CardCollection.getCardById(message.intArguments[0])));
+        }
+
+        private void processSummon(GameMessage message)
+        {
+            parent.summonOPP(message.intArguments);
+        }
+
+        private void processAttackSafeguards(GameMessage message)
+        {
+            parent.safeguardsUnderAttack(message.intArguments);
+        }
+
+        private void processAttackPlayer(GameMessage message)
+        {
+            parent.playerUnderAttack(message.intArguments);
+        }
+
+        private void processAttackCreature(GameMessage message)
+        {
+            parent.creatureUnderAttack(message.intArguments);
+        }
+
+        private void processBattle(GameMessage message)
+        {
+            parent.Battle(message.intArguments, true);
+        }
+
+        private void processSendTo(GameMessage message)
+        {
+            parent.processSendTo(message.intArguments, message.stringArguments[0], message.stringArguments[1]);
         }
     }
 }

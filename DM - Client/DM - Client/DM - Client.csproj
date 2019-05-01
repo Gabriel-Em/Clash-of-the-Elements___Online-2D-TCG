@@ -37,7 +37,6 @@
   <ItemGroup>
     <Reference Include="FontAwesome.WPF, Version=4.7.0.37774, Culture=neutral, PublicKeyToken=0758b07a11a4f466, processorArchitecture=MSIL">
       <HintPath>..\packages\FontAwesome.WPF.4.7.0.9\lib\net40\FontAwesome.WPF.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -65,30 +64,58 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Animations\AlignAnimation.cs" />
+    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\AnimationConstants.cs" />
+    <Compile Include="Animations\RotateAnimation.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionConstants\CollectionConstants.cs" />
     <Compile Include="Controllers\GameRoomController.cs" />
     <Compile Include="Controllers\PreGameRoomController.cs" />
+    <Compile Include="GamePlay\Animations.cs" />
+    <Compile Include="GamePlay\AttackPhase.cs" />
+    <Compile Include="GamePlay\Disengage.cs" />
+    <Compile Include="GamePlay\EndTurn.cs" />
+    <Compile Include="GamePlay\Engage.cs" />
+    <Compile Include="GamePlay\ManaPhase.cs" />
+    <Compile Include="GamePlay\SpecialEffects.cs" />
+    <Compile Include="GamePlay\StartTurn.cs" />
+    <Compile Include="GamePlay\SummonPhase.cs" />
+    <Compile Include="GUIPages\GUIEndGame.xaml.cs">
+      <DependentUpon>GUIEndGame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUIPages\GUIGameRoom.xaml.cs">
       <DependentUpon>GUIGameRoom.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUIPages\GUIPreGameRoom.xaml.cs">
       <DependentUpon>GUIPreGameRoom.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUIWindows\GUICreateDeck.xaml.cs">
+      <DependentUpon>GUICreateDeck.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUIWindows\GUIDisconnected.xaml.cs">
       <DependentUpon>GUIDisconnected.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\AnimationUtility.cs" />
-    <Compile Include="Models\Card.cs" />
-    <Compile Include="Models\CardCollection.cs" />
-    <Compile Include="Models\CardGUIModel.cs" />
-    <Compile Include="Models\DeckItemGUIModel.cs" />
-    <Compile Include="Models\CardWithGameProperties.cs" />
-    <Compile Include="Models\ClientMessage.cs" />
+    <Compile Include="GUIWindows\GUISelect.xaml.cs">
+      <DependentUpon>GUISelect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUIWindows\GUIUserData.xaml.cs">
+      <DependentUpon>GUIUserData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Animations\MoveAnimation.cs" />
+    <Compile Include="Models\Collection\Card.cs" />
+    <Compile Include="Models\Collection\CardCollection.cs" />
+    <Compile Include="Models\GUIModels\CardGUIModel.cs" />
+    <Compile Include="Models\GUIModels\DeckItemGUIModel.cs" />
+    <Compile Include="Models\Collection\CardWithGameProperties.cs" />
+    <Compile Include="Models\GUIModels\SelectGUI_CardGUIModel.cs" />
+    <Compile Include="Models\Messages\ClientMessage.cs" />
     <Compile Include="Communication\Communication.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
     <Compile Include="Controllers\Controller.cs" />
@@ -113,17 +140,17 @@
     <Compile Include="GUIWindows\GUIRegister.xaml.cs">
       <DependentUpon>GUIRegister.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\CollectionDeck.cs" />
-    <Compile Include="Models\CollectionDeckItem.cs" />
-    <Compile Include="Models\DeckGUIModel.cs" />
-    <Compile Include="Models\GameMessage.cs" />
-    <Compile Include="Models\GameRoom.cs" />
-    <Compile Include="Models\GameRoomGUIModel.cs" />
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Models\PreGameDeckGUIModel.cs" />
-    <Compile Include="Models\PreGameDeckListElement.cs" />
-    <Compile Include="Models\SpecialEffect.cs" />
-    <Compile Include="Models\UserData.cs" />
+    <Compile Include="Models\Collection\CollectionDeck.cs" />
+    <Compile Include="Models\Collection\CollectionDeckItem.cs" />
+    <Compile Include="Models\GUIModels\DeckGUIModel.cs" />
+    <Compile Include="Models\Messages\GameMessage.cs" />
+    <Compile Include="Models\Lobby\GameRoom.cs" />
+    <Compile Include="Models\GUIModels\GameRoomGUIModel.cs" />
+    <Compile Include="Models\Messages\Message.cs" />
+    <Compile Include="Models\GUIModels\PreGameDeckGUIModel.cs" />
+    <Compile Include="Models\Lobby\PreGameDeckListElement.cs" />
+    <Compile Include="Models\Collection\SpecialEffect.cs" />
+    <Compile Include="Models\User\UserData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,7 +167,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -152,6 +181,10 @@
     <Resource Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="GUIPages\GUIEndGame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUIPages\GUIGameRoom.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -180,6 +213,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GUIWindows\GUICreateDeck.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUIWindows\GUIDisconnected.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -188,18 +225,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\1688 x 1204-50403-samurai-duel-wallpaper.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Duel_Masters_Wiki.png" />
+    <Page Include="GUIWindows\GUISelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUIWindows\GUIUserData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\registerBackground.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\dragon-05143.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\arrow.png" />
@@ -211,141 +247,15 @@
     <Resource Include="Resources\Deck.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Images\Cards\Aqua Hulcus.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Aqua Soldier.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Aqua Vehicle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Astrocomet Dragon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Black Feather, Shadow of Rage.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Bloody Squito.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Bone Assassin, the Ripper.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Bone Spider.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Brain Serum.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Brawler Zyler.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Bronze-Arm Tribe.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Burning Mane.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Candy Drop.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Crimson Hammer.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Dark Reversal.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Death Smoke.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Deathblade Beetle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Deathliger, Lion of Chaos.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Dia Nork, Moonlight Guardian.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Emerald Grass.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Ghost Touch.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Gran Gure, Space Guardian.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Hanusa, Radiance Elemental.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Holy Awe.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Hunter Fish.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\King Depthcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\La Ura Giga, Sky Guardian.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Marine Flower.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Meteosaur.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Miele, Vizier of Lightning.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Moonlight Flash.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Natural Snare.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Pangaea%27s Song.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Poisonous Mushroom.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Rothus, The Traveler.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Senatine Jade Tree.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Solar Ray.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Spiral Gate.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Terror Pit.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Thorny Mandra.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Tornado Flame.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\Cards\Zagaan, Knight of Darkness.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <Resource Include="Resources\Logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Images\GUI\CardBack.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Images\GUI\VS.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <Resource Include="Resources\Background.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\logInBackground.jpg" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

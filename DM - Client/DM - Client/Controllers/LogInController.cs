@@ -9,7 +9,7 @@ namespace DM___Client.Controllers
 {
     public class LogInController : Controllers.Controller
     {
-        private GUIPages.GUILogIn parent;
+        private GUIPages.GUILogIn parent;           // the Page that uses this Controller
         
         public LogInController(GUIPages.GUILogIn _parent, Communication _com)
         {
@@ -17,7 +17,7 @@ namespace DM___Client.Controllers
             com = _com;
         }
 
-        public override void commandProcessor(Models.ClientMessage message)
+        public override void clientCommandProcessor(Models.ClientMessage message)
         {
             switch(message.Command)
             {
@@ -28,10 +28,10 @@ namespace DM___Client.Controllers
                     parent.logInDenied();
                     break;
                 case "DISCONNECTED":
-                    parent.disconnected("Connection to server was lost and a log regarding the incident was created and deposited inside 'Logs' in apps home directory.", 0);
+                    parent.weGotDisconnected("Connection to server was lost and a log regarding the incident was created and deposited inside 'Logs' in apps home directory.", 0);
                     break;
                 case "REMOTEDISCONNECT":
-                    parent.disconnected("Your account was logged in from a different location.", -1);
+                    parent.weGotDisconnected("Your account was logged in from a different location.", -1);
                     break;
                 case "ALREADYLOGGEDIN":
                     parent.alreadyLoggedIn();

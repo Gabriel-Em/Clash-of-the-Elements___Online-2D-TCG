@@ -17,7 +17,7 @@ namespace DM___Client.Controllers
             com = _com;
         }
 
-        public override void commandProcessor(Models.ClientMessage message)
+        public override void clientCommandProcessor(Models.ClientMessage message)
         {
             switch (message.Command)
             {
@@ -25,7 +25,7 @@ namespace DM___Client.Controllers
                     parent.registerSuccessful();
                     break;
                 case "REGISTERFAILED":
-                    parent.registerFailed(message.Arguments);
+                    parent.registerFailed(message.stringArguments);
                     break;
                 case "DISCONNECTED":
                     parent.disconnected("Connection to server was lost and a log regarding the incident was created and deposited inside 'Logs' in apps home directory.", 0);

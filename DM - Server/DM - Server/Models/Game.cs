@@ -10,23 +10,32 @@ namespace DM___Server.Models
 {
     public class Game
     {
-        public List<int> Player1Deck;
-        public List<int> Player2Deck;
-        public List<int> Player1ManaZone;
-        public List<int> Player2ManaZone;
-        public List<int> Player1Graveyard;
-        public List<int> Player2Graveyard;
-        public List<int> Player1BattleZone;
-        public List<int> Player2BattleZone;
-        public List<int> Player1Shields;
-        public List<int> Player2Shields;
-        public List<int> Player1Hand;
-        public List<int> Player2Hand;
+        public int ID { get; set; }
+
+        public List<int> listPlayer1Deck;
+        public List<int> listPlayer2Deck;
+
+        public List<int> listPlayer1ManaZone;
+        public List<int> listPlayer2ManaZone;
+
+        public List<int> listPlayer1Graveyard;
+        public List<int> listPlayer2Graveyard;
+
+        public List<int> listPlayer1BattleGround;
+        public List<int> listPlayer2BattleGround;
+
+        public List<int> listPlayer1Safeguards;
+        public List<int> listPlayer2Safeguards;
+
+        public List<int> listPlayer1Hand;
+        public List<int> listPlayer2Hand;
+
         public Socket Player1Socket;
         public Socket Player2Socket;
-        public bool P1Ready { get; set; }
-        public bool P2Ready { get; set; }
-        public int ID { get; set; }
+
+        public bool isP1Ready { get; set; }
+        public bool isP2Ready { get; set; }
+
         public bool isPlayer1First { get; set; }
 
         public Game(int ID_, Socket player1, Socket player2)
@@ -34,46 +43,58 @@ namespace DM___Server.Models
             ID = ID_;
             Player1Socket = player1;
             Player2Socket = player2;
-            Player1Deck = new List<int>();
-            Player2Deck = new List<int>();
-            Player1ManaZone = new List<int>();
-            Player2ManaZone = new List<int>();
-            Player1Graveyard = new List<int>();
-            Player2Graveyard = new List<int>();
-            Player1BattleZone = new List<int>();
-            Player2BattleZone = new List<int>();
-            Player1Shields = new List<int>();
-            Player2Shields = new List<int>();
-            Player1Hand = new List<int>();
-            Player2Hand = new List<int>();
-            P1Ready = false;
-            P2Ready = false;
 
-            isPlayer1First = true;
-            //Random r = new Random();
+            initLists();
 
-            //if (r.Next(1, 10000) % 2 == 0)
-            //    isPlayer1First = true;
-            //else
-            //    isPlayer1First = false;
+            isP1Ready = false;
+            isP2Ready = false;
+
+            Random r = new Random();
+
+            if (r.Next(1, 10000) % 2 == 0)
+                isPlayer1First = true;
+            else
+                isPlayer1First = false;
+        }
+
+        private void initLists()
+        {
+            listPlayer1Deck = new List<int>();
+            listPlayer2Deck = new List<int>();
+            listPlayer1ManaZone = new List<int>();
+            listPlayer2ManaZone = new List<int>();
+            listPlayer1Graveyard = new List<int>();
+            listPlayer2Graveyard = new List<int>();
+            listPlayer1Safeguards = new List<int>();
+            listPlayer2BattleGround = new List<int>();
+            listPlayer1Safeguards = new List<int>();
+            listPlayer2Safeguards = new List<int>();
+            listPlayer1Hand = new List<int>();
+            listPlayer2Hand = new List<int>();
         }
 
         public void loadPlayer1InitialData(string deck)
         {
-            Player1Deck = commandArgumentToDeck(deck);
+            listPlayer1Deck = commandArgumentToDeck(deck);
             for (int i = 0; i < 5; i++)
-                Player1Shields.Add(drawCard(ref Player1Deck));
-            for (int i =0;i<5;i++)
-                Player1Hand.Add(drawCard(ref Player1Deck));
+            {
+                listPlayer1Safeguards.Add(listPlayer1Deck[0]);
+                listPlayer1Deck.RemoveAt(0);
+            }
+            for (int i = 0; i < 5; i++)
+                drawCard(1);
         }
 
         public void loadPlayer2InitialData(string deck)
         {
-            Player2Deck = commandArgumentToDeck(deck);
+            listPlayer2Deck = commandArgumentToDeck(deck);
             for (int i = 0; i < 5; i++)
-                Player2Shields.Add(drawCard(ref Player2Deck));
+            {
+                listPlayer2Safeguards.Add(listPlayer2Deck[0]);
+                listPlayer2Deck.RemoveAt(0);
+            }
             for (int i = 0; i < 5; i++)
-                Player2Hand.Add(drawCard(ref Player2Deck));
+                drawCard(2);
         }
 
         public bool isPlayer1(Socket socket)
@@ -121,17 +142,80 @@ namespace DM___Server.Models
             return deck;
         }
 
-        private int drawCard(ref List<int> deck)
+        public int drawCard(int player)
         {
-            int id;
-            if (deck.Count > 0)
+            int cardID;
+
+            if (player == 1)
             {
-                id = deck[0];
-                deck.RemoveAt(0);
+                if (listPlayer1Deck.Count > 0)
+                {
+                    cardID = listPlayer1Deck[0];
+                    listPlayer1Deck.RemoveAt(0);
+                    listPlayer1Hand.Add(cardID);
+                }
+                else
+                    cardID = -1;
             }
             else
-                id = -1;
-            return id;
+            {
+                if (listPlayer2Deck.Count > 0)
+                {
+                    cardID = listPlayer2Deck[0];
+                    listPlayer2Deck.RemoveAt(0);
+                    listPlayer2Hand.Add(cardID);
+                }
+                else
+                    cardID = -1;
+            }
+            return cardID;
+        }
+
+        public void playAsMana(int cardID, int player)
+        {
+            if (player == 1)
+            {
+                listPlayer1Hand.Remove(cardID);
+                listPlayer1ManaZone.Add(cardID);
+            }
+            else
+            {
+                listPlayer2Hand.Remove(cardID);
+                listPlayer2ManaZone.Add(cardID);
+            }
+        }
+
+        public void summon(int cardID, int player)
+        {
+            if (player == 1)
+            {
+                listPlayer1Hand.Remove(cardID);
+                listPlayer1Safeguards.Add(cardID);
+            }
+            else
+            {
+                listPlayer2Hand.Remove(cardID);
+                listPlayer2BattleGround.Add(cardID);
+            }
+        }
+
+        public int breakSafeguard(int safeguardIndex, int player)
+        {
+            int cardID;
+
+            if (player == 1)
+            {
+                cardID = listPlayer1Safeguards[safeguardIndex];
+                listPlayer1Safeguards.RemoveAt(safeguardIndex);
+                listPlayer1Hand.Add(cardID);
+            }
+            else
+            {
+                cardID = listPlayer2Safeguards[safeguardIndex];
+                listPlayer2Safeguards.RemoveAt(safeguardIndex);
+                listPlayer2Hand.Add(cardID);
+            }
+            return cardID;
         }
     }
 }

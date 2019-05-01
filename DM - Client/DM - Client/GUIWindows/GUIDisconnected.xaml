@@ -22,6 +22,6 @@
             </DockPanel>
             <Separator Background="Black" Margin="15,0,15,0"></Separator>
         </StackPanel>
-        <Button Grid.Row="1" x:Name="button" Content="Reconnect" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Height="40" FontSize="20" Click="button_Click" Cursor="Hand"/>
+        <Button Grid.Row="1" x:Name="btnReconnect" Content="Reconnect" HorizontalAlignment="Center" VerticalAlignment="Center" Width="115" Height="40" FontSize="20" Click="btnReconnect_Click" Cursor="Hand"/>
     </Grid>
 </Window>

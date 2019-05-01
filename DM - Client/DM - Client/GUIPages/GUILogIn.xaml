@@ -36,11 +36,11 @@
         </Style>
     </Page.Resources>
     <Grid>
-        <Image x:Name="backgroundImage" HorizontalAlignment="Left" Height="700" VerticalAlignment="Top" Width="1200" Source="/DM - Client;component/Resources/1688 x 1204-50403-samurai-duel-wallpaper.jpg" Stretch="Fill"/>
-        <Image x:Name="titleImage" HorizontalAlignment="Center" Height="193" Margin="0,50,0,0" VerticalAlignment="Top" Width="384" Source="/DM - Client;component/Resources/Duel_Masters_Wiki.png" Stretch="None"/>
+        <Image x:Name="backgroundImage" HorizontalAlignment="Left" Height="700" VerticalAlignment="Top" Width="1200" Source="/DM - Client;component/Resources/logInBackground.jpg" Stretch="Fill"/>
+        <Image x:Name="titleImage" HorizontalAlignment="Center" Height="265" Margin="291,16,265,0" VerticalAlignment="Top" Width="644" Source="/DM - Client;component/Resources/Logo.png" Stretch="Uniform"/>
         <Button x:Name="btnRetry" Style="{StaticResource buttonStyle}" Content="Retry connecting to server..." Cursor="Hand" Margin="0,23,0,0" VerticalAlignment="Top" HorizontalAlignment="Center" Width="185" Height="30" Background="Black" Foreground="Red" FontSize="14" Click="btnRetry_Click" Visibility="Hidden"/>
-        <Border Background="Black" Opacity="0.8" CornerRadius="20" Width="500" Height="365" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,150,0,0"/>
-        <Border Background="Transparent" CornerRadius="20" Width="500" Height="365" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,150,0,0" BorderBrush="Black" BorderThickness="10">
+        <Border Background="Black" Opacity="0.8" CornerRadius="20" Width="500" Height="365" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,175,0,0"/>
+        <Border Background="Transparent" CornerRadius="20" Width="500" Height="365" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,175,0,0" BorderBrush="Black" BorderThickness="10">
             <StackPanel x:Name="spanelLogIn" Margin="20" IsEnabled="False">
                 <Label Content="Login" Foreground="White" FontSize="30" HorizontalAlignment="Center"/>
                 <Separator Height="37"></Separator>

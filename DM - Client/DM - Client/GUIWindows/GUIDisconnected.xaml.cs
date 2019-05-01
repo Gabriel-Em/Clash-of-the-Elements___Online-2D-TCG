@@ -26,18 +26,19 @@ namespace DM___Client.GUIWindows
             InitializeComponent();
             messageBlock.Text = "Reason: " + message;
             type = type_;
+
+            // if this was a remote disconnect (which means that this account was logged in somewhere else)
             if (type_ == -1)
-                button.Content = "Exit";
+                btnReconnect.Content = "Exit";
 
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void btnReconnect_Click(object sender, RoutedEventArgs e)
         {
             if (type == -1)
                 System.Windows.Application.Current.Shutdown();
             else
                 Close();
-
         }
     }
 }

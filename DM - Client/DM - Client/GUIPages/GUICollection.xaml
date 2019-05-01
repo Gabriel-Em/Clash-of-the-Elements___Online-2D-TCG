@@ -209,8 +209,8 @@
             </Setter>
         </Style>
     </Page.Resources>
-    <Grid x:Name="cardGrid">
-        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"/>
+    <Grid x:Name="grdParent">
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/Background.jpg" Stretch="UniformToFill"/>
         <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
         <Border x:Name="CollectionBorder" Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
             <Grid Margin="20">
@@ -238,49 +238,44 @@
                             <RowDefinition Height="*" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <Button x:Name="btnCard1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage1" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage1" Grid.Column="0" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard2" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage2" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard2" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage2" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard3" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard3" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage3" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard4" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage4" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard4" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage4" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard5" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage5" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard5" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage5" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard6" Grid.Row="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage6" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard6" Grid.Row="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage6" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard7" Grid.Row="1" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage7" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard7" Grid.Row="1" Grid.Column="1" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage7" Height="170" Width="123" Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button Grid.Row="1" x:Name="btnCard8" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage8" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button Grid.Row="1" x:Name="btnCard8" Grid.Column="2" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage8" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard9" Grid.Row="1" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage9" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard9" Grid.Row="1" Grid.Column="3" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage9" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
-                        <Button x:Name="btnCard10" Grid.Row="1" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="Button_Click">
-                            <Image x:Name="cardImage10" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
+                        <Button x:Name="btnCard10" Grid.Row="1" Grid.Column="4" Background="Transparent" HorizontalAlignment="Center" VerticalAlignment="Center" Height="170" Width="123" Click="cardButton_Click">
+                            <Image x:Name="cardImage10" Height="170" Width="123"  Cursor="Hand" MouseRightButtonDown="cardImage_MouseRightButtonDown" MouseRightButtonUp="cardImage_MouseRightButtonUp"/>
                         </Button>
                     </Grid>
-                    <Button Style="{StaticResource arrowButton}" Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="657,165,-10,172" BorderThickness="0" Click="btnArrowRight_Click">
+                    <Button Style="{StaticResource arrowButton}" Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="657,175,-10,162" BorderThickness="0" Click="btnArrowRight_Click">
                     <Image Source="/DM - Client;component/Resources/arrow.png" Width="63" Height="63"/>
                     </Button>
-                    <Button Style="{StaticResource arrowButton}"  Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="-13,165,660,172" BorderThickness="0" Click="btnArrowLeft_Click">
+                    <Button Style="{StaticResource arrowButton}"  Width="63" Height="63" Background="Transparent" Cursor="Hand" Margin="-13,175,660,162" BorderThickness="0" Click="btnArrowLeft_Click">
                         <Image Source="/DM - Client;component/Resources/arrow.png" Width="63" Height="63"  RenderTransformOrigin="0.5,0.5">
                             <Image.RenderTransform>
-                                <TransformGroup>
-                                    <ScaleTransform ScaleY="1" ScaleX="-1"/>
-                                    <SkewTransform AngleY="0" AngleX="0"/>
-                                    <RotateTransform Angle="0"/>
-                                    <TranslateTransform/>
-                                </TransformGroup>
+                                <ScaleTransform ScaleY="1" ScaleX="-1"/>
                             </Image.RenderTransform>
                         </Image>
                     </Button>
@@ -310,12 +305,10 @@
                 <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF685D8B" Opacity="0.2" CornerRadius="20" Margin="0,0,0,0"/>
                 <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" BorderThickness="5" BorderBrush="Black">
                     <StackPanel Margin="10,0,10,0">
-                        <Label FontSize="15" Foreground="White" Content="Filters" HorizontalAlignment="Center"/>
-                        <Separator Height="1" Background="White" Margin="0"/>
-                        <Separator Height="1" Background="White" Margin="0"/>
+                        <Label FontSize="18" Foreground="White" Content="Filters" HorizontalAlignment="Center" FontFamily="SegoeUI" FontWeight="Bold"/>
+                        <Separator Height="2" Background="White" Margin="0"/>
                         <Grid Height="140">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
@@ -323,29 +316,29 @@
                                 <RowDefinition Height="*" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
-                            <StackPanel>
+                            <StackPanel Margin="60,5,60,0">
                                 <Label Content="Type:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
-                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterType" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCardType" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
                                     <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
                                     <ComboBoxItem>Creature</ComboBoxItem>
                                     <ComboBoxItem>Spell</ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Grid.Column="1">
-                                <Label Content="Civilization:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
-                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCivilization" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
+                            <StackPanel Grid.Column="1" Margin="60,5,60,0">
+                                <Label Content="Element:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
+                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterElement" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
                                     <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
-                                    <ComboBoxItem>Darkness</ComboBoxItem>
+                                    <ComboBoxItem>Air</ComboBoxItem>
+                                    <ComboBoxItem>Earth</ComboBoxItem>
+                                    <ComboBoxItem>Ether</ComboBoxItem>
                                     <ComboBoxItem>Fire</ComboBoxItem>
-                                    <ComboBoxItem>Light</ComboBoxItem>
-                                    <ComboBoxItem>Nature</ComboBoxItem>
                                     <ComboBoxItem>Water</ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Grid.Column="2">
+                            <StackPanel Grid.Row="1">
                                 <Label Content="Cost:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
-                                <DockPanel>
-                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCostType" Height="23" Width="95" Margin="10,0,10,0" SelectionChanged="ComboBox_SelectionChanged">
+                                <DockPanel Margin="60,0,60,0">
+                                    <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterCostComparator" Height="23" Width="95" Margin="10,0,10,0" SelectionChanged="ComboBox_SelectionChanged">
                                         <ComboBoxItem IsSelected="True">=</ComboBoxItem>
                                         <ComboBoxItem>&lt;=</ComboBoxItem>
                                         <ComboBoxItem>&gt;=</ComboBoxItem>
@@ -359,33 +352,11 @@
                                         <ComboBoxItem>5</ComboBoxItem>
                                         <ComboBoxItem>6</ComboBoxItem>
                                         <ComboBoxItem>7</ComboBoxItem>
+                                        <ComboBoxItem>8</ComboBoxItem>
                                     </ComboBox>
                                 </DockPanel>
                             </StackPanel>
-                            <StackPanel Grid.Row="1">
-                                <Label Content="Race:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
-                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterRace" Height="23" Margin="15,0,15,0" MaxDropDownHeight="145" SelectionChanged="ComboBox_SelectionChanged">
-                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
-                                    <ComboBoxItem>Armored Dragon</ComboBoxItem>
-                                    <ComboBoxItem>Liquid People</ComboBoxItem>
-                                    <ComboBoxItem>Ghost</ComboBoxItem>
-                                    <ComboBoxItem>Living Dead</ComboBoxItem>
-                                    <ComboBoxItem>Human</ComboBoxItem>
-                                    <ComboBoxItem>Beast Folk</ComboBoxItem>
-                                    <ComboBoxItem>Cyber Virus</ComboBoxItem>
-                                    <ComboBoxItem>Giant Insect</ComboBoxItem>
-                                    <ComboBoxItem>Demon Command</ComboBoxItem>
-                                    <ComboBoxItem>Fish</ComboBoxItem>
-                                    <ComboBoxItem>Leviathan</ComboBoxItem>
-                                    <ComboBoxItem>Rock Beast</ComboBoxItem>
-                                    <ComboBoxItem>Initiate</ComboBoxItem>
-                                    <ComboBoxItem>Balloon Mushroom</ComboBoxItem>
-                                    <ComboBoxItem>Armorloid</ComboBoxItem>
-                                    <ComboBoxItem>Starlight Tree</ComboBoxItem>
-                                    <ComboBoxItem>Tree Folk</ComboBoxItem>
-                                </ComboBox>
-                            </StackPanel>
-                            <StackPanel Grid.Row="1" Grid.Column="1">
+                            <StackPanel Grid.Row="1" Grid.Column="1" Margin="60,0,60,0">
                                 <Label Content="Power:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
                                 <DockPanel>
                                     <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterPowerType" Height="23" Width="95" Margin="10,0,10,0" SelectionChanged="ComboBox_SelectionChanged">
@@ -395,25 +366,17 @@
                                     </ComboBox>
                                     <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterPower" Height="23" Width="95" Margin="0,0,10,0" MaxDropDownHeight="145" HorizontalAlignment="Right" SelectionChanged="ComboBox_SelectionChanged">
                                         <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
+                                        <ComboBoxItem>500</ComboBoxItem>
                                         <ComboBoxItem>1000</ComboBoxItem>
                                         <ComboBoxItem>2000</ComboBoxItem>
+                                        <ComboBoxItem>2500</ComboBoxItem>
                                         <ComboBoxItem>3000</ComboBoxItem>
                                         <ComboBoxItem>4000</ComboBoxItem>
-                                        <ComboBoxItem>5000</ComboBoxItem>
                                         <ComboBoxItem>6000</ComboBoxItem>
                                         <ComboBoxItem>7000</ComboBoxItem>
                                         <ComboBoxItem>8000</ComboBoxItem>
-                                        <ComboBoxItem>9000</ComboBoxItem>
-                                        <ComboBoxItem>9500</ComboBoxItem>
                                     </ComboBox>
                                 </DockPanel>
-                            </StackPanel>
-                            <StackPanel Grid.Row="1" Grid.Column="2">
-                                <Label Content="Set:" Foreground="White" HorizontalAlignment="Center" FontSize="16"></Label>
-                                <ComboBox Style="{StaticResource ComboBoxFlatStyle}" x:Name="cboFilterSet" Height="23" Margin="15,0,15,0" SelectionChanged="ComboBox_SelectionChanged">
-                                    <ComboBoxItem IsSelected="True">Any</ComboBoxItem>
-                                    <ComboBoxItem>Base Set</ComboBoxItem>
-                                </ComboBox>
                             </StackPanel>
                         </Grid>
                     </StackPanel>

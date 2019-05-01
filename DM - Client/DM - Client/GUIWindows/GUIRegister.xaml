@@ -32,9 +32,15 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <Image x:Name="image" HorizontalAlignment="Left" VerticalAlignment="Top" Width="575" Height="668" Source="/DM - Client;component/Resources/RegisterBackground.jpg" Margin="0,-28,-81,-69"/>
-        <Border Background="Black" Opacity="0.75" CornerRadius="20" Width="400" Height="512" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <Border Background="Transparent" CornerRadius="20" Width="400" Height="512" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="67*"/>
+            <ColumnDefinition Width="298*"/>
+            <ColumnDefinition Width="129*"/>
+        </Grid.ColumnDefinitions>
+        <Image x:Name="image" HorizontalAlignment="Left" VerticalAlignment="Top"  Source="/DM - Client;component/Resources/logInBackground.jpg" Margin="0,0,-0.4,0" Height="570" Width="494" Stretch="UniformToFill" Grid.ColumnSpan="3"/>
+
+        <Border Background="Black" Opacity="0.75" CornerRadius="20" Width="400" Height="512" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="3" Margin="47,29,46.6,29.4"/>
+        <Border Background="Transparent" CornerRadius="20" Width="400" Height="512" HorizontalAlignment="Center" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="5" Grid.ColumnSpan="3" Margin="47,29,46.6,29.4">
             <StackPanel x:Name="spanelRegister" Margin="20">
                 <Label Content="Register" Foreground="White" FontSize="35" HorizontalAlignment="Center" BorderThickness="0"/>
                 <Separator Height="24"/>

@@ -32,13 +32,21 @@ namespace DM___Client.GUIPages
         public GUIPreGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_)
         {
             InitializeComponent();
+
+            // attach parent, GameRoomID and controller 
             parent = parent_;
             GameRoomID = GameRoomID_;
-            DecksGUI = new List<Models.PreGameDeckGUIModel>();
             ctrl = new Controllers.PreGameRoomController(this, com_);
+
+            // initailize uninitialized adta
+            DecksGUI = new List<Models.PreGameDeckGUIModel>();
             selectedDeckID = -1;
+
+            // initialize server response timer
             checkServerResponse.Interval = new TimeSpan(0, 0, 0, 0, 100);
             checkServerResponse.Tick += checkServerResponse_Tick;
+
+            // start loading page data and start listening
             ctrl.loadPageData();
             beginListening();
         }
@@ -75,14 +83,14 @@ namespace DM___Client.GUIPages
             parent.loadLogIn();
         }
 
-        public List<bool> getLoadedData()
+        public List<bool> getLoadedDataChecklist()
         {
-            return ctrl.getLoadedData();
+            return ctrl.getLoadedDataChecklist();
         }
 
         public bool DoneLoading()
         {
-            if (ctrl.getLoadedData().Contains(false))
+            if (ctrl.getLoadedDataChecklist().Contains(false))
                 return false;
             return true;
         }

@@ -26,24 +26,24 @@ namespace DM___Client.GUIPages
         private const int MESSAGEHEIGHT = 41;
         private const string MESSAGEBULLETPOINT = "+ ";
 
-        public GUILoading(ImageSource source, List<string> Messages, List<bool> loadedData)
+        public GUILoading(ImageSource source, List<string> loadedDataChecklistItems, List<bool> loadedDataChecklist)
         {
             InitializeComponent();
             backgroundImage.Source = source;
-            surroundingBorder.Height = BORDERHEIGHT + Messages.Count * MESSAGEHEIGHT;
-            interiorBorder.Height = BORDERHEIGHT + Messages.Count * MESSAGEHEIGHT;
-            populateWindow(Messages, loadedData);
+            surroundingBorder.Height = BORDERHEIGHT + loadedDataChecklistItems.Count * MESSAGEHEIGHT;
+            interiorBorder.Height = BORDERHEIGHT + loadedDataChecklistItems.Count * MESSAGEHEIGHT;
+            populateWindow(loadedDataChecklistItems, loadedDataChecklist);
         }
 
-        private void populateWindow(List<string> Messages, List<bool> loadedData)
+        private void populateWindow(List<string> loadedDataChecklistItems, List<bool> loadedDataChecklist)
         {
             images = new List<ImageAwesome>();
-            for (int i = 0; i < Messages.Count; i++)
+            for (int i = 0; i < loadedDataChecklistItems.Count; i++)
             {
                 Label label = new Label();
                 label.FontSize = 23;
                 label.Foreground = Brushes.Black;
-                label.Content = MESSAGEBULLETPOINT + Messages[i];
+                label.Content = MESSAGEBULLETPOINT + loadedDataChecklistItems[i];
                 label.HorizontalAlignment = HorizontalAlignment.Left;
                 label.FontWeight = FontWeights.Bold;
 
@@ -51,7 +51,7 @@ namespace DM___Client.GUIPages
                 image.Width = 25;
                 image.HorizontalAlignment = HorizontalAlignment.Right;
                 image.Margin = new Thickness(0, 0, 30, 0);
-                if (loadedData[i])
+                if (loadedDataChecklist[i])
                     image.Icon = FontAwesomeIcon.Check;
                 else
                 {
@@ -65,15 +65,15 @@ namespace DM___Client.GUIPages
                 dp.Children.Add(label);
                 dp.Children.Add(image);
 
-                messagePanel.Children.Add(dp);
+                checkListPanel.Children.Add(dp);
             }
         }
 
-        public void updateMessages(List<bool> loadedData)
+        public void updateMessages(List<bool> loadedDataCheckList)
         {
-            for(int i =0;i<loadedData.Count;i++)
+            for(int i = 0; i< loadedDataCheckList.Count;i++)
             {
-                if (loadedData[i] && images[i].Icon == FontAwesomeIcon.Spinner)
+                if (loadedDataCheckList[i] && images[i].Icon == FontAwesomeIcon.Spinner)
                 {
                     images[i].Spin = false;
                     images[i].Icon = FontAwesomeIcon.Check;

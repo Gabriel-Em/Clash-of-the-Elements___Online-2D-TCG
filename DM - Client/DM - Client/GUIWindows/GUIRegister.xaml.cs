@@ -59,7 +59,7 @@ namespace DM___Client.GUIWindows
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)
         {
-            if(validateRegisterInfo())
+            if (validateRegisterInfo())
             {
                 spanelRegister.IsEnabled = false;
                 List<string> commandArguments = new List<string>() { txtUsername.Text, txtNickName.Text, ctrl.stringToMD5Hash(passwordBox.Password), txtEmail.Text };

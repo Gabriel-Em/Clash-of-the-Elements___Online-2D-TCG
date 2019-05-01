@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Constants = DM___Client.CollectionConstants;
 
 namespace DM___Client.GUIPages
 {
@@ -24,41 +25,69 @@ namespace DM___Client.GUIPages
     {
         private GUIWindows.GUI parent;
         private Controllers.CollectionController ctrl;
+
         private DispatcherTimer checkServerResponse = new DispatcherTimer();
-        private List<Image> GuiImages;
-        private List<Button> GuiButtons;
-        private Image tempImage;
-        private bool isWindowLoaded;
-        private List<Models.DeckGUIModel> DecksGUI;
-        private List<Models.DeckItemGUIModel> DeckContentGUI;
+
+        private List<Image> listGuiImages;
+        private List<Button> listGuiCardButtons;
+        private List<Models.DeckGUIModel> listDecksGUI;
+        private List<Models.DeckItemGUIModel> listDeckContentGUI;
+        private Models.CollectionDeck deck;
+
+        private Image zoomedImage;
         private int selectedDeckID;
+
+        private const int COMPARELESSTHANOREQUAL = 8;
+        private const int COMPAREGREATERTHANOREQUAL = 9;
+        private const int COMPAREEQUAL = 10;
+
+        private bool editModeON;
+
+        private Log.Logger logger;
+
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
 
         public GUICollection(GUIWindows.GUI parent_, Communication com_, Models.CardCollection CardCollection_)
         {
-            isWindowLoaded = false;
             InitializeComponent();
-            isWindowLoaded = true;
+
+            logger = new Log.Logger();
+
+            // attach parent
             parent = parent_;
-            DecksGUI = new List<Models.DeckGUIModel>();
-            DeckContentGUI = new List<Models.DeckItemGUIModel>();
+
+            // attach controller
             ctrl = new Controllers.CollectionController(this, com_, CardCollection_);
+
+            // init uninitialized data
+
+            listDecksGUI = new List<Models.DeckGUIModel>();
+            listDeckContentGUI = new List<Models.DeckItemGUIModel>();
             selectedDeckID = -1;
-            tempImage = new Image();
-            tempImage.Width = 222;
-            tempImage.Height = 307;
-            tempImage.VerticalAlignment = VerticalAlignment.Top;
-            tempImage.HorizontalAlignment = HorizontalAlignment.Left;
-            tempImage.Visibility = Visibility.Hidden;
-            tempImage.Stretch = Stretch.Fill;
-            cardGrid.Children.Add(tempImage);
+            editModeON = false;
 
-            GuiImages = new List<Image>() { cardImage1, cardImage2, cardImage3, cardImage4, cardImage5, cardImage6, cardImage7, cardImage8, cardImage9, cardImage10 };
-            GuiButtons = new List<Button>() { btnCard1, btnCard2, btnCard3, btnCard4, btnCard5, btnCard6, btnCard7, btnCard8, btnCard9, btnCard10 };
+            // create an invisibile image that will become the zoomed in image whenever auser right clicks a card from the collection
+            zoomedImage = new Image();
+            zoomedImage.Width = 250;
+            zoomedImage.Height = 346;
+            zoomedImage.VerticalAlignment = VerticalAlignment.Top;
+            zoomedImage.HorizontalAlignment = HorizontalAlignment.Left;
+            zoomedImage.Visibility = Visibility.Hidden;
+            zoomedImage.Stretch = Stretch.Fill;
+            grdParent.Children.Add(zoomedImage);
 
-            loadCardsToGUI(ctrl.currentList, ctrl.currentIndex);
+            // add all card images and attached buttons to two lists for easy access
+            listGuiImages = new List<Image>() { cardImage1, cardImage2, cardImage3, cardImage4, cardImage5, cardImage6, cardImage7, cardImage8, cardImage9, cardImage10 };
+            listGuiCardButtons = new List<Button>() { btnCard1, btnCard2, btnCard3, btnCard4, btnCard5, btnCard6, btnCard7, btnCard8, btnCard9, btnCard10 };
+
+            // load the first 10 cards in the collection to GUI
+            loadCardsToGUI(ctrl.filteredCollection, ctrl.currentIndex);
+
+            // init server response timer
             checkServerResponse.Interval = new TimeSpan(0, 0, 0, 0, 250);
             checkServerResponse.Tick += checkServerResponse_Tick;
+
+            // start loading page data and start listening
             ctrl.loadPageData();
             beginListening();
         }
@@ -85,14 +114,14 @@ namespace DM___Client.GUIPages
                 ctrl.messageProcessor(ctrl.getReceivedResponse());
         }
 
-        public List<bool> getLoadedData()
+        public List<bool> getLoadedDataChecklist()
         {
-            return ctrl.getLoadedData();
+            return ctrl.getLoadedDataChecklist();
         }
 
         public bool DoneLoading()
         {
-            if (ctrl.getLoadedData().Contains(false))
+            if (ctrl.getLoadedDataChecklist().Contains(false))
                 return false;
             return true;
         }
@@ -107,6 +136,8 @@ namespace DM___Client.GUIPages
             parent.loadLogIn();
         }
 
+        // load cards to GUI
+
         private void loadCardsToGUI(List<Models.Card> Cards, int index)
         {
             for (int i = index; i < index + 10; i++)
@@ -115,33 +146,37 @@ namespace DM___Client.GUIPages
                 {
                     try
                     {
-                        GuiImages[i - index].Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Cards[i].Name + ".png", UriKind.Absolute));
-                        if (GuiButtons[i - index].Visibility == Visibility.Hidden)
-                            GuiButtons[i - index].Visibility = Visibility.Visible;
+                        listGuiImages[i - index].Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Cards[i].Name + ".png", UriKind.Absolute));
+                        if (listGuiCardButtons[i - index].Visibility == Visibility.Hidden)
+                            listGuiCardButtons[i - index].Visibility = Visibility.Visible;
                     }
                     catch
                     {
-                        GuiImages[i - index].Source = null;
-                        GuiButtons[i - index].Visibility = Visibility.Hidden;
+                        listGuiImages[i - index].Source = null;
+                        listGuiCardButtons[i - index].Visibility = Visibility.Hidden;
                     }
                 }
                 else
                 {
-                    GuiImages[i - index].Source = null;
-                    GuiButtons[i - index].Visibility = Visibility.Hidden;
+                    listGuiImages[i - index].Source = null;
+                    listGuiCardButtons[i - index].Visibility = Visibility.Hidden;
                 }
             }
         }
 
+        // load decks to GUI
+
         public void loadDecksToGUI()
         {
-            foreach(Models.CollectionDeck deck in ctrl.Decks)
+            foreach (Models.CollectionDeck deck in ctrl.Decks)
             {
                 Models.DeckGUIModel dguim = new Models.DeckGUIModel(deck.DeckID, deck.DeckName, this);
                 stackDecks.Children.Add(dguim.Border);
-                DecksGUI.Add(dguim);
+                listDecksGUI.Add(dguim);
             }
         }
+
+        // zoomed in image
 
         private void cardImage_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
@@ -149,35 +184,49 @@ namespace DM___Client.GUIPages
             int index = Int32.Parse(img.Name.Substring(9));
             try
             {
-                tempImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + ctrl.currentList[ctrl.currentIndex + index - 1].Name + ".png", UriKind.Absolute));
+                zoomedImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + ctrl.filteredCollection[ctrl.currentIndex + index - 1].Name + ".png", UriKind.Absolute));
             }
             catch (Exception ex)
             {
-                if (!Directory.Exists(@".\Logs"))
-                    Directory.CreateDirectory(@".\Logs");
-
-                StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                file.Write(ex.ToString());
-                file.Close();
+                logger.Log(ex.ToString());
             }
-            Point location = GuiImages[index - 1].TransformToAncestor(Application.Current.MainWindow).Transform(new Point(0, 0));
-            tempImage.Margin = new Thickness(location.X + 127, location.Y, 0, 0);
+            Point location = listGuiImages[index - 1].TransformToAncestor(Application.Current.MainWindow).Transform(new Point(0, 0));
+            zoomedImage.Margin = new Thickness(location.X + 127, location.Y, 0, 0);
 
-            tempImage.Visibility = Visibility.Visible;
+            zoomedImage.Visibility = Visibility.Visible;
+        }
+
+        public void displayZoomedInImage(string cardName, Border border)
+        {
+            try
+            {
+                zoomedImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + cardName + ".png", UriKind.Absolute));
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.ToString());
+            }
+            Point location = border.TranslatePoint(new Point(0,0), grdParent);
+
+            if (location.Y + zoomedImage.Height > parent.Height - 50)
+                location.Y -= location.Y + zoomedImage.Height - parent.Height + 50;
+
+            zoomedImage.Margin = new Thickness(location.X - 260, location.Y, 0, 0);
+            zoomedImage.Visibility = Visibility.Visible;
         }
 
         private void cardImage_MouseRightButtonUp(object sender, MouseEventArgs e)
         {
-            tempImage.Visibility = Visibility.Hidden;
-            tempImage.Source = null;
+            hideZoomedInImage();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        public void hideZoomedInImage()
         {
-            Button btn = (Button)sender;
-            int index = Int32.Parse(btn.Name.Substring(7));
-            loadCardInfo(ctrl.currentList[ctrl.currentIndex + index - 1]);
+            zoomedImage.Visibility = Visibility.Hidden;
+            zoomedImage.Source = null;
         }
+
+        // load card info
 
         public void loadCardInfo(Models.Card Card)
         {
@@ -196,10 +245,10 @@ namespace DM___Client.GUIPages
             tr.Text = Card.Type;
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nCivilization: ";
+            tr.Text = "\nElement: ";
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.Civilization;
+            tr.Text = Card.Element;
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
             tr.Text = "\nCost: ";
@@ -207,7 +256,7 @@ namespace DM___Client.GUIPages
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
             tr.Text = Card.Cost.ToString();
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
-            if(Card.Race!=null)
+            if (Card.Race != null)
             {
                 tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
                 tr.Text = "\nRace: ";
@@ -216,7 +265,7 @@ namespace DM___Client.GUIPages
                 tr.Text = Card.Race;
                 tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             }
-            if(Card.Power!=-1)
+            if (Card.Power != -1)
             {
                 tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
                 tr.Text = "\nPower: ";
@@ -225,18 +274,6 @@ namespace DM___Client.GUIPages
                 tr.Text = Card.Power.ToString();
                 tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             }
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nMana Number: ";
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.ManaNumber.ToString();
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nSet: ";
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.Set;
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
             tr.Text = "\nText: ";
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
@@ -249,71 +286,76 @@ namespace DM___Client.GUIPages
             rchCardInfo.ScrollToHome();
         }
 
+        // move right inside collection
+
         private void btnArrowRight_Click(object sender, RoutedEventArgs e)
         {
-            if(ctrl.currentIndex+10 <= ctrl.currentList.Count-1)
+            if (ctrl.currentIndex + 10 <= ctrl.filteredCollection.Count - 1)
             {
                 ctrl.currentIndex += 10;
-                loadCardsToGUI(ctrl.currentList, ctrl.currentIndex);
+                loadCardsToGUI(ctrl.filteredCollection, ctrl.currentIndex);
             }
         }
+
+        // move left inside collection
 
         private void btnArrowLeft_Click(object sender, RoutedEventArgs e)
         {
             if (ctrl.currentIndex - 10 >= 0)
             {
                 ctrl.currentIndex -= 10;
-                loadCardsToGUI(ctrl.currentList, ctrl.currentIndex);
+                loadCardsToGUI(ctrl.filteredCollection, ctrl.currentIndex);
             }
         }
+
+        // menu buttons
 
         private void btnCreateNewDeck_Click(object sender, RoutedEventArgs e)
         {
+            string deckName;
+            GUIWindows.GUICreateDeck gUICreateDeck;
 
-        }
+            gUICreateDeck = new GUIWindows.GUICreateDeck();
+            gUICreateDeck.ShowDialog();
 
-        private void btnBackToLobby_Click(object sender, RoutedEventArgs e)
-        {
-            ctrl.send(new Models.ClientMessage("JOINLOBBY"));
-            stopListening();
-            parent.loadGameLobby();
-        }
+            deckName = gUICreateDeck.deckName;
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (isWindowLoaded)
+            if (deckName != null)
             {
-                ctrl.filterCollection(((ComboBoxItem)cboFilterType.SelectedItem).Content.ToString(), ((ComboBoxItem)cboFilterCivilization.SelectedItem).Content.ToString(),
-                    ((ComboBoxItem)cboFilterCost.SelectedItem).Content.ToString(), ((ComboBoxItem)cboFilterCostType.SelectedItem).Content.ToString(), ((ComboBoxItem)cboFilterRace.SelectedItem).Content.ToString(),
-                    ((ComboBoxItem)cboFilterPower.SelectedItem).Content.ToString(), ((ComboBoxItem)cboFilterPowerType.SelectedItem).Content.ToString(), ((ComboBoxItem)cboFilterSet.SelectedItem).Content.ToString());
-                loadCardsToGUI(ctrl.currentList, ctrl.currentIndex);
+                ctrl.send(new Models.ClientMessage("CREATEDECK", new List<string>() { deckName }));
             }
         }
 
-        public void SelectDeck(int ID)
+        private void btnEditSelected_Click(object sender, RoutedEventArgs e)
         {
-            selectedDeckID = ID;
-            for(int i =0; i< DecksGUI.Count;i++)
-                DecksGUI[i].deselect();
-        }
-
-        public void populateDeckContents(int id)
-        {
-            stackDeckContents.Children.Clear();
-            Models.CollectionDeck deck = ctrl.getDeckByID(id);
-            if(deck!= null)
+            if (selectedDeckID != -1)
             {
-                foreach(Models.CollectionDeckItem cdi in deck.CardList)
+                if (editModeON)
                 {
-                    Models.DeckItemGUIModel cguim = new Models.DeckItemGUIModel(cdi, this);
-                    stackDeckContents.Children.Add(cguim.Border);
+                    editModeON = false;
+                    btnEditSelected.Content = "Edit deck";
+                    ctrl.updateDeck(deck);
+                    sendUpdateDeck();
+                }
+                else
+                {
+                    editModeON = true;
+                    btnEditSelected.Content = "Save deck";
+
                 }
             }
+            else
+                MessageBox.Show("No deck selected.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        private void insertCDIGUIdToStackPanel(Models.DeckItemGUIModel cguim)
+        private void sendUpdateDeck()
         {
-            
+            Models.ClientMessage clientMessage = new Models.ClientMessage();
+            clientMessage.Command = "UPDATEDECK";
+            clientMessage.intArguments = new List<int>() { (deck.DeckID) };
+            clientMessage.stringArguments = new List<string>() { ctrl.collectionDeckToStringArgument(deck) };
+
+            ctrl.send(clientMessage);
         }
 
         private void btnDeleteSelected_Click(object sender, RoutedEventArgs e)
@@ -330,22 +372,239 @@ namespace DM___Client.GUIPages
             }
         }
 
+        private void btnBackToLobby_Click(object sender, RoutedEventArgs e)
+        {
+            stopListening();
+            ctrl.send(new Models.ClientMessage("JOINLOBBY"));
+            parent.loadGameLobby();
+        }
+
+        // filter collection
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string comboBoxContent;
+            string cardType;
+            string cardElement;
+            int cardCost;
+            int cardCostComparator;
+            int cardPower;
+            int cardPowerComparator;
+
+            if (e.RemovedItems.Count != 0)
+            {
+                // cardType
+
+                cardType = ((ComboBoxItem)cboFilterCardType.SelectedItem).Content.ToString();
+
+                // cardElement
+
+                cardElement = ((ComboBoxItem)cboFilterElement.SelectedItem).Content.ToString();
+
+                // cardCost
+
+                comboBoxContent = ((ComboBoxItem)cboFilterCost.SelectedItem).Content.ToString();
+                if (comboBoxContent == "Any")
+                    cardCost = -1;
+                else
+                    cardCost = Int32.Parse(comboBoxContent);
+
+                // cardCost comparator
+
+                comboBoxContent = ((ComboBoxItem)cboFilterCostComparator.SelectedItem).Content.ToString();
+
+                if (comboBoxContent == ">=")
+                    cardCostComparator = COMPAREGREATERTHANOREQUAL;
+                else
+                if (comboBoxContent == "<=")
+                    cardCostComparator = COMPARELESSTHANOREQUAL;
+                else
+                    cardCostComparator = COMPAREEQUAL;
+
+                // cardPower
+
+                comboBoxContent = ((ComboBoxItem)cboFilterPower.SelectedItem).Content.ToString();
+
+                if (comboBoxContent == "Any")
+                    cardPower = -1;
+                else
+                    cardPower = Int32.Parse(comboBoxContent);
+
+                // cardPowerComparator
+
+                comboBoxContent = ((ComboBoxItem)cboFilterPowerType.SelectedItem).Content.ToString();
+
+                if (comboBoxContent == ">=")
+                    cardPowerComparator = COMPAREGREATERTHANOREQUAL;
+                else
+                if (comboBoxContent == "<=")
+                    cardPowerComparator = COMPARELESSTHANOREQUAL;
+                else
+                    cardPowerComparator = COMPAREEQUAL;
+
+                ctrl.filterCollection(cardType, cardElement, cardCost, cardCostComparator, cardPower, cardPowerComparator);
+                loadCardsToGUI(ctrl.filteredCollection, ctrl.currentIndex);
+            }
+        }
+
+        // Select deck
+
+        public void SelectDeck(int ID)
+        {
+            selectedDeckID = ID;
+            populateDeckContents(ID);
+        }
+
+        // Deselect deck
+
+        public void DeselectDeck()
+        {
+            selectedDeckID = -1;
+            stackDeckContents.Children.Clear();
+        }
+
+        public void deselectAll()
+        {
+            foreach (Models.DeckGUIModel deck in listDecksGUI)
+                deck.deselect();
+        }
+
+        // whenever you select a deck
+
+        private void populateDeckContents(int id)
+        {
+            Models.CollectionDeck deck;
+
+            stackDeckContents.Children.Clear();
+            listDeckContentGUI.Clear();
+            deck = ctrl.getDeckByID(id);
+
+            this.deck = deck.Clone();
+
+            if (deck != null)
+            {
+                foreach (Models.CollectionDeckItem cdi in deck.CardList)
+                {
+                    Models.DeckItemGUIModel cguim = new Models.DeckItemGUIModel(cdi, this);
+                    listDeckContentGUI.Add(cguim);
+                    stackDeckContents.Children.Add(cguim.Border);
+                }
+            }
+        }
+
+        // creates a new Deck item
+
+        public void createNewDeckGUI(int deckID, string deckName)
+        {
+            Models.DeckGUIModel dguim = new Models.DeckGUIModel(deckID, deckName, this);
+            stackDecks.Children.Add(dguim.Border);
+            listDecksGUI.Add(dguim);
+        }
+
+        // removes a deck item
+
         private void removeDeckFromGUI(int ID)
         {
-            for(int i =0;i<DecksGUI.Count;i++)
+            for (int i = 0; i < listDecksGUI.Count; i++)
             {
-                if(DecksGUI[i].ID == ID)
+                if (listDecksGUI[i].ID == ID)
                 {
-                    stackDecks.Children.Remove(DecksGUI[i].Border);
-                    DecksGUI.RemoveAt(i);
+                    stackDecks.Children.Remove(listDecksGUI[i].Border);
+                    listDecksGUI.RemoveAt(i);
                     break;
                 }
             }
         }
 
-        private void btnEditSelected_Click(object sender, RoutedEventArgs e)
-        {
+        // click on a card in collection
 
+        private void cardButton_Click(object sender, RoutedEventArgs e)
+        {
+            Models.Card card;
+
+            Button btn = (Button)sender;
+            int index = Int32.Parse(btn.Name.Substring(7));
+
+            card = ctrl.filteredCollection[ctrl.currentIndex + index - 1];
+            loadCardInfo(card);
+
+            if (editModeON)
+            {
+                addCardToDeck(card);
+            }
+        }
+
+        // add a new card to deck while in Edit mode
+
+        private void addCardToDeck(Models.Card card)
+        {
+            bool found;
+
+            if (deck.Count == 40)
+            {
+                MessageBox.Show("This deck contains 40 cards. You cannot add any more", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (deck.addCard(card))
+            {
+                found = false;
+                foreach (Models.DeckItemGUIModel dguim in listDeckContentGUI)
+                {
+                    if (dguim.Card.ID == card.ID)
+                    {
+                        dguim.increaseCount();
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Models.CollectionDeckItem collectionDeckItem = deck.getCollectionDeckItemByID(card.ID);
+                    Models.DeckItemGUIModel cguim = new Models.DeckItemGUIModel(collectionDeckItem, this);
+                    listDeckContentGUI.Add(cguim);
+                    stackDeckContents.Children.Add(cguim.Border);
+                }
+            }
+            else
+                MessageBox.Show("You can only add a maximum of 4 copies of any card.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        // click on card in deck
+
+        public void deckItem_Clicked(Models.Card card)
+        {
+            loadCardInfo(card);
+
+            if (editModeON)
+            {
+                removeCardFromDeck(card);
+            }
+        }
+
+        private void removeCardFromDeck(Models.Card card)
+        {
+            Models.DeckItemGUIModel deckItemGUIModel;
+
+            deckItemGUIModel = null;
+
+            foreach (Models.DeckItemGUIModel dguim in listDeckContentGUI)
+                if (dguim.Card.ID == card.ID)
+                {
+                    deckItemGUIModel = dguim;
+                    break;
+                }
+
+            if (deck.removeCard(card))
+            {
+                deckItemGUIModel.decreaseCount();
+            }
+            else
+            {
+                listDeckContentGUI.Remove(deckItemGUIModel);
+                stackDeckContents.Children.Remove(deckItemGUIModel.Border);
+            }
         }
     }
 }

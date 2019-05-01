@@ -27,11 +27,11 @@ namespace DM___Client.GUIWindows
     {
         private Communication com;
         private DispatcherTimer loadPage = new DispatcherTimer();
-        private GUIPages.GUILobbyRoom lobbyRoom;
-        private GUIPages.GUICollection collection;
-        private GUIPages.GUILoading loading;
-        private GUIPages.GUIGameRoom gameRoom;
-        private GUIPages.GUIPreGameRoom preGameRoom;
+        private GUIPages.GUILobbyRoom GUIlobbyRoom;
+        private GUIPages.GUICollection GUIcollection;
+        private GUIPages.GUILoading GUIloading;
+        private GUIPages.GUIGameRoom GUIgameRoom;
+        private GUIPages.GUIPreGameRoom GUIpreGameRoom;
         private int currentPageID;
         private Models.CardCollection CardCollection;
         public bool CardCollectionLoaded { get; set; }
@@ -47,59 +47,71 @@ namespace DM___Client.GUIWindows
             loadLogIn();
         }
 
+        // timer that waits for pages to load their data (usually to recieve it from the server) before displaying the page
+
         private void LoadPage_Tick(object sender, EventArgs e)
         {
             switch (currentPageID)
             {
                 case 1:
-                    if (lobbyRoom.DoneLoading())
+                    if (GUIlobbyRoom.DoneLoadingData())         // this is initially false and is being checked every second; When page data has been loaded this becomes true
                     {
-                        loadPage.Stop();
-                        MainFrame.Content = lobbyRoom;
-                        loading = null;
+                        loadPage.Stop();                    // stop the check that occures every second once the data was loaded
+                        MainFrame.Content = GUIlobbyRoom;   // display the page
+                        GUIloading = null;                  // you no longer need the loading GUI page
                     }
                     else
-                        loading.updateMessages(lobbyRoom.getLoadedData());
+                        GUIloading.updateMessages(GUIlobbyRoom.getLoadedDataChecklist()); // update the checklist for loaded data
                     break;
                 case 2:
-                    if(collection.DoneLoading())
+                    if(GUIcollection.DoneLoading())
                     {
                         loadPage.Stop();
-                        MainFrame.Content = collection;
-                        loading = null;
+                        MainFrame.Content = GUIcollection;
+                        GUIloading = null;
                     }
                     else
-                        loading.updateMessages(collection.getLoadedData());
+                        GUIloading.updateMessages(GUIcollection.getLoadedDataChecklist());
                     break;
                 case 3:
-                    if (preGameRoom.DoneLoading())
+                    if (GUIpreGameRoom.DoneLoading())
                     {
                         loadPage.Stop();
-                        MainFrame.Content = preGameRoom;
-                        loading = null;
+                        MainFrame.Content = GUIpreGameRoom;
+                        GUIloading = null;
                     }
                     else
-                        loading.updateMessages(preGameRoom.getLoadedData());
+                        GUIloading.updateMessages(GUIpreGameRoom.getLoadedDataChecklist());
                     break;
                 case 4:
-                    if (gameRoom.DoneLoading())
+                    if (GUIgameRoom.DoneLoading())
                     {
                         loadPage.Stop();
-                        MainFrame.Content = gameRoom;
-                        gameRoom.startRolling();
-                        loading = null;
+                        MainFrame.Content = GUIgameRoom;
+                        GUIloading = null;
+                        GUIgameRoom.startRolling();
                     }
                     else
-                        loading.updateMessages(gameRoom.getLoadedData());
+                        GUIloading.updateMessages(GUIgameRoom.getLoadedDataChecklist());
                     break;
                 default: break;
             }
         }
 
+        // END GAME
+
+        public void loadEndGame(bool youHaveWon)
+        {
+            GUIPages.GUIEndGame GUIendGame = new GUIPages.GUIEndGame(this, youHaveWon);
+            MainFrame.Content = GUIendGame;
+        }
+
+        // GAME LOBBY
+
         public void loadGameLobby()
         {
-            lobbyRoom = new GUIPages.GUILobbyRoom(this, com);
-            List<string> messages = new List<string>()
+            GUIlobbyRoom = new GUIPages.GUILobbyRoom(this, com);
+            List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Populating User List",
                 "Fetching User Data",
@@ -107,69 +119,77 @@ namespace DM___Client.GUIWindows
                 "Fetching Card Database"
             };
 
-            loading = new GUIPages.GUILoading(lobbyRoom.BackgroundImageSource, messages, lobbyRoom.getLoadedData());
-            MainFrame.Content = loading;
+            GUIloading = new GUIPages.GUILoading(GUIlobbyRoom.BackgroundImageSource, loadedDataChecklistTitles, GUIlobbyRoom.getLoadedDataChecklist());
+            MainFrame.Content = GUIloading;
             currentPageID = 1;
             loadPage.Start();
         }
 
+        // COLLECTION
+
         public void loadCollection()
         {
-            collection = new GUIPages.GUICollection(this, com, CardCollection);
-            List<string> messages = new List<string>()
+            GUIcollection = new GUIPages.GUICollection(this, com, CardCollection);
+            List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Fetching Decks",
             };
 
-            loading = new GUIPages.GUILoading(collection.BackgroundImageSource, messages, collection.getLoadedData());
-            MainFrame.Content = loading;
+            GUIloading = new GUIPages.GUILoading(GUIcollection.BackgroundImageSource, loadedDataChecklistTitles, GUIcollection.getLoadedDataChecklist());
+            MainFrame.Content = GUIloading;
             currentPageID = 2;
             loadPage.Start();
         }
 
+        // GAME ROOM
+
         public void loadGameRoom(int GameRoomID,int DeckID)
         {
-            gameRoom = new GUIPages.GUIGameRoom(this, com, GameRoomID, DeckID, CardCollection);
-            List<string> messages = new List<string>()
+            GUIgameRoom = new GUIPages.GUIGameRoom(this, com, GameRoomID, DeckID, CardCollection);
+            List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Setting up initial conditions",
                 "Fetching hand",
                 "Waiting for opponent"
             };
-            loading = new GUIPages.GUILoading(gameRoom.BackgroundImageSource, messages, gameRoom.getLoadedData());
-            MainFrame.Content = loading;
+            GUIloading = new GUIPages.GUILoading(GUIgameRoom.BackgroundImageSource, loadedDataChecklistTitles, GUIgameRoom.getLoadedDataChecklist());
+            MainFrame.Content = GUIloading;
             currentPageID = 4;
             loadPage.Start();
         }
 
+        // PRE GAME ROOM
+
         internal void loadPreGameRoom(int GameRoomID)
         {
-            preGameRoom = new GUIPages.GUIPreGameRoom(this, com, GameRoomID);
-            List<string> messages = new List<string>()
+            GUIpreGameRoom = new GUIPages.GUIPreGameRoom(this, com, GameRoomID);
+            List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Fetching Decks"
             };
-            loading = new GUIPages.GUILoading(preGameRoom.BackgroundImageSource, messages, preGameRoom.getLoadedData());
-            MainFrame.Content = loading;
+            GUIloading = new GUIPages.GUILoading(GUIpreGameRoom.BackgroundImageSource, loadedDataChecklistTitles, GUIpreGameRoom.getLoadedDataChecklist());
+            MainFrame.Content = GUIloading;
             currentPageID = 3;
             loadPage.Start();
         }
 
+        // LOG IN
+
         public void loadLogIn()
         {
-            GUIPages.GUILogIn logIn = new GUIPages.GUILogIn(this, com);
-            MainFrame.Content = logIn;
-            logIn.tryConnect();
+            GUIPages.GUILogIn logIn = new GUIPages.GUILogIn(this, com); // create the LogIn GUI page
+            MainFrame.Content = logIn;                                  // apply the page to current window
+            logIn.tryConnect();                                         // try to connect to the server
         }
 
-        public void changeStatus(string text)
+        public void changeStatus(string text)   // change the status on the title of the window
         {
-            this.Title = "Duel Masters v1.0.0.0 | Status: " + text;
+            this.Title = "Clash of the Elements v1.0.0.0 | Status: " + text;
         }
 
-        public void setCardCollection(Models.CardCollection CardCollection_)
+        public void setCardCollection(List<Models.Card> cards)
         {
-            CardCollection = CardCollection_.Clone();
+            CardCollection.setCards(cards);
             CardCollectionLoaded = true;
         }
     }

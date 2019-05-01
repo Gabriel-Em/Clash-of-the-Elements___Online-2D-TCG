@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DM___Client.GUIWindows"
         mc:Ignorable="d"
-        Title="Duel Masters v1.0.0.0 | Status: Not connected!" SizeToContent="WidthAndHeight"  WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Clash of the Elements v1.0.0.0 | Status: Not connected!"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize">
     <Grid>
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" Grid.ColumnSpan="2"/>
     </Grid>

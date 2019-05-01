@@ -62,17 +62,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Card.cs" />
-    <Compile Include="Models\ClientMessage.cs" />
+    <Compile Include="Controllers\ControllerCollection.cs" />
+    <Compile Include="Controllers\ControllerLobby.cs" />
+    <Compile Include="Controllers\ControllerLogInAndRegistration.cs" />
+    <Compile Include="Controllers\ControllerOnGoingGame.cs" />
+    <Compile Include="Controllers\ControllerPreGameRoom.cs" />
+    <Compile Include="Data\GameRoomsData.cs" />
+    <Compile Include="Data\LobbyRoomData.cs" />
+    <Compile Include="Data\OnGoingGamesData.cs" />
+    <Compile Include="Log\Logger.cs" />
+    <Compile Include="Models\Collection\Card.cs" />
+    <Compile Include="Models\Messages\ClientMessage.cs" />
     <Compile Include="Models\Game.cs" />
-    <Compile Include="Models\GameRoom.cs" />
-    <Compile Include="Models\GameMessage.cs" />
-    <Compile Include="Models\Message.cs" />
-    <Compile Include="Models\SpecialEffect.cs" />
-    <Compile Include="Models\Storage.cs" />
-    <Compile Include="Models\StorageForSocket.cs" />
+    <Compile Include="Models\Lobby\GameRoom.cs" />
+    <Compile Include="Models\Messages\GameMessage.cs" />
+    <Compile Include="Models\Messages\Message.cs" />
+    <Compile Include="Models\Collection\SpecialEffect.cs" />
+    <Compile Include="Models\SocketStorage\Storage.cs" />
+    <Compile Include="Models\SocketStorage\StorageForSocket.cs" />
     <Compile Include="Communication\Server.cs" />
-    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserData\User.cs" />
     <Compile Include="Controllers\Controller.cs" />
     <Compile Include="Database\Database.cs" />
     <Compile Include="DataSet.Designer.cs">
@@ -80,7 +89,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Models\Response.cs" />
+    <Compile Include="Models\Messages\Response.cs" />
     <Compile Include="Main\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -91,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="DataSet.xsc">
       <DependentUpon>DataSet.xsd</DependentUpon>
     </None>
@@ -130,6 +140,7 @@
       <DependentUpon>Database.mdf</DependentUpon>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

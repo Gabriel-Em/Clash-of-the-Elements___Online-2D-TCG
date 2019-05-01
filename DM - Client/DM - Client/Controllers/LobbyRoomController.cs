@@ -9,7 +9,6 @@ namespace DM___Client.Controllers
     public class LobbyRoomController : Controller
     {
         private GUIPages.GUILobbyRoom parent;
-        private Models.CardCollection CardCollection;
         public List<Models.GameRoom> GameRooms;
         public Models.UserData userData { get; set; }
 
@@ -17,13 +16,21 @@ namespace DM___Client.Controllers
         {
             parent = _parent;
             com = _com;
-            CardCollection = new Models.CardCollection();
             GameRooms = new List<Models.GameRoom>();
-            userData = new Models.UserData("UNDEFINED", "UNDEFINED", "UNDEFINED", -1, -1);
-            loadedData = new List<bool>() { false, false, false, parent.CardCollectionLoaded };
+            userData = new Models.UserData();
+            loadedDataChecklist = new List<bool>() { false, false, false, parent.CardCollectionLoaded };
         }
 
-        public override void commandProcessor(Models.ClientMessage message)
+        public override void loadPageData()
+        {
+            send(new Models.ClientMessage("GETLOBBYROOMUSERS"));
+            send(new Models.ClientMessage("FETCHUSERDATA"));
+            send(new Models.ClientMessage("GETGAMEROOMS"));
+            if (!parent.CardCollectionLoaded)
+                send(new Models.ClientMessage("GETCARDCOLLECTION"));
+        }
+
+        public override void clientCommandProcessor(Models.ClientMessage message)
         {
             switch (message.Command)
             {
@@ -34,68 +41,115 @@ namespace DM___Client.Controllers
                     parent.disconnected("Your account was logged in from a different location.", -1);
                     break;
                 case "POPULATELOBBYROOM":
-                        parent.addLobbyRoomUsers(message.Arguments);
-                        loadedData[0] = true;
+                        parent.addLobbyRoomUsers(message.stringArguments);
+                        loadedDataChecklist[0] = true;
                     break;
                 case "ADDLOBBYROOMUSER":
-                    parent.addLobbyRoomUsers(message.Arguments);
+                    parent.addLobbyRoomUsers(message.stringArguments);
                     break;
                 case "REMOVELOBBYROOMUSER":
-                    parent.removeLobbyRoomUser(message.Arguments[0]);
-                    removePlayerFromGameRooms(message.Arguments[0]);
+                    parent.removeLobbyRoomUser(message.stringArguments[0]);
+                    if (message.stringArguments.Count == 1)
+                        removePlayerFromGameRooms(message.stringArguments[0]);
                     break;
                 case "USERDATAFETCHED":
-                        if(isValidUserData(message.Arguments))
+                        if(isValidUserData(message.stringArguments))
                         {
-                            updateUserData(message.Arguments);
+                            updateUserData(message.stringArguments);
                             parent.updateLoggedInAs(userData.NickName);
-                            loadedData[1] = true;
+                            loadedDataChecklist[1] = true;
                         }
                     break;
                 case "NEWCHATMESSAGE":
-                    parent.newChatMessage(message.Arguments);
+                    parent.newChatMessage(message.stringArguments[0], message.stringArguments[1]);
                     break;
                 case "NOLOBBYROOMUSERS":
-                        loadedData[0] = true;
+                        loadedDataChecklist[0] = true;
                     break;
                 case "ERRORFETCHDATA":
+                    userData.Username = message.stringArguments[0];
                     break;
-                case "ADDNEWCARDTOCOLLECTION":
-                    CardCollection.AddCard(message.Card);
+                case "YOUGOTCARDS":
+                    parent.setCardCollection(message.CardCollection);
+                    loadedDataChecklist[3] = true;
                     break;
-                case "COLLECTIONSENT":
-                    parent.setCardCollection(CardCollection);
-                    CardCollection = null;
-                    loadedData[3] = true;
+                case "YOUGOTROOMS":
+                    populateGameRooms(message.stringArguments);
+                    loadedDataChecklist[2] = true;
                     break;
                 case "ADDGAMEROOM":
-                    Models.GameRoom room = roomFromArguments(message.Arguments);
-                    GameRooms.Add(room);
-                    parent.AddRoomToGUI(room);
+                    createRoom(message.stringArguments[0]);
                     break;
-                case "REMOVEROOM":
-                    removeRoom(Int32.Parse(message.Arguments[0]));
-                    break;
-                case "ROOMSSENT":
-                    loadedData[2] = true;
+                case "CLOSEROOM":
+                    closeRoom(Int32.Parse(message.stringArguments[0]));
                     break;
                 case "LINKUSERTOROOM":
-                    linkUserToRoom(message.Arguments);
+                    linkUserToRoom(message.stringArguments);
                     break;
                 case "REMOVEUSERFROMROOM":
-                    removeUserFromRoom(message.Arguments);
+                    removeUserFromRoom(message.stringArguments);
                     break;
                 case "SETREADY":
-                    setReadyInRoom(message.Arguments);
+                    setReadyInRoom(message.stringArguments);
                     break;
                 case "DECKSREQUIREDTOJOIN":
                     parent.noRoomsForMe();
                     break;
                 case "JOINPREGAMEROOM":
-                    parent.joinPreGameRoom(Int32.Parse(message.Arguments[0]));
+                    processJoinPreGameRoom(message);
+                    break;
+                case "SETROOMSTATE":
+                    processSetRoomState(message);
                     break;
                 default: break;
             }
+        }
+
+        // GAME ROOMS
+
+        // populates the GUI and game room list with game rooms received from server
+        private void populateGameRooms(List<string> roomArguments)
+        {
+            foreach (string roomArgument in roomArguments)
+            {
+                createRoom(roomArgument);
+            }
+        }
+
+        // creates a room object and its GUI
+        public void createRoom(string roomArguments)
+        {
+            Models.GameRoom room = roomFromArguments(roomArguments);
+            GameRooms.Add(room);
+            parent.AddRoomToGUI(room);
+        }
+
+        // removes a room object and its GUI
+        public void closeRoom(int id)
+        {
+            for (int i = 0; i < GameRooms.Count; i++)
+            {
+                if (GameRooms[i].RoomID == id)
+                {
+                    parent.RemoveRoomFromGUI(id);
+                    GameRooms.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
+        // updates a room object and its GUI with a user that joined that room
+        private void linkUserToRoom(List<string> commandArguments)
+        {
+            int roomID = Int32.Parse(commandArguments[1]);
+
+            for (int i = 0; i < GameRooms.Count; i++)
+                if (GameRooms[i].RoomID == roomID)
+                {
+                    GameRooms[i].Guest = commandArguments[0];
+                    break;
+                }
+            parent.playerJoinedRoom(roomID, commandArguments[0]);
         }
 
         private void removePlayerFromGameRooms(string nickName)
@@ -108,55 +162,82 @@ namespace DM___Client.Controllers
                     GameRooms.RemoveAt(i);
                     i--;
                 }
-                else if (GameRooms[i].Joined == nickName)
+                else if (GameRooms[i].Guest == nickName)
                 {
-                    parent.playerLeftRoom(GameRooms[i].RoomID, nickName);
-                    GameRooms[i].Joined = "*";
-                    GameRooms[i].OwnerReady = false;
-                    GameRooms[i].JoinedReady = false;
+                    parent.removePlayerFromRoom(GameRooms[i].RoomID, nickName);
+                    GameRooms[i].Guest = "*";
+                    GameRooms[i].OwnerIsReady = false;
+                    GameRooms[i].GuestIsReady = false;
                 }
             }
         }
 
-        public void removeRoom(int id)
+        private Models.GameRoom roomFromArguments(string roomArguments)
         {
-            for(int i =0;i<GameRooms.Count;i++)
-            {
-                if(GameRooms[i].RoomID == id)
+            int id;
+            string owner;
+            string guest;
+            bool ownerIsReady;
+            bool joinedIsReady;
+            string state;
+
+            string[] arguments = roomArguments.Split('`');
+            id = Int32.Parse(arguments[0]);
+            owner = arguments[1];
+            guest = arguments[2];
+            ownerIsReady = bool.Parse(arguments[3]);
+            joinedIsReady = bool.Parse(arguments[4]);
+            state = arguments[5];
+
+            return new Models.GameRoom(id, owner, guest, ownerIsReady, joinedIsReady, state);
+        }
+
+        private void removeUserFromRoom(List<string> commandArguments)
+        {
+            int id = Int32.Parse(commandArguments[1]);
+
+            for (int i = 0; i < GameRooms.Count; i++)
+                if (GameRooms[i].RoomID == id)
                 {
-                    parent.RemoveRoomFromGUI(id);
-                    GameRooms.RemoveAt(i);
+                    GameRooms[i].Guest = "*";
+                    GameRooms[i].GuestIsReady = false;
+                    GameRooms[i].OwnerIsReady = false;
                     break;
                 }
-            }
+            parent.removePlayerFromRoom(id, commandArguments[0]);
         }
+
+        private void setReadyInRoom(List<string> commandArguments)
+        {
+            int id = Int32.Parse(commandArguments[0]);
+            string playerNickName = commandArguments[1];
+
+            for (int i = 0; i < GameRooms.Count; i++)
+                if (GameRooms[i].RoomID == id)
+                {
+                    if (GameRooms[i].Owner == playerNickName)
+                        GameRooms[i].OwnerIsReady = true;
+                    else
+                        GameRooms[i].GuestIsReady = true;
+                    break;
+                }
+            parent.setReady(id, playerNickName);
+        }
+
+        // USER DATA
 
         private void updateUserData(List<string> data)
         {
             userData.NickName = data[0];
             userData.Email = data[1];
-
-            try
-            {
-                userData.GamesWon = Int32.Parse(data[2]);
-            }
-            catch
-            {
-                userData.GamesWon = -1;
-            }
-            try
-            {
-                userData.GamesLost = Int32.Parse(data[3]);
-            }
-            catch
-            {
-                userData.GamesLost = -1;
-            }
+            userData.GamesWon = Int32.Parse(data[2]);
+            userData.GamesLost = Int32.Parse(data[3]);
+            userData.Username = data[4];
         }
 
         bool isValidUserData(List<string> commandArguments)
         {
-            if(commandArguments.Count == 4)
+            if(commandArguments.Count == 5)
             {
                 int value;
                 if (int.TryParse(commandArguments[2], out value) && int.TryParse(commandArguments[3], out value))
@@ -164,6 +245,8 @@ namespace DM___Client.Controllers
             }
             return false;
         }
+
+        // CHAT MESSAGES
 
         public bool notEmpty(string text)
         {
@@ -173,78 +256,27 @@ namespace DM___Client.Controllers
             return false;
         }
 
-        public override void loadPageData()
+        private void processJoinPreGameRoom(Models.ClientMessage message)
         {
-            send(new Models.ClientMessage("GETLOBBYROOMUSERS"));
-            send(new Models.ClientMessage("FETCHUSERDATA"));
-            send(new Models.ClientMessage("GETGAMEROOMS"));
-            if (!parent.CardCollectionLoaded)
-                send(new Models.ClientMessage("GETCARDCOLLECTION"));
-        }
+            int roomID;
 
-        private Models.GameRoom roomFromArguments(List<string> arguments)
-        {
-            int id;
-            string owner;
-            string joined;
-            bool ownerReady;
-            bool joinedReady;
-            string state;
+            roomID = Int32.Parse(message.stringArguments[0]);
 
-            id = Int32.Parse(arguments[0]);
-            owner = arguments[1];
-            joined = arguments[2];
-            ownerReady = bool.Parse(arguments[3]);
-            joinedReady = bool.Parse(arguments[4]);
-            state = arguments[5];
-
-            return new Models.GameRoom(id, owner, joined, ownerReady, joinedReady, state);
-        }
-
-        private void linkUserToRoom(List<string> commandArguments)
-        {
-            int id = Int32.Parse(commandArguments[0]);
-
-            for(int i =0;i<GameRooms.Count;i++)
-                if(GameRooms[i].RoomID == id)
+            foreach(Models.GameRoom gameRoom in GameRooms)
+                if (gameRoom.RoomID == roomID)
                 {
-                    GameRooms[i].Joined = commandArguments[1];
+                    if (gameRoom.Owner == userData.NickName)
+                    {
+                        send(new Models.ClientMessage("SETROOMSTATE", new List<string>() { roomID.ToString(), "Battle in progress..." }));
+                    }
                     break;
                 }
-            parent.playerJoinedRoom(id, commandArguments[1]);
+            parent.joinPreGameRoom(Int32.Parse(message.stringArguments[0]));
         }
 
-        private void removeUserFromRoom(List<string> commandArguments)
+        private void processSetRoomState(Models.ClientMessage message)
         {
-            int id = Int32.Parse(commandArguments[0]);
-
-            for (int i = 0; i < GameRooms.Count; i++)
-                if (GameRooms[i].RoomID == id)
-                {
-                    GameRooms[i].Joined = "*";
-                    GameRooms[i].JoinedReady = false;
-                    GameRooms[i].OwnerReady = false;
-                    break;
-                }
-            parent.playerLeftRoom(id, commandArguments[1]);
+            parent.setRoomState(Int32.Parse(message.stringArguments[0]), message.stringArguments[1]);
         }
-
-        private void setReadyInRoom(List<string> commandArguments)
-        {
-            int id = Int32.Parse(commandArguments[0]);
-            bool owner = bool.Parse(commandArguments[1]);
-
-            for (int i = 0; i < GameRooms.Count; i++)
-                if (GameRooms[i].RoomID == id)
-                {
-                    if (owner)
-                        GameRooms[i].JoinedReady = true;
-                    else
-                        GameRooms[i].OwnerReady = true;
-                    break;
-                }
-            parent.setReady(id, owner);
-        }
-
     }
 }

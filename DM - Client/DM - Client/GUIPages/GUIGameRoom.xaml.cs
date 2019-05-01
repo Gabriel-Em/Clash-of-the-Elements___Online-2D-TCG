@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using DM___Client.Animations;
 
 namespace DM___Client.GUIPages
 {
@@ -24,33 +25,43 @@ namespace DM___Client.GUIPages
     {
         private GUIWindows.GUI parent;
         private Controllers.GameRoomController ctrl;
-        private DispatcherTimer checkServerResponse = new DispatcherTimer();
-        private List<Models.CardGUIModel> Hand;
-        private List<Models.CardGUIModel> OwnManaZone;
-        private List<Models.CardGUIModel> OwnBattleZone;
-        private List<Models.CardGUIModel> OwnGraveyard;
-        private List<Models.CardGUIModel> OwnShieldZone;
-        private List<Models.CardGUIModel> OppManaZone;
-        private List<Models.CardGUIModel> OppBattleZone;
-        private List<Models.CardGUIModel> OppGraveyard;
-        private List<Models.CardGUIModel> OppShieldZone;
-        private Models.AnimatioUtility AU1;
-        private Models.AnimatioUtility AU2;
-        private DispatcherTimer chainOwnShieldAnimations = new DispatcherTimer();
-        private DispatcherTimer chainOppShieldAnimations = new DispatcherTimer();
-        private DispatcherTimer chainOwnHandAnimations = new DispatcherTimer();
-        private DispatcherTimer PlayAsManaAnimation = new DispatcherTimer();
-        private List<Models.CardGUIModel> selectedCards;
-        private bool isYourTurn;
+        private DispatcherTimer checkServerResponse;
+
+        private List<Models.CardGUIModel> listHand;
+        private List<Models.CardGUIModel> listOwnManaZone;
+        private List<Models.CardGUIModel> listOwnBattleGround;
+        private List<Models.CardGUIModel> listOwnGraveyard;
+        private List<Models.CardGUIModel> listOwnSafeGuardZone;
+        private List<Models.CardGUIModel> listOppManaZone;
+        private List<Models.CardGUIModel> listOppBattleGround;
+        private List<Models.CardGUIModel> listOppGraveyard;
+        private List<Models.CardGUIModel> listOppSafeguardZone;
+
         private Button btnPlayAsMana;
         private Button btnNextPhase;
         private Button btnPlayCard;
+        private Button btnAttackSafeguards;
+        private Button btnAttackCreatures;
         private Button btnEndTurn;
+        private Button btnWin;
+
+        private List<Models.CardGUIModel> selectedCards;
+        private List<Models.CardGUIModel> ableToSelect = new List<Models.CardGUIModel>();
+        private int ableToSelectLimit;
+
+        private Image zoomedImage;
+
+        private bool itIsOwnTurn;
+
+        private DispatcherTimer animationTimer;
+        private DispatcherTimer checkInitialAnimationsFinished;
+        private List<Animation> animationsAndEvents;
 
         public string Phase;
+
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
-        public List<Models.CardGUIModel> ableToSelect = new List<Models.CardGUIModel>();
-        public int ableToSelectCount;
+
+        private Log.Logger logger;
 
         public GUIGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_, int DeckID_, Models.CardCollection CardCollection_)
         {
@@ -58,48 +69,46 @@ namespace DM___Client.GUIPages
             parent = parent_;
             ctrl = new Controllers.GameRoomController(this, com_, GameRoomID_, DeckID_, CardCollection_);
 
+            logger = new Log.Logger();
+
+            grdOwnGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationConstants.graveInitialPosition, Visibility.Hidden).Border);
+            grdOppGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationConstants.graveInitialPosition, Visibility.Hidden).Border);
+
             initButtons();
             initTimers();
             initLists();
+            initZoomedInImage();
+
             ctrl.loadPageData();
             beginListening();
         }
 
-        private void PlayAsManaAnimation_Tick(object sender, EventArgs e)
-        {
-            PlayAsManaAnimation.Stop();
-            AU1.destination.Visibility = Visibility.Visible;
-            grdParent.Children.Remove(selectedCards[0].Border);
-            Hand.Remove(selectedCards[0]);
-            selectedCards.Clear();
-        }
-
         private void initTimers()
         {
+            checkServerResponse = new DispatcherTimer();
             checkServerResponse.Interval = new TimeSpan(0, 0, 0, 0, 100);
             checkServerResponse.Tick += checkServerResponse_Tick;
-            chainOwnShieldAnimations.Interval = new TimeSpan(0, 0, 0, 0, 400);
-            chainOwnShieldAnimations.Tick += ChainOwnShieldAnimations_Tick;
-            chainOppShieldAnimations.Interval = new TimeSpan(0, 0, 0, 0, 400);
-            chainOppShieldAnimations.Tick += ChainOppShieldAnimations_Tick;
-            chainOwnHandAnimations.Interval = new TimeSpan(0, 0, 0, 0, 400);
-            chainOwnHandAnimations.Tick += ChainOwnHandAnimations_Tick;
-            PlayAsManaAnimation.Interval = new TimeSpan(0, 0, 0, 0, 400);
-            PlayAsManaAnimation.Tick += PlayAsManaAnimation_Tick;
+            animationTimer = new DispatcherTimer();
+            animationTimer.Interval = new TimeSpan(0, 0, 0, 0, 50);
+            animationTimer.Tick += AnimationTimer_Tick;
+            checkInitialAnimationsFinished = new DispatcherTimer();
+            checkInitialAnimationsFinished.Interval = new TimeSpan(0, 0, 0, 0, 300);
+            checkInitialAnimationsFinished.Tick += CheckInitialAnimationsFinished_Tick;
         }
 
         private void initLists()
         {
-            Hand = new List<Models.CardGUIModel>();
-            OwnManaZone = new List<Models.CardGUIModel>();
-            OwnBattleZone = new List<Models.CardGUIModel>();
-            OwnGraveyard = new List<Models.CardGUIModel>();
-            OwnShieldZone = new List<Models.CardGUIModel>();
-            OppManaZone = new List<Models.CardGUIModel>();
-            OppBattleZone = new List<Models.CardGUIModel>();
-            OppGraveyard = new List<Models.CardGUIModel>();
-            OppShieldZone = new List<Models.CardGUIModel>();
+            listHand = new List<Models.CardGUIModel>();
+            listOwnManaZone = new List<Models.CardGUIModel>();
+            listOwnBattleGround = new List<Models.CardGUIModel>();
+            listOwnGraveyard = new List<Models.CardGUIModel>();
+            listOwnSafeGuardZone = new List<Models.CardGUIModel>();
+            listOppManaZone = new List<Models.CardGUIModel>();
+            listOppBattleGround = new List<Models.CardGUIModel>();
+            listOppGraveyard = new List<Models.CardGUIModel>();
+            listOppSafeguardZone = new List<Models.CardGUIModel>();
             selectedCards = new List<Models.CardGUIModel>();
+            animationsAndEvents = new List<Animation>();
         }
 
         private void initButtons()
@@ -108,44 +117,36 @@ namespace DM___Client.GUIPages
             btnNextPhase = getActionButton();
             btnPlayCard = getActionButton();
             btnEndTurn = getActionButton();
+            btnAttackSafeguards = getActionButton();
+            btnAttackCreatures = getActionButton();
+            btnWin = getActionButton();
             btnPlayAsMana.Content = "Play as Mana";
             btnPlayAsMana.Click += BtnPlayAsMana_Click;
             btnNextPhase.Content = "Next Phase";
+            btnNextPhase.Click += BtnNextPhase_Click;
             btnPlayCard.Content = "Play Card";
+            btnPlayCard.Click += BtnPlayCard_Click;
+            btnAttackSafeguards.Content = "Attack Safeguards";
+            btnAttackSafeguards.Click += BtnAttackSafeguards_Click;
+            btnAttackCreatures.Content = "Attack Creatures";
+            btnAttackCreatures.Click += BtnAttackCreatures_Click;
             btnEndTurn.Content = "End Turn";
+            btnEndTurn.Click += BtnEndTurn_Click;
+            btnWin.Content = "ATTACK!!!";
+            btnWin.Click += BtnWin_Click;
         }
 
-        private void BtnPlayAsMana_Click(object sender, RoutedEventArgs e)
+        private void initZoomedInImage()
         {
-            if (selectedCards.Count != ableToSelectCount)
-                MessageBox.Show("You must select a card first", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-            else
-            {
-                Models.CardGUIModel cguim;
-
-                selectedCards[0].Border.BorderBrush = Brushes.Transparent;
-                Point newPoint = selectedCards[0].Border.TranslatePoint(new Point(0, 0), grdParent);
-                grdHand.Children.Remove(selectedCards[0].Border);
-                grdParent.Children.Add(selectedCards[0].Border);
-                selectedCards[0].Border.VerticalAlignment = VerticalAlignment.Top;
-                selectedCards[0].Border.Margin = new Thickness(newPoint.X, newPoint.Y, 0, 0);
-
-                if (OwnManaZone.Count == 0)
-                    cguim = new Models.CardGUIModel(selectedCards[0].Card, this, new Thickness(5, 0, 0, 0), Visibility.Hidden, 2);
-                else
-                {
-                    Thickness margin = OwnManaZone[OwnManaZone.Count - 1].Border.Margin;
-                    margin.Left += 80;
-                    cguim = new Models.CardGUIModel(selectedCards[0].Card, this, margin, Visibility.Hidden, 2);
-                }
-                grdOwnMana.Children.Add(cguim.Border);
-                OwnManaZone.Add(cguim);
-                AU1 = new Models.AnimatioUtility(this);
-                AU1.origin = selectedCards[0].Border;
-                AU1.destination = cguim.Border;
-                AU1.startAnimation();
-                PlayAsManaAnimation.Start();
-            }
+            // create an invisibile image that will become the zoomed in image whenever auser right clicks a card from the collection
+            zoomedImage = new Image();
+            zoomedImage.Width = 280;
+            zoomedImage.Height = 388;
+            zoomedImage.VerticalAlignment = VerticalAlignment.Top;
+            zoomedImage.HorizontalAlignment = HorizontalAlignment.Left;
+            zoomedImage.Visibility = Visibility.Hidden;
+            zoomedImage.Stretch = Stretch.UniformToFill;
+            grdParent.Children.Add(zoomedImage);
         }
 
         private Button getActionButton()
@@ -196,153 +197,107 @@ namespace DM___Client.GUIPages
             parent.loadLogIn();
         }
 
-        public List<bool> getLoadedData()
+        public List<bool> getLoadedDataChecklist()
         {
-            return ctrl.getLoadedData();
+            return ctrl.getLoadedDataChecklist();
         }
 
         public bool DoneLoading()
         {
-            if (ctrl.getLoadedData().Contains(false))
+            if (ctrl.getLoadedDataChecklist().Contains(false))
                 return false;
             return true;
         }
 
+        // starts the magic
         public void startRolling()
         {
-            AU1 = new Models.AnimatioUtility(this);
-            AU1.animationsLeft = 5;
-            chainOwnShieldAnimations.Start();
-            AU2 = new Models.AnimatioUtility(this);
-            AU2.animationsLeft = 5;
-            chainOppShieldAnimations.Start();
+            animationTimer.Start();
+            animateOwnSafeguards();
+            animateOppSafeguards();
+            animateInitialHand();
+            checkInitialAnimationsFinished.Start();
+
+            ctrl.send(new Models.ClientMessage("GETINITIALGAMESTATE", new List<string>() { ctrl.GameRoomID.ToString() }));
         }
 
-        private void addShieldToOwnZone()
+        // animate initial conditions
+
+        private void animateOwnSafeguards()
         {
-            Models.CardGUIModel cguim;
-            if (OwnShieldZone.Count == 0)
-                cguim = new Models.CardGUIModel(null, this, new Thickness(15, 0, 0, 0), Visibility.Hidden, 1);
-            else
-            {
-                Thickness margin = OwnShieldZone[OwnShieldZone.Count - 1].Border.Margin;
-                margin.Left += 100;
-                cguim = new Models.CardGUIModel(null, this, margin, Visibility.Hidden, 1);
-            }
-            grdOwnShields.Children.Add(cguim.Border);
-            OwnShieldZone.Add(cguim);
-            cguim = new Models.CardGUIModel(null, this, new Thickness(983,463,0,149), Visibility.Visible, 0);
-            grdParent.Children.Add(cguim.Border);
+            Models.CardGUIModel safeGuard;
 
-            AU1.origin = cguim.Border;
-            AU1.destination = OwnShieldZone[OwnShieldZone.Count - 1].Border;
-            AU1.startAnimation();
+            Thickness margin = new Thickness(5, 0, 0, 0);
+            for (int i = 0; i < 5; i++)
+            {
+                Animations.MoveAnimation animation;
+
+                // add the actual card
+                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.ownDeckLocation, Visibility.Hidden);
+                grdParent.Children.Add(safeGuard.Border);
+
+                animation = new Animations.MoveAnimation(grdParent,
+                    grdOwnSafeguards,
+                    grdParent,
+                    null,
+                    listOwnSafeGuardZone,
+                    safeGuard,
+                    AnimationConstants.DESTINATIONSAFEGUARD);
+                animation.startsWithHiddenOrigin = true;
+                addAnimation(animation);
+            }
         }
 
-        private void addShieldToOppZone()
+        private void animateOppSafeguards()
         {
-            Models.CardGUIModel cguim;
-            if (OppShieldZone.Count == 0)
-                cguim = new Models.CardGUIModel(null, this, new Thickness(15, 0, 0, 0), Visibility.Hidden, -1);
-            else
-            {
-                Thickness margin = OppShieldZone[OppShieldZone.Count - 1].Border.Margin;
-                margin.Left += 100;
-                cguim = new Models.CardGUIModel(null, this, margin, Visibility.Hidden, -1);
-            }
-            grdOppShields.Children.Add(cguim.Border);
-            OppShieldZone.Add(cguim);
-            cguim = new Models.CardGUIModel(null, this, new Thickness(519, 133, 0, 479), Visibility.Visible, 0);
-            grdParent.Children.Add(cguim.Border);
+            Models.CardGUIModel safeGuard;
 
-            AU2.origin = cguim.Border;
-            AU2.destination = OppShieldZone[OppShieldZone.Count - 1].Border;
-            AU2.startAnimation();
+            for (int i = 0; i < 5; i++)
+            {
+                Animations.MoveAnimation animation;
+
+                // add the actual card
+                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.oppDeckLocation, Visibility.Hidden);
+                grdParent.Children.Add(safeGuard.Border);
+
+                animation = new Animations.MoveAnimation(
+                    grdParent,
+                    grdOppSafeguards, 
+                    grdParent, 
+                    null,
+                    listOppSafeguardZone, 
+                    safeGuard,
+                    AnimationConstants.DESTINATIONSAFEGUARD);
+                animation.startsWithHiddenOrigin = true;
+                addAnimation(animation);
+            }
         }
 
-        private void drawCard(Models.CardWithGameProperties card)
+        private void animateInitialHand()
         {
-            Models.CardGUIModel cguim;
-            if (Hand.Count == 0)
-                cguim = new Models.CardGUIModel(card, this, new Thickness(5, 0, 0, 0), Visibility.Hidden, 5);
-            else
-            {
-                Thickness margin = Hand[Hand.Count - 1].Border.Margin;
-                margin.Left += 25;
-                cguim = new Models.CardGUIModel(card, this, margin, Visibility.Hidden, 5);
-            }
-            grdHand.Children.Add(cguim.Border);
-            Hand.Add(cguim);
-            cguim = new Models.CardGUIModel(null, this, new Thickness(983, 463, 0, 149), Visibility.Visible, 0);
-            grdParent.Children.Add(cguim.Border);
-            Grid.SetRow(cguim.Border, 4);
-            Grid.SetColumn(cguim.Border, 8);
+            Models.CardGUIModel card;
 
-            AU1.origin = cguim.Border;
-            AU1.destination = Hand[Hand.Count - 1].Border;
-            AU1.startAnimation();
-        }
-
-        private void ChainOwnShieldAnimations_Tick(object sender, EventArgs e)
-        {
-            if (AU1.origin != null)
-                grdParent.Children.Remove(AU1.origin);
-            if (AU1.destination != null)
-                AU1.destination.Visibility = Visibility.Visible;
-
-            if (AU1.animationsLeft != 0)
+            for (int i = 0; i < 5; i++)
             {
-                addShieldToOwnZone();
-                AU1.animationsLeft--;
-            }
-            else
-            {
-                chainOwnShieldAnimations.Stop();
-                AU1 = new Models.AnimatioUtility(this);
-                AU1.animationsLeft = 5;
-                chainOwnHandAnimations.Start();
+                Animations.MoveAnimation animation;
+
+                card = new Models.CardGUIModel(ctrl.getCardFromInitialHand(), this, AnimationConstants.ownDeckLocation, Visibility.Hidden);
+                grdParent.Children.Add(card.Border);
+
+                animation = new Animations.MoveAnimation(
+                    grdParent, 
+                    grdHand, 
+                    grdParent, 
+                    null,
+                    listHand,
+                    card,
+                    AnimationConstants.DESTINATIONOWNHAND);
+                animation.startsWithHiddenOrigin = true;
+                addAnimation(animation);
             }
         }
 
-        private void ChainOppShieldAnimations_Tick(object sender, EventArgs e)
-        {
-            if (AU2.origin != null)
-                grdParent.Children.Remove(AU2.origin);
-            if (AU2.destination != null)
-                AU2.destination.Visibility = Visibility.Visible;
-
-            if (AU2.animationsLeft != 0)
-            {
-                addShieldToOppZone();
-                AU2.animationsLeft--;
-            }
-            else
-            {
-                chainOppShieldAnimations.Stop();
-                AU2 = null;
-            }
-        }
-
-        private void ChainOwnHandAnimations_Tick(object sender, EventArgs e)
-        {
-            if (AU1.origin != null)
-                grdParent.Children.Remove(AU1.origin);
-            if (AU1.destination != null)
-                AU1.destination.Visibility = Visibility.Visible;
-
-            if (AU1.animationsLeft != 0)
-            {
-                drawCard(ctrl.getCardFromHand());
-                AU1.animationsLeft--;
-            }
-            else
-            {
-                chainOwnHandAnimations.Stop();
-                AU1 = null;
-                ctrl.send(new Models.ClientMessage("GETFIRSTGAMESTATE", new List<string>() { ctrl.GameRoomID.ToString() }));
-            }
-        }
-
+        // load card info
         public void loadCardInfo(Models.Card Card)
         {
             rchCardInfo.Document.Blocks.Clear();
@@ -360,10 +315,10 @@ namespace DM___Client.GUIPages
             tr.Text = Card.Type;
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nCivilization: ";
+            tr.Text = "\nElement: ";
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.Civilization;
+            tr.Text = Card.Element;
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
             tr.Text = "\nCost: ";
@@ -390,18 +345,6 @@ namespace DM___Client.GUIPages
                 tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
             }
             tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nMana Number: ";
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.ManaNumber.ToString();
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = "\nSet: ";
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
-            tr.Text = Card.Set;
-            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
-            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
             tr.Text = "\nText: ";
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
             if (Card.Text != null)
@@ -413,16 +356,19 @@ namespace DM___Client.GUIPages
             rchCardInfo.ScrollToHome();
         }
 
-        public void updateGameState(bool isYourTurn_, string phase)
+        // update game state
+        public void updateGameState(bool itIsOwnTurn, string phase)
         {
             Phase = phase;
-            if (isYourTurn_)
+            if (itIsOwnTurn)
                 lblTurn.Content = "Your turn";
             else
                 lblTurn.Content = "Opponent's turn";
-            isYourTurn = isYourTurn_;
+            this.itIsOwnTurn = itIsOwnTurn;
             lblPhase.Content = phase;
         }
+
+        // select/deselect methods
 
         public void deselectAll()
         {
@@ -443,7 +389,7 @@ namespace DM___Client.GUIPages
         public void setAbleToSelect(int count, List<Models.CardGUIModel> cards)
         {
             ableToSelect.Clear();
-            ableToSelectCount = count;
+            ableToSelectLimit = count;
             ableToSelect = cards;
         }
 
@@ -454,36 +400,143 @@ namespace DM___Client.GUIPages
             return false;
         }
 
-        public void startTurn()
-        {
+        // next phase
 
+        private void BtnNextPhase_Click(object sender, RoutedEventArgs e)
+        {
+            switch (Phase)
+            {
+                case "Mana phase":
+                    loadSummonPhase();
+                    break;
+                case "Summon phase":
+                    addLoadEvent(new Animation(loadAttackPhase));
+                    break;
+            }
         }
 
-        public void endTurn()
+        // zoomed in image
+
+        public void cardImage_MouseRightButtonDown(object sender, MouseEventArgs e)
         {
+            Image img = (Image)sender;
 
+            try
+            {
+                zoomedImage.Source = img.Source;
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.ToString());
+            }
 
+            Point location = ((Button)(img.Parent)).TranslatePoint(new Point(0, 0), grdParent);
+            if (location.X + zoomedImage.Width > parent.Width - 100)
+                location.X -= zoomedImage.Width + 15;
+            else
+                location.X += 75;
+
+            if (location.Y + zoomedImage.Height > parent.Height)
+                location.Y -= zoomedImage.Height - 90;
+
+            zoomedImage.Margin = new Thickness(location.X, location.Y, 0, 0);
+
+            zoomedImage.Visibility = Visibility.Visible;
         }
-        public void loadManaPhase()
+
+        public void cardImage_MouseRightButtonUp(object sender, MouseEventArgs e)
         {
-            updateGameState(true, "Mana phase");
-            List<Models.CardGUIModel> cards = new List<Models.CardGUIModel>();
-            foreach (Models.CardGUIModel card in Hand)
-                cards.Add(card);
-            setAbleToSelect(1, cards);
-            actionButtons.Children.Clear();
-            actionButtons.Children.Add(btnPlayAsMana);
-            actionButtons.Children.Add(btnNextPhase);
+            zoomedImage.Visibility = Visibility.Hidden;
+            zoomedImage.Source = null;
         }
 
-        public void loadSummonPhase()
-        {
+        // animation queue
 
+        private void AnimationTimer_Tick(object sender, EventArgs e)
+        {
+            if (animationsAndEvents.Count > 0)
+            {
+                bool animationFinished;
+
+                if (animationsAndEvents.Count != 0)
+                {
+                    animationFinished = false;
+
+                    switch (animationsAndEvents[0].type)
+                    {
+                        case AnimationConstants.TYPEMOVE:
+                            if (animationsAndEvents[0].moveAnimation.isFinished)
+                                animationFinished = true;
+                            else
+                            if (!animationsAndEvents[0].moveAnimation.isRunning)
+                                animationsAndEvents[0].moveAnimation.startAnimation();
+                            break;
+                        case AnimationConstants.TYPEROTATE:
+                            if (animationsAndEvents[0].rotateAnimation.isFinished)
+                                animationFinished = true;
+                            else
+                            if (!animationsAndEvents[0].rotateAnimation.isRunning)
+                                animationsAndEvents[0].rotateAnimation.startAnimation();
+                            break;
+                        case AnimationConstants.TYPEALIGN:
+                            if (animationsAndEvents[0].alignAnimation.isFinished)
+                                animationFinished = true;
+                            else
+                            if (!animationsAndEvents[0].alignAnimation.isRunning)
+                                animationsAndEvents[0].alignAnimation.startAnimation();
+                            break;
+                        case AnimationConstants.TYPELOAD:
+                            animationsAndEvents[0].loadPhase();
+                            animationFinished = true;
+                            break;
+                    }
+
+                    if (animationFinished && animationsAndEvents.Count != 0)
+                    {
+                        animationsAndEvents.RemoveAt(0);
+                    }
+                }
+            }
         }
 
-        public void loadAttackPhase()
+        private void addAnimation(MoveAnimation moveAnimation)
         {
+            animationsAndEvents.Add(new Animation(moveAnimation));
+        }
 
+        private void addAnimation(RotateAnimation rotateAnimation)
+        {
+            animationsAndEvents.Add(new Animation(rotateAnimation));
+        }
+
+        private void addAnimation(AlignAnimation alignAnimation)
+        {
+            animationsAndEvents.Add(new Animation(alignAnimation));
+        }
+
+        public void addLoadEvent(Animation animation)
+        {
+            animationsAndEvents.Add(animation);
+        }
+
+        private void CheckInitialAnimationsFinished_Tick(object sender, EventArgs e)
+        {
+            if (animationsAndEvents.Count == 0)
+            {
+                checkInitialAnimationsFinished.Stop();
+
+                if (itIsOwnTurn)
+                    loadManaPhase();
+            }
+        }
+
+        // Game Over
+
+        public void loadEndGame(bool youHaveWon)
+        {
+            stopListening();
+            ctrl.send(new Models.ClientMessage("JOINLOBBY"));
+            parent.loadEndGame(youHaveWon);
         }
     }
 }
