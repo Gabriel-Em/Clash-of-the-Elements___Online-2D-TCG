@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DM___Client.GUIWindows.GUI" Collapsed="true">
+    <Position X="1" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAEACBQgCAAgCQAIAAAAAEAECAIBCCABAAA=</HashCode>
+      <FileName>GUIWindows\GUI.xaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="GUIcollection" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DM___Client.GUIPages.GUICollection" Collapsed="true">
+    <Position X="3.5" Y="4" Width="1.75" />
+    <AssociationLine Name="ctrl" Type="DM___Client.Controllers.CollectionController" FixedFromPoint="true">
+      <Path>
+        <Point X="4.75" Y="4.691" />
+        <Point X="4.75" Y="5" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.107" Y="0.059" Height="0.182" Width="0.5" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>CIEBjEAAAABCEwNCUgFCBIQAABAGCNASAKiQAABIQhA=</HashCode>
+      <FileName>GUIPages\GUICollection.xaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="ctrl" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DM___Client.Models.CardCollection">
+    <Position X="3.5" Y="6" Width="1.75" />
+    <AssociationLine Name="Cards" Type="System.Collections.Generic.List&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="5.25" Y="6.936" />
+        <Point X="5.49" Y="6.936" />
+        <Point X="5.49" Y="4.25" />
+        <Point X="5.75" Y="4.25" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAACAAAAAAAAAAIAAAAAAAAAAACAAAAABA=</HashCode>
+      <FileName>Models\Collection\CardCollection.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Cards" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DM___Client.Controllers.CollectionController" Collapsed="true">
+    <Position X="3.5" Y="5" Width="1.75" />
+    <AssociationLine Name="CardCollection" Type="DM___Client.Models.CardCollection" FixedToPoint="true">
+      <Path>
+        <Point X="4.75" Y="5.691" />
+        <Point X="4.75" Y="6" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.161" Y="0.059" Height="0.182" Width="1.168" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AIYAAACAAABAAAHABAAQAAAACAgAABAAAEIAAAAAAAE=</HashCode>
+      <FileName>Controllers\CollectionController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="CardCollection" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="System.Collections.Generic.List&lt;T&gt;" Collapsed="true">
+    <Position X="5.75" Y="4" Width="5.25" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="DM___Client.Models.Card">
+    <Position X="5.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAAAAAgAAAAAgAABQAAAAAAAABAQAACAAEAAA=</HashCode>
+      <FileName>Models\Collection\Card.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DM___Client.Models.CollectionDeck">
+    <Position X="7.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAgAACAAAQAAAAAAARAAAAAAAAAADA=</HashCode>
+      <FileName>Models\Collection\CollectionDeck.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DM___Client.Models.CollectionDeckItem">
+    <Position X="9.25" Y="4.75" Width="1.75" />
+    <AssociationLine Name="Card" Type="DM___Client.Models.Card" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="9.25" Y="5.875" />
+        <Point X="9.062" Y="5.875" />
+        <Point X="9.062" Y="7.973" />
+        <Point X="6.5" Y="7.973" />
+        <Point X="6.5" Y="7.844" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\Collection\CollectionDeckItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Card" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DM___Client.Models.SpecialEffect" Collapsed="true">
+    <Position X="5.75" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABiAABAAAAAAAQAAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Models\Collection\SpecialEffect.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DM___Client.Models.DeckGUIModel" Collapsed="true">
+    <Position X="7.5" Y="8.25" Width="1.5" />
+    <AssociationLine Name="Parent" Type="DM___Client.GUIPages.GUICollection" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="9" Y="8.562" />
+        <Point X="11.698" Y="8.562" />
+        <Point X="11.698" Y="3.283" />
+        <Point X="4.375" Y="3.283" />
+        <Point X="4.375" Y="4" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.6" Y="0.77" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAgAAQAAAAgAAAAEAAQAAAAAAAAABCEAAAAAAAAAA=</HashCode>
+      <FileName>Models\GUIModels\DeckGUIModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Parent" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="DM___Client.Models.DeckItemGUIModel" Collapsed="true">
+    <Position X="9.25" Y="6.5" Width="1.75" />
+    <AssociationLine Name="Parent" Type="DM___Client.GUIPages.GUICollection" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="11" Y="6.75" />
+        <Point X="11.463" Y="6.75" />
+        <Point X="11.463" Y="3.625" />
+        <Point X="4.75" Y="3.625" />
+        <Point X="4.75" Y="4" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.6" Y="0.415" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>BABQAAAAAAAQEAAABEAAQAAAAAAAAAAAEAQABAgAAAg=</HashCode>
+      <FileName>Models\GUIModels\DeckItemGUIModel.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Parent" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

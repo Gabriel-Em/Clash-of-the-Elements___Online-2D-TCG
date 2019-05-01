@@ -13,15 +13,22 @@ namespace DM___Server
     public class Server
     {
         private static Socket _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
         private static Models.Storage Storage;
+
         private static Controller ctrl;
+
         private static byte[] _buffer = new byte[10000];
+
         private const string BEGIN_MESSAGE_DELIMITER = "[[_~_begin_~_]]";
         private const string END_MESSAGE_DELIMITER = "[[_!_end_!_]]";
+
         private const int PORT = 100;
-        
+        private static Log.Logger logger;
+
         public Server()
         {
+            logger = new Log.Logger();
             ctrl = new Controller();
             Storage = new Models.Storage(BEGIN_MESSAGE_DELIMITER, END_MESSAGE_DELIMITER);
             SetupServer();
@@ -41,12 +48,7 @@ namespace DM___Server
             }
             catch (Exception e)
             {
-                if (!Directory.Exists(@".\Logs"))
-                    Directory.CreateDirectory(@".\Logs");
-
-                StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                file.Write(e.ToString());
-                file.Close();
+                logger.Log(e.Message);
             }
         }
 
@@ -58,18 +60,13 @@ namespace DM___Server
             {
                 Socket socket = _serverSocket.EndAccept(AR);
                 Storage.createStorage(socket);
-                Console.WriteLine("Client connected on IP [" + IPAddress.Parse(((IPEndPoint)socket.RemoteEndPoint).Address.ToString()) + "] as [" + ctrl.getUsernameOfClientSocket(socket) + "]");
+                Console.WriteLine("Client connected on IP [" + IPAddress.Parse(((IPEndPoint)socket.RemoteEndPoint).Address.ToString()) + "] as [Guest]");
                 socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceieveCallBack), socket);
                 _serverSocket.BeginAccept(new AsyncCallback(AcceptCallBack), null); // we begin accepting any new incoming clients
             }
             catch (Exception e)
             {
-                if (!Directory.Exists(@".\Logs"))
-                    Directory.CreateDirectory(@".\Logs");
-
-                StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                file.Write(e.ToString());
-                file.Close();
+                logger.Log(e.Message);
             }
         }
 
@@ -81,85 +78,98 @@ namespace DM___Server
 
             try
             {
+                // we received data from a client and we parse it
                 int received = socket.EndReceive(AR);
                 byte[] dataBuf = new byte[received];
                 Array.Copy(_buffer, dataBuf, received);
                 string message = Encoding.ASCII.GetString(dataBuf);
 
+                // we add the chunks of data we received from our client to its Storage
                 Storage.addChunks(message, socket);
 
                 Models.Message obMessage;
                 while ((obMessage = Storage.getWholeMessage(socket)) != null)
-                    processResponseMessage(ctrl.messageProcessor(obMessage, socket), socket);
-
+                {
+                    processResponseMessage(ctrl.messageProcessor(obMessage, socket));
+                }
                 socket.BeginReceive(_buffer, 0, _buffer.Length, SocketFlags.None, new AsyncCallback(ReceieveCallBack), socket);
             }
-            catch (Exception e)
+            catch (SocketException)
             {
-                if (e.Message == "An existing connection was forcibly closed by the remote host")
-                {
-                    clientDisconnected(socket);
-                }
-                else
-                {
-                    if (!Directory.Exists(@".\Logs"))
-                        Directory.CreateDirectory(@".\Logs");
-
-                    StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                    file.Write(e.ToString());
-                    file.Close();
-                }
+                clientDisconnected(socket);
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.ToString());
             }
         }
 
         // ACTIONS TAKEN AFTER RECEIVING DATA FROM CLIENTS //
 
-        private static void processResponseMessage(Models.Response response, Socket socket)
+        private static void processResponseMessage(Models.Response response)
         {
             try
             {
                 if (response != null)
                 {
-                    Console.WriteLine("Received command [" + response.AssignedCommand + "] from client [" + ctrl.getUsernameOfClientSocket(socket) + ":" + IPAddress.Parse(((IPEndPoint)socket.RemoteEndPoint).Address.ToString()) + "]");
-
-                    switch (response.messageType)
+                    if (response.Type == 1)
                     {
-                        case 0:
-                            if (response.cMessageToSender.Command != "NotRequired")
-                                send(Models.Message.Serialize(Models.Message.FromValue(response.cMessageToSender)), socket);
-                            if (response.cMessageToSockets.Command != "NotRequired")
+                        Models.ClientMessage cm;
+
+                        if (response.responseCommandToSender != null)
+                        {
+                            cm = new Models.ClientMessage(
+                                response.responseCommandToSender,
+                                response.commandStringArgumentsToSender,
+                                response.commandIntArgumentsToSender,
+                                response.CardCollection
+                                );
+                            send(Models.Message.Serialize(Models.Message.FromValue(cm)), response.sender);
+                        }
+
+                        if (response.responseCommandToSockets != null)
+                        {
+                            cm = new Models.ClientMessage(
+                                response.responseCommandToSockets,
+                                response.commandStringArgumentsToSockets
+                                );
+                            foreach (Socket s in response.socketsToNotify)
                             {
-                                foreach (Socket s in response.cSockets)
-                                    send(Models.Message.Serialize(Models.Message.FromValue(response.cMessageToSockets)), s);
+                                send(Models.Message.Serialize(Models.Message.FromValue(cm)), s);
                             }
-                            break;
-                        case 1:
-                            break;
-                        case 2:
-                            foreach (Models.Card Card in response.CardCollection)
-                                send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("ADDNEWCARDTOCOLLECTION", Card))), socket);
-                            send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("COLLECTIONSENT"))),socket);
-                            break;
-                        case 3:
-                                foreach (Socket s in response.cSockets)
-                                    send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("ADDGAMEROOM", response.GameRooms[0]))), s);
-                            break;
-                        case 4: 
-                            foreach(List<string> room in response.GameRooms)
-                                send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("ADDGAMEROOM", room))), socket);
-                            send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("ROOMSSENT"))), socket);
-                            break;
+                        }
+                    }
+                    else
+                    {
+                        Models.GameMessage gm;
+
+                        if (response.responseCommandToSender != null)
+                        {
+                            gm = new Models.GameMessage(
+                                response.responseCommandToSender,
+                                response.commandStringArgumentsToSender,
+                                response.commandIntArgumentsToSender);
+                            send(Models.Message.Serialize(Models.Message.FromValue(gm)), response.sender);
+                        }
+
+                        if (response.responseCommandToSockets != null)
+                        {
+                            gm = new Models.GameMessage(
+                                response.responseCommandToSockets,
+                                response.commandStringArgumentsToSockets,
+                                response.commandIntArgumentsToSockets
+                                );
+                            foreach (Socket s in response.socketsToNotify)
+                            {
+                                send(Models.Message.Serialize(Models.Message.FromValue(gm)), s);
+                            }
+                        }
                     }
                 }
             }
             catch (Exception e)
             {
-                if (!Directory.Exists(@".\Logs"))
-                    Directory.CreateDirectory(@".\Logs");
-
-                StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                file.Write(e.ToString());
-                file.Close();
+                logger.Log(e.ToString());
             }
         }
 
@@ -172,17 +182,13 @@ namespace DM___Server
                 byte[] data = Encoding.ASCII.GetBytes(BEGIN_MESSAGE_DELIMITER + message + END_MESSAGE_DELIMITER);
                 socket.BeginSend(data, 0, data.Length, SocketFlags.None, new AsyncCallback(SendCallBack), socket);
             }
+            catch (SocketException)
+            {
+                clientDisconnected(socket);
+            }
             catch (Exception e)
             {
-                if (e.Message != "An existing connection was forcibly closed by the remote host")
-                {
-                    if (!Directory.Exists(@".\Logs"))
-                        Directory.CreateDirectory(@".\Logs");
-
-                    StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                    file.Write(e.ToString());
-                    file.Close();
-                }
+                logger.Log(e.ToString());
             }
         }
 
@@ -195,37 +201,47 @@ namespace DM___Server
             }
             catch (Exception e)
             {
-                if (!Directory.Exists(@".\Logs"))
-                    Directory.CreateDirectory(@".\Logs");
-
-                StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                file.Write(e.ToString());
-                file.Close();
+                logger.Log(e.ToString());
             }
         }
 
         // PROCESSING A CLIENTDISCONNECTED EVENT //
 
-        private static void clientDisconnected(Socket socket)
+        private static void clientDisconnected(Socket clientSocket)
         {
-            string data;
-            data = ctrl.getUsernameOfClientSocket(socket);
-            Console.WriteLine("Client [" + ctrl.getUsernameOfClientSocket(socket) + ":" + IPAddress.Parse(((IPEndPoint)socket.RemoteEndPoint).Address.ToString()) + "] disconnected");
-            if (data != "<Guest>" && ctrl.checkUserLoggedIn(data))
+            try
             {
-                data = ctrl.getNickNameOfClientSocket(socket);
-                List<string> commandArguments = new List<string>();
-                commandArguments.Add(data);
-                List<Socket> sockets = ctrl.lobbyRoomUsersToSocketList();
-                sockets.Remove(socket);
-                foreach (Socket s in sockets)
-                    send(Models.Message.Serialize(Models.Message.FromValue(new Models.ClientMessage("REMOVELOBBYROOMUSER", commandArguments))), s);
-            }
+                Console.WriteLine("Client [" + IPAddress.Parse(((IPEndPoint)clientSocket.RemoteEndPoint).Address.ToString()) + "] disconnected");
+                // if the user that disconnected was logged in
+                if (!ctrl.checkIfUserIsGuest(clientSocket))
+                {
+                    Models.Response response = new Models.Response();
 
-            ctrl.removeClient(socket);
-            Storage.removeStorage(socket);
-            socket.Close();
-            socket.Dispose();
+                    // we notify every client to remove the user from their lobby
+                    response.socketsToNotify = ctrl.lobbyRoomData.lobbyRoomUsersToSocketList();
+                    response.responseCommandToSockets = "REMOVELOBBYROOMUSER";
+                    response.commandStringArgumentsToSockets.Add(ctrl.lobbyRoomData.getNickNameBySocket(clientSocket));
+
+                    Models.ClientMessage cm = new Models.ClientMessage(
+                        response.responseCommandToSockets,
+                        response.commandStringArgumentsToSockets
+                        );
+
+                    response.socketsToNotify.Remove(clientSocket);
+                    foreach (Socket s in response.socketsToNotify)
+                    {
+                        send(Models.Message.Serialize(Models.Message.FromValue(cm)), s);
+                    }
+                    ctrl.removeClient(clientSocket);
+                }
+                Storage.removeStorage(clientSocket);
+                clientSocket.Close();
+                clientSocket.Dispose();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.ToString());
+            }
         }
     }
 }

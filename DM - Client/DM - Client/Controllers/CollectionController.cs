@@ -13,20 +13,38 @@ namespace DM___Client.Controllers
 
         public List<Models.CollectionDeck> Decks;
         public int currentIndex;
-        public List<Models.Card> currentList;
+        public List<Models.Card> filteredCollection;
+
+        private const string ANY = "Any";
+        private const int COMPARELESSTHANOREQUAL = 8;
+        private const int COMPAREGREATERTHANOREQUAL = 9;
+        private const int COMPAREEQUAL = 10;
 
         public CollectionController(GUIPages.GUICollection _parent, Communication _com, Models.CardCollection CardCollection_)
         {
+            // attach parent, communication class and card collection
             parent = _parent;
             com = _com;
-            currentIndex = 0;
-            currentList = CardCollection_.Cards;
-            loadedData = new List<bool>() { false };
             CardCollection = CardCollection_;
+
+            // the index of the first card that shows on GUI from the filteredCollection
+            currentIndex = 0;
+
+            // in the beginning there are no filters set
+            filteredCollection = CardCollection_.Cards;
+
+            // list of decks you have
             Decks = new List<Models.CollectionDeck>();
+
+            loadedDataChecklist = new List<bool>() { false };
         }
 
-        public override void commandProcessor(Models.ClientMessage message)
+        public override void loadPageData()
+        {
+            send(new Models.ClientMessage("GETDECKS"));
+        }
+
+        public override void clientCommandProcessor(Models.ClientMessage message)
         {
             switch(message.Command)
             {
@@ -36,13 +54,16 @@ namespace DM___Client.Controllers
                 case "REMOTEDISCONNECT":
                     parent.disconnected("Your account was logged in from a different location.", -1);
                     break;
-                case "NODECKS":
-                    loadedData[0] = true;
+                case "NODECKSFOUND":
+                    loadedDataChecklist[0] = true;
                     break;
                 case "DECKSDELIVERED":
-                    commandArgumentsToDecks(message.Arguments);
+                    commandArgumentsToDecks(message.stringArguments);
                     parent.loadDecksToGUI();
-                    loadedData[0] = true;
+                    loadedDataChecklist[0] = true;
+                    break;
+                case "DECKCREATED":
+                    processDeckCreated(message);
                     break;
                 default: break;
             }
@@ -54,92 +75,102 @@ namespace DM___Client.Controllers
             string deckName;
             int cardID;
             int count;
+            List<Models.CollectionDeckItem> cardDeckItems;
 
             foreach (string argument in commandArguments)
             {
-                string[] splitData = argument.Split(',');
+                string[] splitData = argument.Split('`');
 
                 id = Int32.Parse(splitData[0]);
                 deckName = splitData[1];
 
-                string[] deckItems = splitData[2].Split(';');
-                List<Models.CollectionDeckItem> cdi = new List<Models.CollectionDeckItem>();
-                foreach(string deckItem in deckItems)
+                cardDeckItems = new List<Models.CollectionDeckItem>();
+                if (splitData.Length == 3)
                 {
-                    string[] split = deckItem.Split('&');
-                    cardID = Int32.Parse(split[0]);
-                    count = Int32.Parse(split[1]);
-                    cdi.Add(new Models.CollectionDeckItem(CardCollection.getCardById(cardID), count));
+                    string[] deckItems = splitData[2].Split(';');
+                    foreach (string deckItem in deckItems)
+                    {
+                        string[] split = deckItem.Split('&');
+                        cardID = Int32.Parse(split[0]);
+                        count = Int32.Parse(split[1]);
+                        cardDeckItems.Add(new Models.CollectionDeckItem(CardCollection.getCardById(cardID), count));
+                    }
                 }
 
-                cdi = cdi.OrderBy(x => x.Card.Cost).ToList<Models.CollectionDeckItem>();
-                Decks.Add(new Models.CollectionDeck(id, deckName, cdi));
+                if (cardDeckItems.Count != 0)
+                    cardDeckItems = cardDeckItems.OrderBy(x => x.Card.Cost).ToList<Models.CollectionDeckItem>();
+
+                Decks.Add(new Models.CollectionDeck(id, deckName, cardDeckItems));
             }
         }
 
-        public override void loadPageData()
+        public void filterCollection(string cardType, string cardElement, int cardCost, int costComparator, int cardPower, int powerComparator)
         {
-            send(new Models.ClientMessage("GETDECKS"));
-        }
+            List<Models.Card> filteredCards;
+            bool keep;
 
-        public void filterCollection(string Type, string Civilization, string Cost, string costType, string Race, string Power, string powerType, string Set)
-        {
-            List<Models.Card> cards = new List<Models.Card>();
-            bool isOk;
+            filteredCards = new List<Models.Card>();
+
             foreach (Models.Card card in CardCollection.Cards)
             {
-                isOk = true;
-                if (Type != "Any" && card.Type != Type)
-                    isOk = false;
-                else if (Civilization != "Any" && card.Civilization != Civilization)
-                    isOk = false;
-                else if (card.Type == "Spell" && Race != "Any" || Race != "Any" && card.Race != Race)
-                    isOk = false;
-                else if (Set != "Any" && card.Set != Set)
-                    isOk = false;
+                keep = true;
+                if (cardType != ANY && card.Type != cardType)
+                    keep = false;
+                else if (cardElement != ANY && card.Element != cardElement)
+                    keep = false;
                 else
                 {
-                    switch (costType)
+                    if (cardCost != -1)
                     {
-                        case "=":
-                            if (Cost != "Any" && card.Cost != Int32.Parse(Cost))
-                                isOk = false;
-                            break;
-                        case "<=":
-                            if (Cost != "Any" && card.Cost > Int32.Parse(Cost))
-                                isOk = false;
-                            break;
-                        case ">=":
-                            if (Cost != "Any" && card.Cost < Int32.Parse(Cost))
-                                isOk = false;
-                            break;
-                    }
-                        if (card.Type == "Spell" && Power != "Any")
-                            isOk = false;
-                        else
-                        switch (powerType)
+                        switch (costComparator)
                         {
-                            case "=":
-                                if (Power != "Any" && card.Power != Int32.Parse(Power))
-                                    isOk = false;
+                            case COMPARELESSTHANOREQUAL:
+                                if (card.Cost > cardCost)
+                                    keep = false;
                                 break;
-                            case "<=":
-                                if (Power != "Any" && card.Power > Int32.Parse(Power))
-                                    isOk = false;
+                            case COMPAREGREATERTHANOREQUAL:
+                                if (card.Cost < cardCost)
+                                    keep = false;
                                 break;
-                            case ">=":
-                                if (Power != "Any" && card.Power < Int32.Parse(Power))
-                                    isOk = false;
+                            case COMPAREEQUAL:
+                                if (card.Cost != cardCost)
+                                    keep = false;
                                 break;
                         }
+                    }
+                    if (keep != false && cardPower != -1)
+                    {
+                        if (card.Type == "Spell")
+                        {
+                            keep = false;
+                        }
+                        else
+                        {
+                            switch (powerComparator)
+                            {
+                                case COMPARELESSTHANOREQUAL:
+                                    if (card.Power > cardPower)
+                                        keep = false;
+                                    break;
+                                case COMPAREGREATERTHANOREQUAL:
+                                    if (card.Power < cardPower)
+                                        keep = false;
+                                    break;
+                                case COMPAREEQUAL:
+                                    if (card.Power != cardPower)
+                                        keep = false;
+                                    break;
+                            }
+                        }
+                    }
                 }
 
-                if (isOk)
-                    cards.Add(card);
+                if (keep)
+                    filteredCards.Add(card);
             }
 
             currentIndex = 0;
-            currentList = cards;
+            filteredCollection = filteredCards;
         }
 
         public Models.CollectionDeck getDeckByID(int id)
@@ -158,6 +189,38 @@ namespace DM___Client.Controllers
                     Decks.RemoveAt(i);
                     break;
                 }
+        }
+
+        private void processDeckCreated(Models.ClientMessage message)
+        {
+            Decks.Add(new Models.CollectionDeck(message.intArguments[0], message.stringArguments[0], new List<Models.CollectionDeckItem>()));
+            parent.createNewDeckGUI(message.intArguments[0], message.stringArguments[0]);
+        }
+
+        public string collectionDeckToStringArgument(Models.CollectionDeck deck)
+        {
+            List<string> arguments;
+
+            arguments = new List<string>();
+
+            foreach(Models.CollectionDeckItem cdi in deck.CardList)
+            {
+                arguments.Add(string.Format("{0}&{1}", cdi.Card.ID, cdi.Count));
+            }
+
+            return String.Join(";", arguments.ToArray());
+        }
+
+        public void updateDeck(Models.CollectionDeck deck)
+        {
+            for (int i = 0; i < Decks.Count; i++)
+            {
+                if (Decks[i].DeckID == deck.DeckID)
+                {
+                    Decks[i] = deck.Clone();
+                    break;
+                }
+            }
         }
     }
 }

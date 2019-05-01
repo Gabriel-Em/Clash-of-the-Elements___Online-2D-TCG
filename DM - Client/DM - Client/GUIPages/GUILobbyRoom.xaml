@@ -58,7 +58,7 @@
         </Style>
     </Page.Resources>
     <Grid>
-        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"></Image>
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/Background.jpg" Stretch="UniformToFill"></Image>
         <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
         <Border Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
             <Grid Margin="20">
@@ -113,7 +113,7 @@
                 <Border Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Opacity="0.2" CornerRadius="20" Margin="10,10,0,0"/>
                 <Border Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="20" Margin="10,10,0,0" BorderThickness="5" BorderBrush="Black">
                     <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,10" VerticalAlignment="Stretch" Background="Transparent">
-                        <Label x:Name="lblLoggedInAs" FontSize="15" Foreground="Black" Content="loading..." HorizontalAlignment="Center" FontWeight="Bold" Cursor="Hand"/>
+                        <Label x:Name="lblLoggedInAs" FontSize="15" Foreground="Black" Content="loading..." HorizontalAlignment="Center" FontWeight="Bold" Cursor="Hand" MouseUp="lblLoggedInAs_MouseUp"/>
                         <Separator Background="Black" Height="15"></Separator>
                         <Button x:Name="btnCreateLobbyRoom" Style="{StaticResource buttonStyle}" Content="Create room" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnCreateLobbyRoom_Click"/>
                         <Button x:Name="btnDecks" Style="{StaticResource buttonStyle}" Content="Collection" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,5,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnDecks_Click"/>

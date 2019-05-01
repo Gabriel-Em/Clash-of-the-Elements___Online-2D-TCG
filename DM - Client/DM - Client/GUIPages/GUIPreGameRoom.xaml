@@ -34,7 +34,7 @@
         </Style>
     </Page.Resources>
     <Grid>
-        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/dragon-05143.jpg" Stretch="UniformToFill"></Image>
+        <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/Background.jpg" Stretch="UniformToFill"></Image>
         <Border Background="Black" Width="1150" Height="625" Opacity="0.4" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0"/>
         <Border Background="Transparent" Width="1150" Height="624" CornerRadius="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="25,38">
             <Grid Margin="20">

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="DM___Server.Data.GameRoomsData">
+    <Position X="1.75" Y="0.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAIQACAAAAAACEAAAAIAAAEAAAAAAAAAAggA=</HashCode>
+      <FileName>Data\GameRoomsData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="GameRooms" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DM___Server.Data.LobbyRoomData">
+    <Position X="5" Y="0.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAQAAAIAAAAAABgAAAAACAgAAAAAAAIABBQAAAA=</HashCode>
+      <FileName>Data\LobbyRoomData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="loggedInUsers" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DM___Server.Data.OnGoingGamesData">
+    <Position X="9" Y="0.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQgAAAAABAAAEAAAAAAAAAAgAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\OnGoingGamesData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="OnGoingGames" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="DM___Server.Models.GameRoom" Collapsed="true">
+    <Position X="1.75" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAAAgBEAACAAAgAIAAAAAgAAAAABAIAAAg=</HashCode>
+      <FileName>Models\Lobby\GameRoom.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DM___Server.User" Collapsed="true">
+    <Position X="5" Y="5.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAQIAAAAAAAAAAQEAAAAAAAAAAAA=</HashCode>
+      <FileName>Models\UserData\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DM___Server.Models.Game" Collapsed="true">
+    <Position X="9" Y="5.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AgAAAIAACAAF0NBBAAQQBAQgAgAEBIAAAAAIIDAAAAA=</HashCode>
+      <FileName>Models\Game.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

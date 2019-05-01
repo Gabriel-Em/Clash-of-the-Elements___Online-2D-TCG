@@ -19,7 +19,7 @@
             <StackPanel>
                 <Label x:Name="animationLabel" FontSize="50" Foreground="Black" Content="Loading..." HorizontalAlignment="Center" FontWeight="Bold"/>
                 <Separator Background="Black" Margin="20,0,20,20"></Separator>
-                <StackPanel x:Name="messagePanel">
+                <StackPanel x:Name="checkListPanel">
                 </StackPanel>
             </StackPanel>
         </Border>

@@ -10,16 +10,18 @@ namespace DM___Client.Controllers
 {
     public abstract class Controller
     {
-        protected Communication com;
-        protected List<bool> loadedData { get; set; }
-        public bool Listening { get; set; }
+        protected Communication com;                        // server communication class
+        protected List<bool> loadedDataChecklist { get; set; }       // checklist for which data was loaded (that's being displayed by the LoadingGUI page)
+        public bool Listening { get; set; }                 // 
+        private Log.Logger logger;
 
         public Controller()
         {
+            logger = new Log.Logger();
             Listening = false;
         }
 
-        public void tryConnect()
+        public void tryConnect()        // try to connect to the server
         {
             com.tryConnect();
         }
@@ -63,9 +65,9 @@ namespace DM___Client.Controllers
 
         public virtual void loadPageData() { }
 
-        public List<bool> getLoadedData()
+        public List<bool> getLoadedDataChecklist()
         {
-            return loadedData;
+            return loadedDataChecklist;
         }
 
         public void messageProcessor(List<Models.Message> messageList)
@@ -76,28 +78,23 @@ namespace DM___Client.Controllers
                 {
                     if (message.Type == "ClientMessage")
                     {
-                        Models.ClientMessage cm = message.Value.ToObject<Models.ClientMessage>();
-                        commandProcessor(cm);
+                        Models.ClientMessage cm = message.Value.ToObject<Models.ClientMessage>(); // parse Message to ClientMessage
+                        clientCommandProcessor(cm);
                     }
                     else if (message.Type == "GameMessage")
                     {
-                        Models.GameMessage gm = message.Value.ToObject<Models.GameMessage>();
+                        Models.GameMessage gm = message.Value.ToObject<Models.GameMessage>(); // parse Message to GameMessage
                         gameCommandProcessor(gm);
                     }
                 }
                 catch (Exception ex)
                 {
-                    if (!Directory.Exists(@".\Logs"))
-                        Directory.CreateDirectory(@".\Logs");
-
-                    StreamWriter file = new StreamWriter(@".\Logs\" + DateTime.Now.ToString("yyyy -dd-MM--HH-mm-ss") + Guid.NewGuid().ToString() + "_Crash_Log.txt");
-                    file.Write(ex.ToString());
-                    file.Close();
+                    logger.Log(ex.ToString());
                 }
             }
         }
 
-        public virtual void commandProcessor(Models.ClientMessage message) { }
+        public virtual void clientCommandProcessor(Models.ClientMessage message) { }
         public virtual void gameCommandProcessor(Models.GameMessage message) { }
     }
 }

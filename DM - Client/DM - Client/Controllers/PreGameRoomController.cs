@@ -16,11 +16,16 @@ namespace DM___Client.Controllers
         {
             parent = _parent;
             com = _com;
-            loadedData = new List<bool>() { false };
+            loadedDataChecklist = new List<bool>() { false };
             Decks = new List<PreGameDeckListElement>();
         }
 
-        public override void commandProcessor(ClientMessage message)
+        public override void loadPageData()
+        {
+            send(new Models.ClientMessage("GETDECKLIST"));
+        }
+
+        public override void clientCommandProcessor(ClientMessage message)
         {
             switch (message.Command)
             {
@@ -31,9 +36,9 @@ namespace DM___Client.Controllers
                     parent.disconnected("Your account was logged in from a different location.", -1);
                     break;
                 case "DECKLISTDELIVERED":
-                    commandArgumentsToDecks(message.Arguments);
+                    commandArgumentsToDecks(message.stringArguments);
                     parent.loadDecksToGUI();
-                    loadedData[0] = true;
+                    loadedDataChecklist[0] = true;
                     break;
                 default: break;
             }
@@ -51,11 +56,6 @@ namespace DM___Client.Controllers
                 deckName = splitData[1];
                 Decks.Add(new PreGameDeckListElement(id, deckName));
             }
-        }
-
-        public override void loadPageData()
-        {
-            send(new Models.ClientMessage("GETDECKLIST"));
         }
     }
 }
