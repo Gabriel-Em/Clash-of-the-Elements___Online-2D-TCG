@@ -16,16 +16,18 @@ namespace DM___Client.GUIPages
         {
             deselectAll();
             ableToSelect.Clear();
-            disengageManaOPP();
-            disengageBattleOPP();
-            animateDrawCardOPP();
-            updateGameState(false, "Mana Phase");
 
+            // remove all spells we used during our turn from the battle ground
             for (int i = 0; i < listOwnBattleGround.Count; i++)
             {
                 if (listOwnBattleGround[i].Card.Type == "Spell")
                     animateBattleToGraveyard(i, true);
             }
+
+            disengageManaOPP();
+            disengageBattleOPP();
+            animateDrawCardOPP();
+            updateGameState(false, "Mana phase");
 
             ctrl.send(new Models.GameMessage("ENDTURN", ctrl.GameRoomID));
 

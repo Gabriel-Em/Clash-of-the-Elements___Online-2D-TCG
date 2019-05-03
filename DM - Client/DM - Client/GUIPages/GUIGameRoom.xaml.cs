@@ -132,7 +132,7 @@ namespace DM___Client.GUIPages
             btnAttackCreatures.Click += BtnAttackCreatures_Click;
             btnEndTurn.Content = "End Turn";
             btnEndTurn.Click += BtnEndTurn_Click;
-            btnWin.Content = "ATTACK!!!";
+            btnWin.Content = "Attack Opponent!";
             btnWin.Click += BtnWin_Click;
         }
 
@@ -212,12 +212,18 @@ namespace DM___Client.GUIPages
         // starts the magic
         public void startRolling()
         {
+            // we start checking the animation queue
             animationTimer.Start();
+
+            // we start animating the begining of the match
             animateOwnSafeguards();
             animateOppSafeguards();
             animateInitialHand();
+
+            // we start checking for the end of the initial animations
             checkInitialAnimationsFinished.Start();
 
+            // we ask the server if we're the ones having the first move { types of response: YOURTURN | OPPTURN }
             ctrl.send(new Models.ClientMessage("GETINITIALGAMESTATE", new List<string>() { ctrl.GameRoomID.ToString() }));
         }
 

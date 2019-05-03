@@ -17,7 +17,7 @@ namespace DM___Client.Models
         private GUIPages.GUIGameRoom parent;
         private Image Image;
         private Button Btn;
-        private bool isSelected { get { if (Border.BorderBrush == Brushes.Gold) return true; return false; } }
+        private bool isSelected { get { return Border.BorderBrush == Brushes.Gold; } }
         private Log.Logger logger;
 
         public Models.CardWithGameProperties Card;
@@ -122,10 +122,17 @@ namespace DM___Client.Models
         {
             Card = card;
 
-            if (Card == null)
-                Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/GUI/CardBack.png", UriKind.Absolute));
-            else
-                Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Card.Name + ".png", UriKind.Absolute));
+            try
+            {
+                if (Card == null)
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/GUI/CardBack.png", UriKind.Absolute));
+                else
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Card.Name + ".png", UriKind.Absolute));
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.ToString());
+            }
         }
 
         public void setMargin(Thickness margin)

@@ -15,18 +15,21 @@ namespace DM___Client.GUIPages
 
         public void startTurn()
         {
-            disengageEverything();
-
-            foreach (Models.CardGUIModel cardGUI in listOwnBattleGround)
-                if (!cardGUI.Card.hasCompletelyBeenSummoned)
-                    cardGUI.Card.hasCompletelyBeenSummoned = true;
-
+            // remove all spells that our opponent has used from the battle ground
             for (int i = 0; i < listOppBattleGround.Count; i++)
             {
                 if (listOppBattleGround[i].Card.Type == "Spell")
                     animateBattleToGraveyard(i, false);
             }
 
+            disengageEverything();
+
+            // set cards that have been summoned but were unable to be used to be able to be used
+            foreach (Models.CardGUIModel cardGUI in listOwnBattleGround)
+                if (!cardGUI.Card.hasCompletelyBeenSummoned)
+                    cardGUI.Card.hasCompletelyBeenSummoned = true;
+
+            // notify the server that our turn has started so it can reveal the cardID of the card we need to draw at the start of our turn
             ctrl.send(new Models.GameMessage("STARTTURN", ctrl.GameRoomID));
         }
 
@@ -34,7 +37,12 @@ namespace DM___Client.GUIPages
         {
             animateDrawCardOWN(card);
             addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
-            ableToSelect.Add(listHand[listHand.Count - 1]);
+
+            // if we drew a card during our own Summon phase we add it to the ableToSelect list
+            if (Phase == "Summon phase" && itIsOwnTurn)
+                ableToSelect.Add(listHand[listHand.Count - 1]);
+
+            // we update the info board
             txtOwnDeck.Text = (Int32.Parse(txtOwnDeck.Text) - 1).ToString();
             txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) + 1).ToString();
         }

@@ -19,34 +19,22 @@ namespace DM___Client.GUIPages
         public void loadAttackPhase()
         {
             List<CardGUIModel> selectableCards;
-            bool canAttack;
 
             deselectAll();
             updateGameState(true, "Attack phase");
-            ctrl.send(new Models.GameMessage("SETPHASE", ctrl.GameRoomID, new List<string>() { "Attack phase" }));
 
-            // only cards that have completly been summoned can attack
+            // notify the server that we entered Attack phase so it can notify our opponent
+            ctrl.send(new Models.GameMessage("SETPHASE", ctrl.GameRoomID, new List<string>() { "Attack phase" }));
 
             selectableCards = new List<CardGUIModel>();
             foreach (CardGUIModel cardGUI in listOwnBattleGround)
             {
-                canAttack = true;
-                foreach (SpecialEffect effect in cardGUI.Card.SpecialEffects)
-                {
-                    if (effect.Effect == "CannotAttack")
-                    {
-                        canAttack = false;
-                        break;
-                    }
-                }
-
-                if (canAttack && cardGUI.Card.hasCompletelyBeenSummoned)
+                if (cardGUI.Card.hasCompletelyBeenSummoned && !hasEffect(cardGUI.Card, "CannotAttack"))
                     selectableCards.Add(cardGUI);
             }
 
             loadAttackPhaseButtons(listOppSafeguardZone.Count == 0);
             setAbleToSelect(1, selectableCards);
-           
         }
 
         // attack buttons
@@ -73,6 +61,7 @@ namespace DM___Client.GUIPages
             {
                 GUIWindows.GUISelect guiSelect;
 
+                // find out how many safeguards can selected creature attack
                 attackTargetCount = getAttackTargetCount();
 
                 if (attackTargetCount == 0)
@@ -84,15 +73,21 @@ namespace DM___Client.GUIPages
                     List<int> selectedSafeguards;
                     int index;
 
+                    // cannot break more safeguards than our opponent has
                     attackTargetCount = Math.Min(attackTargetCount, listOppSafeguardZone.Count());
+
+                    // create the gui that allows us to select the safeguards that we want to attack
                     message = string.Format("You must select a total of {0} safeguard(s).", attackTargetCount);
                     guiSelect = new GUIWindows.GUISelect(listOppSafeguardZone, message, attackTargetCount, null);
-
                     guiSelect.ShowDialog();
+
                     if (!guiSelect.wasCanceled)
                     {
                         selectedSafeguards = guiSelect.selected;
+
+                        // notify server of our attack so it can notify our opponent
                         sendAttack(selectedSafeguards, true);
+
                         index = listOwnBattleGround.IndexOf(selectedCards[0]);
                         ableToSelect.Remove(selectedCards[0]);
                         selectedCards[0].deselect();
@@ -114,7 +109,7 @@ namespace DM___Client.GUIPages
                 List<CardGUIModel> validSelections;
                 int index;
 
-                // only creatures that are negaegd can be attacked
+                // only creatures that are engaged can be attacked
                 validSelections = new List<CardGUIModel>();
                 foreach(CardGUIModel cardGUI in listOppBattleGround)
                 {
@@ -135,6 +130,7 @@ namespace DM___Client.GUIPages
                         // translate selected card indexes to listOppBattleGround indexes
                         index = listOppBattleGround.IndexOf(validSelections[guiSelect.selected[0]]);
 
+                        // notify server of our attack so it can notify our opponent
                         sendAttack(new List<int>() { index }, false);
 
                         // deselect card and engage it
@@ -225,7 +221,7 @@ namespace DM___Client.GUIPages
             {
                 string message;
 
-                defenders = getOwnDefenders();
+                defenders = getOwnDefendersThatCanBlock();
                 message = "Select one defender to block the attack with, or don't block at all.";
 
                 gUISelect = new GUIWindows.GUISelect(defenders, message, 1, null);
@@ -277,7 +273,7 @@ namespace DM___Client.GUIPages
             {
                 string message;
 
-                defenders = getOwnDefenders();
+                defenders = getOwnDefendersThatCanBlock();
                 message = "Select one defender to block the attack with, or don't block at all.";
 
                 gUISelect = new GUIWindows.GUISelect(defenders, message, 1, null);
@@ -327,7 +323,7 @@ namespace DM___Client.GUIPages
                     return false;
             }
 
-            if (getOwnDefenders().Count == 0)
+            if (getOwnDefendersThatCanBlock().Count == 0)
                 return false;
 
             return true;
@@ -396,7 +392,7 @@ namespace DM___Client.GUIPages
             {
                 string message;
 
-                defenders = getOwnDefenders();
+                defenders = getOwnDefendersThatCanBlock();
                 if (defenders.Count != 0)
                 {
                     message = "Select one defender to block the attack with, or don't block at all.";
@@ -423,6 +419,8 @@ namespace DM___Client.GUIPages
 
                 // you modify the target of the attacker to the index of the defender
                 intArguments[1] = index;
+
+                //notify the server that 2 creatures will battle
                 sendBattle(intArguments);
                 Battle(intArguments, false);
             }
@@ -468,19 +466,22 @@ namespace DM___Client.GUIPages
                 ownCreature = listOwnBattleGround[ownCreatureIndex].Card;
                 oppCreature = listOppBattleGround[oppCreatureIndex].Card;
 
-                ownCreaturePower = ownCreature.Power;
+                ownCreaturePower = getCreaturePowerWhileAttacking(ownCreature);
                 oppCreaturePower = oppCreature.Power;
-
-                if (hasEffect(ownCreature, "BloodThirst"))
-                    ownCreaturePower = getBloodThirstValue(ownCreature);
 
                 if (!oppCreature.isEngaged)
                     engageBattleOPP(oppCreatureIndex);
 
+                // if we win the battle
                 if (ownCreaturePower > oppCreaturePower)
                 {
+                    // animate sending opponent's creature to his graveyard
                     animateBattleToGraveyard(oppCreatureIndex, false);
+
+                    // update info board
                     txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+
+                    // if his creature was poisonous
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
                         animateBattleToGraveyard(ownCreatureIndex, true);
@@ -515,10 +516,7 @@ namespace DM___Client.GUIPages
                 oppCreature = listOppBattleGround[oppCreatureIndex].Card;
 
                 ownCreaturePower = ownCreature.Power;
-                oppCreaturePower = oppCreature.Power;
-
-                if (hasEffect(oppCreature, "BloodThirst"))
-                    oppCreaturePower = getBloodThirstValue(oppCreature);
+                oppCreaturePower = getCreaturePowerWhileAttacking(oppCreature);
                 
                 if (oppCreaturePower > ownCreaturePower)
                 {

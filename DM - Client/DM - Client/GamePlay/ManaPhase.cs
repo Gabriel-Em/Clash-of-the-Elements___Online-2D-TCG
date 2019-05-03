@@ -41,13 +41,19 @@ namespace DM___Client.GUIPages
                 index = listHand.IndexOf(selectedCards[0]);
                 selectedCards[0].deselect();
 
+                // we notify the server that we played a card as mana so it can notify our opponent
                 sendPlayAsMana(index);
+
+                // we animate the action and we realign the cards in our hand
                 animatePlayAsManaOWN(index);
                 addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
 
+                // we update the info board
                 txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) - 1).ToString();
                 txtOwnMana.Text = (Int32.Parse(txtOwnMana.Text) + 1).ToString();
 
+                // we want to load the summon phase AFTER all the animations have played out so that's why we insert an animation object which is actually a notification and not an animation
+                // which will trigger the loadSummonPhase method after all the animations have ended
                 addLoadEvent(new Animation(loadSummonPhase));
             }
         }

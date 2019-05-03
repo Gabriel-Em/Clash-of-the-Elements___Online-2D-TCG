@@ -31,8 +31,8 @@ namespace DM___Client.Animations
         private const int DEFAULTSPEED = 350;
 
         private TranslateTransform trans;
-        private double EndX;
-        private double EndY;
+        private double displacementX;
+        private double displacementY;
 
         public bool removeOrigin { get; set; }
         public bool startsWithHiddenOrigin { get; set; }
@@ -69,22 +69,22 @@ namespace DM___Client.Animations
 
         private void animate()
         {
-            Point newPoint = destination.TranslatePoint(new Point(0, 0), parentGrid);
+            Point destinationPoint = destination.TranslatePoint(new Point(0, 0), parentGrid);
 
-            EndX = newPoint.X - origin.Border.Margin.Left;
-            EndY = newPoint.Y - origin.Border.Margin.Top;
+            displacementX = destinationPoint.X - origin.Border.Margin.Left;
+            displacementY = destinationPoint.Y - origin.Border.Margin.Top;
 
             trans = new TranslateTransform();
             origin.Border.RenderTransform = trans;
 
-            DoubleAnimation anim1 = new DoubleAnimation(0, EndX, TimeSpan.FromMilliseconds(speed));
-            DoubleAnimation anim2 = new DoubleAnimation(0, EndY, TimeSpan.FromMilliseconds(speed));
-            anim1.Completed += Anim1_Completed;
-            trans.BeginAnimation(TranslateTransform.XProperty, anim1);
-            trans.BeginAnimation(TranslateTransform.YProperty, anim2);
+            DoubleAnimation animX = new DoubleAnimation(0, displacementX, TimeSpan.FromMilliseconds(speed));
+            DoubleAnimation animY = new DoubleAnimation(0, displacementY, TimeSpan.FromMilliseconds(speed));
+            animX.Completed += AnimX_Completed;
+            trans.BeginAnimation(TranslateTransform.XProperty, animX);
+            trans.BeginAnimation(TranslateTransform.YProperty, animY);
         }
 
-        private void Anim1_Completed(object sender, EventArgs e)
+        private void AnimX_Completed(object sender, EventArgs e)
         {
             if (destinationGrid != parentGrid)
             {
