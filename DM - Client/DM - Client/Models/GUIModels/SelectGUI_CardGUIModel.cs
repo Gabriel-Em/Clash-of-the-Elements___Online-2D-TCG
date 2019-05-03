@@ -89,15 +89,5 @@ namespace DM___Client.Models.GUIModels
             Border.BorderBrush = Brushes.Transparent;
             parent.removeFromSelectedCards(this);
         }
-
-        public void turnVisibilityON()
-        {
-            Border.Visibility = Visibility.Visible;
-        }
-
-        public void turnVisibilityOFF()
-        {
-            Border.Visibility = Visibility.Hidden;
-        }
     }
 }

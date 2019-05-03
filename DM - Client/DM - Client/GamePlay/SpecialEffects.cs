@@ -12,22 +12,15 @@ namespace DM___Client.GUIPages
     {
         private const int ALL = 23;
 
-        private List<CardGUIModel> getOwnDefenders()
+        private List<CardGUIModel> getOwnDefendersThatCanBlock()
         {
             List<CardGUIModel> defenders = new List<CardGUIModel>();
 
             foreach (CardGUIModel cardGUI in listOwnBattleGround)
             {
-                if (!cardGUI.Card.isEngaged)
+                if (!cardGUI.Card.isEngaged && hasEffect(cardGUI.Card, "Defender"))
                 {
-                    foreach (SpecialEffect se in cardGUI.Card.SpecialEffects)
-                    {
-                        if (se.Effect == "Defender")
-                        {
-                            defenders.Add(cardGUI);
-                            break;
-                        }
-                    }
+                    defenders.Add(cardGUI);
                 }
             }
 
@@ -42,7 +35,7 @@ namespace DM___Client.GUIPages
             return false;
         }
 
-        private int getBloodThirstValue(Card card)
+        private int getCreaturePowerWhileAttacking(Card card)
         {
             foreach (SpecialEffect se in card.SpecialEffects)
             {
@@ -111,6 +104,7 @@ namespace DM___Client.GUIPages
                 gUISelect = null;
                 List<int> selectedTargetIndexes;
 
+                // if you must select a number of cards from opponent's mana zone
                 if (se.Arguments[0] != ALL)
                 {
                     message = string.Format("You must select a total of {0} card(s) from your opponent's mana zone.", Math.Min(se.Arguments[0], validSelections.Count));
@@ -134,6 +128,9 @@ namespace DM___Client.GUIPages
                     case "OppHand":
                         foreach (int index in selectedTargetIndexes)
                             animateManaToHandOpp(index);
+                        
+                        // notify the server that we triggered a SendTo effect
+                        // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
                         sendSendTo(selectedTargetIndexes, "OwnMana", "OwnHand");
                         break;
                 }

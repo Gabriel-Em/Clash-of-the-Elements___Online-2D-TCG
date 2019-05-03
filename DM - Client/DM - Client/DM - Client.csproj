@@ -74,7 +74,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CollectionConstants\CollectionConstants.cs" />
     <Compile Include="Controllers\GameRoomController.cs" />
     <Compile Include="Controllers\PreGameRoomController.cs" />
     <Compile Include="GamePlay\Animations.cs" />

@@ -155,38 +155,6 @@ namespace DM___Client.GUIPages
             return card;
         }
 
-        private void spellToGraveyard(Models.CardGUIModel card, bool own)
-        {
-            Animations.MoveAnimation animation;
-
-            // add cards to grids
-
-            if (own)
-            {
-                animation = new Animations.MoveAnimation(
-                    grdOwnBattle,
-                    grdOwnGrave,
-                    grdParent,
-                    listOwnBattleGround,
-                    listOwnGraveyard,
-                    card,
-                    AnimationConstants.DESTINATIONGRAVE);
-            }
-            else
-            {
-                animation = new Animations.MoveAnimation(
-                    grdOppBattle,
-                    grdOppGrave,
-                    grdParent,
-                    listOppBattleGround,
-                    listOppGraveyard,
-                    card,
-                    AnimationConstants.DESTINATIONGRAVE);
-                animation.setDelay(3000);
-            }
-            addAnimation(animation);
-        }
-
         // Attack Phase
 
         private void animateSafeguardBrokeOWN(int index, int cardID)

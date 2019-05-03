@@ -16,6 +16,8 @@ namespace DM___Client.GUIPages
         public void loadSummonPhase()
         {
             updateGameState(true, "Summon phase");
+
+            // we notify the server that we entered Summon phase so it can notify our opponent of this action
             ctrl.send(new Models.GameMessage("SETPHASE", ctrl.GameRoomID, new List<string>() { "Summon phase" }));
             setAbleToSelect(1, listHand.ToList<Models.CardGUIModel>());
             loadSummonPhaseButtons();
@@ -39,70 +41,68 @@ namespace DM___Client.GUIPages
                 GUIWindows.GUISelect guiSelect;
                 List<Models.CardGUIModel> validSelections;
 
+                // if there is not enough unused mana or none of the mana is of card's element then we can't summon
+                if (!checkCanSummon(selectedCards[0]))
+                {
+                    message = string.Format("You don't have the right mana to summon this {0}.", selectedCards[0].Card.Type);
+                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
                 validSelections = new List<Models.CardGUIModel>();
 
-                // you can select mana that's not engaged already
+                // add all mana that's not engaged to the validSelections list (you can only use mana that's not engaged already)
                 foreach (Models.CardGUIModel cardGUI in listOwnManaZone)
                 {
                     if (!cardGUI.Card.isEngaged)
                         validSelections.Add(cardGUI);
                 }
 
-                if (selectedCards[0].Card.Cost > validSelections.Count)
+                int index;
+
+                // create a GUI that will allow us to select the mana that we want to engage to pay the cost of the card we want to summon
+                message = string.Format("You must select a total of {0} mana, out of which at least one must be of {1} type.", selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
+                guiSelect = new GUIWindows.GUISelect(validSelections, message, selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
+                guiSelect.ShowDialog();
+
+                if (!guiSelect.wasCanceled)
                 {
-                    message = string.Format("You don't have enough mana to summon this {0}.", selectedCards[0].Card.Type);
-                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-                else
-                {
-                    int index;
+                    List<int> selectedMana;
 
-                    message = string.Format("You must select a total of {0} mana, out of which at least one must be of {1} type.", selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
-                    guiSelect = new GUIWindows.GUISelect(validSelections, message, selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
+                    selectedMana = new List<int>();
 
-                    guiSelect.ShowDialog();
+                    // translate the selected indexes from the validSelections to indexes from the listOwnManaZone
+                    foreach (int selectedIndex in guiSelect.selected)
+                        selectedMana.Add(listOwnManaZone.IndexOf(validSelections[selectedIndex]));
 
-                    if (!guiSelect.wasCanceled)
-                    {
-                        List<int> selectedMana;
+                    index = listHand.IndexOf(selectedCards[0]);
+                    ableToSelect.Remove(selectedCards[0]);
+                    selectedCards[0].deselect();
 
-                        selectedMana = new List<int>();
-
-                        // translate the selected indexes from the validSelections to indexes from the listOwnManaZone
-                        foreach (int selectedIndex in guiSelect.selected)
-                            selectedMana.Add(listOwnManaZone.IndexOf(validSelections[selectedIndex]));
-                        
-                        index = listHand.IndexOf(selectedCards[0]);
-                        if (hasManaToSummon(selectedMana, index))
-                        {
-                            ableToSelect.Remove(selectedCards[0]);
-                            selectedCards[0].deselect();
-
-                            summonOWN(selectedMana, index);
-                        }
-                    }
+                    // proceed to summon the card
+                    summonOWN(selectedMana, index);
                 }
             }
         }
 
-        private bool hasManaToSummon(List<int> selectedMana, int selectedCardIndex)
+        private bool checkCanSummon(Models.CardGUIModel card)
         {
-            Models.Card card;
-            string errorMessage;
+            int count;
+            bool found_element;
 
-            card = listHand[selectedCardIndex].Card;
-            errorMessage = string.Format("You must select a total of {0} mana, out of which at least one must be a {1} type.", card.Cost.ToString(), card.Element);
+            count = 0;
+            found_element = false;
 
-            if (selectedMana.Count == card.Cost)
+            foreach(Models.CardGUIModel cardGUI in listOwnManaZone)
             {
-                foreach (int index in selectedMana)
-                {
-                    if (listOwnManaZone[index].Card.Element == card.Element)
-                        return true;
-                }
+                if (!cardGUI.Card.isEngaged)
+                    count += 1;
+                if (cardGUI.Card.Element == card.Card.Element)
+                    found_element = true;
             }
 
-            MessageBox.Show(errorMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+            if (card.Card.Cost <= count && found_element)
+                return true;
             return false;
         }
 
@@ -114,18 +114,19 @@ namespace DM___Client.GUIPages
 
             cardGUI = listHand[selectedCardIndex];
 
-            // summon
+            // notify the server that we summoned a card so it can notify our opponent
 
             sendSummon(selectedMana, selectedCardIndex);
 
+            // animate the engaging of the selected mana and the summoning of the card and then we align the remaining cards in our hand
             engageManaOWN(selectedMana);
             animateSummonOWN(selectedCardIndex);
-
             addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
 
+            // update the info board
             txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) - 1).ToString();
 
-            // check summon triggers
+            // check if any special effects have to trigger after the summon
 
             if (hasTrigger(cardGUI.Card, "Summon"))
             {
@@ -142,11 +143,13 @@ namespace DM___Client.GUIPages
             int cardID;
             Models.CardGUIModel cardGUI;
 
+            // animate the summoning of our opponent's card (the first card in list is the card our opponent has summoned and the rest are the mana he used)
             cardID = cardIDs[0];
             cardIDs.RemoveAt(0);
             engageManaOPP(cardIDs);
             cardGUI = animateSummonOPP(cardID);
 
+            // update the info board
             txtOppHand.Text = (Int32.Parse(txtOppHand.Text) - 1).ToString();
         }
 
