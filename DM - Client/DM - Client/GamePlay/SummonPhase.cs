@@ -124,7 +124,7 @@ namespace DM___Client.GUIPages
             addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
 
             // update the info board
-            txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) - 1).ToString();
+            updateInfoBoard("hand", true, -1);
 
             // check if any special effects have to trigger after the summon
 
@@ -150,7 +150,7 @@ namespace DM___Client.GUIPages
             cardGUI = animateSummonOPP(cardID);
 
             // update the info board
-            txtOppHand.Text = (Int32.Parse(txtOppHand.Text) - 1).ToString();
+            updateInfoBoard("hand", false, -1);
         }
 
         private void sendSummon(List<int> selectedMana, int selectedCardIndex)

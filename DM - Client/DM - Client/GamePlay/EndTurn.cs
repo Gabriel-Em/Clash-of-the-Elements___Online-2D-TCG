@@ -21,7 +21,10 @@ namespace DM___Client.GUIPages
             for (int i = 0; i < listOwnBattleGround.Count; i++)
             {
                 if (listOwnBattleGround[i].Card.Type == "Spell")
+                {
                     animateBattleToGraveyard(i, true);
+                    updateInfoBoard("grave", OWN, 1);
+                }
             }
 
             disengageManaOPP();
@@ -32,8 +35,8 @@ namespace DM___Client.GUIPages
             ctrl.send(new Models.GameMessage("ENDTURN", ctrl.GameRoomID));
 
             actionButtons.Children.Clear();
-            txtOppDeck.Text = (Int32.Parse(txtOppDeck.Text) - 1).ToString();
-            txtOppHand.Text = (Int32.Parse(txtOppHand.Text) + 1).ToString();
+            updateInfoBoard("hand", OPP, 1);
+            updateInfoBoard("deck", OPP, -1);
         }
     }
 }

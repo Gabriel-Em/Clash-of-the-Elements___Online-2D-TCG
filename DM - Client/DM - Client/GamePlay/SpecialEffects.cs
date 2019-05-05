@@ -60,24 +60,7 @@ namespace DM___Client.GUIPages
             switch (se.Effect)
             {
                 case "SendTo":
-                    switch (se.TargetFrom)
-                    {
-                        case "OppMana":
-                            effectSendToFromOppMana(se);
-                            break;
-                        case "OwnMana":
-                            effectSendToFromOwnMana(se);
-                            break;
-                        case "OppGround":
-                            effectSendToFromOppGround(se);
-                            break;
-                        case "OwnGrave":
-                            effectSendToFromOwnGrave(se);
-                            break;
-                        case "OwnGround":
-                            effectSendToFromOwnGround(se);
-                            break;
-                    }
+                    triggerOwnSendTo(se);
                     break;
                 case "InstantSummon":
                     card.hasCompletelyBeenSummoned = true;
@@ -88,16 +71,46 @@ namespace DM___Client.GUIPages
             }
         }
 
-        private void effectSendToFromOppMana(SpecialEffect se)
+        private void triggerOwnSendTo(SpecialEffect se)
         {
             GUIWindows.GUISelect gUISelect;
             List<CardGUIModel> validSelections;
-            string message;
+            string selectMessage, friendlyFrom;
 
             validSelections = new List<CardGUIModel>();
 
             validSelections.Clear();
-            validSelections = listOppManaZone;
+            switch(se.TargetFrom)
+            {
+                case "OwnMana":
+                    validSelections = listOwnManaZone;
+                    friendlyFrom = "mana zone";
+                    break;
+                case "OppMana":
+                    validSelections = listOppManaZone;
+                    friendlyFrom = "opponent's mana zone";
+                    break;
+                case "OwnGrave":
+                    validSelections = listOwnGraveyard;
+                    friendlyFrom = "gaveyard";
+                    break;
+                case "OppGrave":
+                    validSelections = listOppGraveyard;
+                    friendlyFrom = "opponent's graveyard";
+                    break;
+                case "OwnGround":
+                    validSelections = listOwnBattleGround;
+                    friendlyFrom = "battleground";
+                    break;
+                case "OppGround":
+                    validSelections = listOppBattleGround;
+                    friendlyFrom = "opponent's battleground";
+                    break;
+                default:
+                    validSelections = new List<CardGUIModel>();
+                    friendlyFrom = "";
+                    break;
+            }
 
             if (validSelections.Count > 0)
             {
@@ -107,9 +120,9 @@ namespace DM___Client.GUIPages
                 // if you must select a number of cards from opponent's mana zone
                 if (se.Arguments[0] != ALL)
                 {
-                    message = string.Format("You must select a total of {0} card(s) from your opponent's mana zone.", Math.Min(se.Arguments[0], validSelections.Count));
+                    selectMessage = string.Format("You must select a total of {0} card(s) from your {1}.", Math.Min(se.Arguments[0], validSelections.Count), friendlyFrom);
 
-                    gUISelect = new GUIWindows.GUISelect(validSelections, message, se.Arguments[0], null);
+                    gUISelect = new GUIWindows.GUISelect(validSelections, selectMessage, se.Arguments[0], null);
                     gUISelect.removeCancelButton();
                     gUISelect.ShowDialog();
 
@@ -126,205 +139,90 @@ namespace DM___Client.GUIPages
                 switch (se.TargetTo)
                 {
                     case "OppHand":
-                        foreach (int index in selectedTargetIndexes)
-                            animateManaToHandOpp(index);
-                        
-                        // notify the server that we triggered a SendTo effect
-                        // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
-                        sendSendTo(selectedTargetIndexes, "OwnMana", "OwnHand");
+                        switch (se.TargetFrom)
+                        {
+                            case "OppMana":
+                                // notify the server that we triggered a SendTo effect
+                                // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
+                                sendSendTo(selectedTargetIndexes, "OwnMana", "OwnHand");
+
+                                foreach (int index in selectedTargetIndexes)
+                                {
+                                    animateManaToHandOpp(index);
+                                    updateInfoBoard("mana", OPP, -1);
+                                    updateInfoBoard("hand", OPP, 1);
+                                }
+                                break;
+                            case "OppGround":
+                                sendSendTo(selectedTargetIndexes, "OwnGround", "OwnHand");
+                                foreach (int index in selectedTargetIndexes)
+                                {
+                                    animateBattleToHandOpp(index);
+                                    updateInfoBoard("hand", OPP, 1);
+                                }
+                                break;
+                            
+                        }
                         break;
-                }
-            }
-        }
-
-        private void effectSendToFromOwnMana(SpecialEffect se)
-        {
-            GUIWindows.GUISelect gUISelect;
-            List<CardGUIModel> validSelections;
-            string message;
-
-            validSelections = new List<CardGUIModel>();
-
-            validSelections.Clear();
-            validSelections = listOwnManaZone;
-
-            if (validSelections.Count > 0)
-            {
-                gUISelect = null;
-                List<int> selectedTargetIndexes;
-
-                if (se.Arguments[0] != ALL)
-                {
-                    message = string.Format("You must select a total of {0} card(s) from your mana zone.", Math.Min(se.Arguments[0], validSelections.Count));
-
-                    gUISelect = new GUIWindows.GUISelect(validSelections, message, se.Arguments[0], null);
-                    gUISelect.removeCancelButton();
-                    gUISelect.ShowDialog();
-
-                    selectedTargetIndexes = gUISelect.selected;
-                }
-                else
-                {
-                    selectedTargetIndexes = new List<int>();
-
-                    for (int i = 0; i < validSelections.Count; i++)
-                        selectedTargetIndexes.Add(i);
-                }
-
-                switch (se.TargetTo)
-                {
                     case "OwnHand":
-                        foreach (int index in selectedTargetIndexes)
-                            animateManaToHandOwn(index);
-                        sendSendTo(selectedTargetIndexes, "OppMana", "OppHand");
-                        break;
-                }
-            }
-        }
-
-        private void effectSendToFromOppGround(SpecialEffect se)
-        {
-            GUIWindows.GUISelect gUISelect;
-            List<CardGUIModel> validSelections;
-            string message;
-
-            validSelections = new List<CardGUIModel>();
-
-            validSelections.Clear();
-            validSelections = listOppBattleGround;
-
-            if (validSelections.Count > 0)
-            {
-                gUISelect = null;
-                List<int> selectedTargetIndexes;
-
-                if (se.Arguments[0] != ALL)
-                {
-                    message = string.Format("You must select a total of {0} card(s) from your opponent's battleground.", Math.Min(se.Arguments[0], validSelections.Count));
-
-                    gUISelect = new GUIWindows.GUISelect(validSelections, message, se.Arguments[0], null);
-                    gUISelect.removeCancelButton();
-                    gUISelect.ShowDialog();
-
-                    selectedTargetIndexes = gUISelect.selected;
-                }
-                else
-                {
-                    selectedTargetIndexes = new List<int>();
-
-                    for (int i = 0; i < validSelections.Count; i++)
-                        selectedTargetIndexes.Add(i);
-                }
-
-                switch (se.TargetTo)
-                {
-                    case "OppHand":
-                        foreach (int index in selectedTargetIndexes)
-                            animateBattleToHandOpp(index);
-                        sendSendTo(selectedTargetIndexes, "OwnGround", "OwnHand");
+                        {
+                            switch (se.TargetFrom)
+                            {
+                                case "OwnMana":
+                                    sendSendTo(selectedTargetIndexes, "OppMana", "OppHand");
+                                    foreach (int index in selectedTargetIndexes)
+                                    {
+                                        animateManaToHandOwn(index);
+                                        updateInfoBoard("mana", OWN, -1);
+                                        updateInfoBoard("hand", OWN, 1);
+                                    }
+                                    break;
+                                case "OwnGrave":
+                                    sendSendTo(selectedTargetIndexes, "OppGrave", "OppHand");
+                                    foreach (int index in selectedTargetIndexes)
+                                    {
+                                        animateGraveyardToHandOwn(index);
+                                        updateInfoBoard("grave", OWN, -1);
+                                        updateInfoBoard("hand", OWN, 1);
+                                    }
+                                    break;
+                                case "OwnGround":
+                                    sendSendTo(selectedTargetIndexes, "OppGround", "OppHand");
+                                    foreach (int index in selectedTargetIndexes)
+                                    {
+                                        animateBattleToHandOwn(index);
+                                        updateInfoBoard("hand", OWN, 1);
+                                    }
+                                    break;
+                            }
+                        }
                         break;
                     case "OppGrave":
-                        foreach (int index in selectedTargetIndexes)
-                            animateBattleToGraveyard(index, false);
-                        sendSendTo(selectedTargetIndexes, "OwnGround", "OwnGrave");
+                        switch(se.TargetFrom)
+                        {
+                            case "OppGround":
+                                sendSendTo(selectedTargetIndexes, "OwnGround", "OwnGrave");
+                                foreach (int index in selectedTargetIndexes)
+                                {
+                                    animateBattleToGraveyard(index, OPP);
+                                    updateInfoBoard("grave", OPP, 1);
+                                }
+                                break;
+                        }
+                        
                         break;
-                }
-            }
-        }
-
-        private void effectSendToFromOwnGrave(SpecialEffect se)
-        {
-            GUIWindows.GUISelect gUISelect;
-            List<CardGUIModel> validSelections;
-            string message;
-
-            validSelections = new List<CardGUIModel>();
-
-            validSelections.Clear();
-            validSelections = listOwnGraveyard;
-
-            if (validSelections.Count > 0)
-            {
-                gUISelect = null;
-                List<int> selectedTargetIndexes;
-
-                if (se.Arguments[0] != ALL)
-                {
-                    message = string.Format("You must select a total of {0} card(s) from your own graveyard.", Math.Min(se.Arguments[0], validSelections.Count));
-
-                    gUISelect = new GUIWindows.GUISelect(validSelections, message, se.Arguments[0], null);
-                    gUISelect.removeCancelButton();
-                    gUISelect.ShowDialog();
-
-                    selectedTargetIndexes = gUISelect.selected;
-                }
-                else
-                {
-                    selectedTargetIndexes = new List<int>();
-
-                    for (int i = 0; i < validSelections.Count; i++)
-                        selectedTargetIndexes.Add(i);
-                }
-
-                switch (se.TargetTo)
-                {
                     case "OwnGround":
-                        foreach (int index in selectedTargetIndexes)
+                        switch(se.TargetFrom)
                         {
-                            animateGraveyardToBattle(index, true);
+                            case "OwnGrave":
+                                sendSendTo(selectedTargetIndexes, "OppGrave", "OppGround");
+                                foreach (int index in selectedTargetIndexes)
+                                {
+                                    animateGraveyardToBattle(index, OWN);
+                                    updateInfoBoard("grave", OWN, -1);
+                                }
+                                break;
                         }
-                        sendSendTo(selectedTargetIndexes, "OppGrave", "OppGround");
-                        break;
-                    case "OwnHand":
-                        foreach (int index in selectedTargetIndexes)
-                        {
-                            animateGraveyardToHandOwn(index);
-                        }
-                        sendSendTo(selectedTargetIndexes, "OppGrave", "OppHand");
-                        break;
-                }
-            }
-        }
-
-        private void effectSendToFromOwnGround(SpecialEffect se)
-        {
-            GUIWindows.GUISelect gUISelect;
-            List<CardGUIModel> validSelections;
-            string message;
-
-            validSelections = new List<CardGUIModel>();
-
-            validSelections.Clear();
-            validSelections = listOwnBattleGround;
-
-            if (validSelections.Count > 0)
-            {
-                gUISelect = null;
-                List<int> selectedTargetIndexes;
-
-                if (se.Arguments[0] != ALL)
-                {
-                    message = string.Format("You must select a total of {0} card(s) from your own battleground.", Math.Min(se.Arguments[0], validSelections.Count));
-
-                    gUISelect = new GUIWindows.GUISelect(validSelections, message, se.Arguments[0], null);
-                    gUISelect.removeCancelButton();
-                    gUISelect.ShowDialog();
-                    selectedTargetIndexes = gUISelect.selected;
-                }
-                else
-                {
-                    selectedTargetIndexes = new List<int>();
-
-                    for (int i = 0; i < validSelections.Count; i++)
-                        selectedTargetIndexes.Add(i);
-                }
-                
-                switch (se.TargetTo)
-                {
-                    case "OwnHand":
-                        foreach (int index in selectedTargetIndexes)
-                            animateBattleToHandOwn(index);
-                        sendSendTo(selectedTargetIndexes, "OppGround", "OppHand");
                         break;
                 }
             }
@@ -343,7 +241,7 @@ namespace DM___Client.GUIPages
             ctrl.send(gameMessage);
         }
 
-        public void processSendTo(List<int> arguments, string from, string to)
+        public void processOppSendTo(List<int> arguments, string from, string to)
         {
             switch(from)
             {
@@ -415,7 +313,39 @@ namespace DM___Client.GUIPages
 
         public void processOppDrew()
         {
+            updateInfoBoard("Deck", OPP, 1);
             animateDrawCardOPP();
         }
     }
 }
+
+/*
+
+    Working
+Baraq
+Cataclysm				            
+Cyclonius				            
+Ejzif					            
+Qroax 					           
+
+    Not working
+Flux					            must code
+Volta					            must code
+Decadence of Life			        must code
+Siorvys, Protector of the Forest	can't break 2 shields
+Terrane					            must code
+Lydia Von Stein				        bring only creatures
+
+    Not tested
+Araneidae
+Black Plague
+Jugguro, The Protector
+Murriephan, The Puny
+Rockoz
+Elemental Burn
+Eliondrox
+Gulgurd
+Hulor
+
+
+*/

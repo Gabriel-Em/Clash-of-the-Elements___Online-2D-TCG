@@ -19,7 +19,10 @@ namespace DM___Client.GUIPages
             for (int i = 0; i < listOppBattleGround.Count; i++)
             {
                 if (listOppBattleGround[i].Card.Type == "Spell")
-                    animateBattleToGraveyard(i, false);
+                {
+                    animateBattleToGraveyard(i, OPP);
+                    updateInfoBoard("grave", OPP, 1);
+                }
             }
 
             disengageEverything();
@@ -43,8 +46,8 @@ namespace DM___Client.GUIPages
                 ableToSelect.Add(listHand[listHand.Count - 1]);
 
             // we update the info board
-            txtOwnDeck.Text = (Int32.Parse(txtOwnDeck.Text) - 1).ToString();
-            txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) + 1).ToString();
+            updateInfoBoard("hand", OWN, 1);
+            updateInfoBoard("deck", OWN, -1);
         }
 
         private void disengageEverything()

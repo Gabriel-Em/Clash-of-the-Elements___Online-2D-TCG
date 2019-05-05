@@ -23,10 +23,13 @@ namespace DM___Client.GUIPages
     /// </summary>
     public partial class GUIGameRoom : Page
     {
+        #region COMMUNICATION
         private GUIWindows.GUI parent;
         private Controllers.GameRoomController ctrl;
         private DispatcherTimer checkServerResponse;
+        #endregion
 
+        #region LISTS
         private List<Models.CardGUIModel> listHand;
         private List<Models.CardGUIModel> listOwnManaZone;
         private List<Models.CardGUIModel> listOwnBattleGround;
@@ -36,7 +39,12 @@ namespace DM___Client.GUIPages
         private List<Models.CardGUIModel> listOppBattleGround;
         private List<Models.CardGUIModel> listOppGraveyard;
         private List<Models.CardGUIModel> listOppSafeguardZone;
+        private List<Models.CardGUIModel> selectedCards;
+        private List<Models.CardGUIModel> ableToSelect;
+        private List<Animation> animationsAndEvents;
+        #endregion
 
+        #region BUTTONS
         private Button btnPlayAsMana;
         private Button btnNextPhase;
         private Button btnPlayCard;
@@ -44,24 +52,19 @@ namespace DM___Client.GUIPages
         private Button btnAttackCreatures;
         private Button btnEndTurn;
         private Button btnWin;
+        #endregion
 
-        private List<Models.CardGUIModel> selectedCards;
-        private List<Models.CardGUIModel> ableToSelect = new List<Models.CardGUIModel>();
         private int ableToSelectLimit;
-
         private Image zoomedImage;
-
         private bool itIsOwnTurn;
-
+        private Log.Logger logger;
+        private const bool OWN = true;
+        private const bool OPP = false;
         private DispatcherTimer animationTimer;
         private DispatcherTimer checkInitialAnimationsFinished;
-        private List<Animation> animationsAndEvents;
-
+        
         public string Phase;
-
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
-
-        private Log.Logger logger;
 
         public GUIGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_, int DeckID_, Models.CardCollection CardCollection_)
         {
@@ -108,6 +111,7 @@ namespace DM___Client.GUIPages
             listOppGraveyard = new List<Models.CardGUIModel>();
             listOppSafeguardZone = new List<Models.CardGUIModel>();
             selectedCards = new List<Models.CardGUIModel>();
+            ableToSelect = new List<Models.CardGUIModel>();
             animationsAndEvents = new List<Animation>();
         }
 
@@ -372,6 +376,34 @@ namespace DM___Client.GUIPages
                 lblTurn.Content = "Opponent's turn";
             this.itIsOwnTurn = itIsOwnTurn;
             lblPhase.Content = phase;
+        }
+
+        // update info board
+        public void updateInfoBoard(string type, bool own, int ammount)
+        {
+            TextBlock value;
+
+            switch(type)
+            {
+                case "mana":
+                    value = own ? txtOwnMana : txtOppMana;
+                    break;
+                case "deck":
+                    value = own ? txtOwnDeck : txtOppDeck;
+                    break;
+                case "hand":
+                    value = own ? txtOwnHand : txtOppHand;
+                    break;
+                case "grave":
+                    value = own ? txtOwnGrave : txtOppGrave;
+                    break;
+                default:
+                    value = null;
+                    break;
+            }
+
+            if (value != null)
+                value.Text = (Int32.Parse(value.Text) + ammount).ToString();
         }
 
         // select/deselect methods

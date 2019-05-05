@@ -354,9 +354,10 @@ namespace DM___Client.GUIPages
 
             count = args[0];
             for (int i = 1; i <= count; i++)
+            {
                 animateSafeguardBrokeOWN(args[i], args[i + count]);
-
-            txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) + count).ToString();
+                updateInfoBoard("hand", OWN, 1);
+            }
         }
 
         // whenever you break safeguards
@@ -367,9 +368,10 @@ namespace DM___Client.GUIPages
                 loadAttackPhaseButtons(true);
 
             foreach (int index in args)
+            {
                 animateSafeguardBrokeOPP(index);
-
-            txtOppHand.Text = (Int32.Parse(txtOppHand.Text) + args.Count).ToString();
+                updateInfoBoard("hand", OPP, 1);
+            }
         }
 
         // creature is under attack
@@ -476,35 +478,35 @@ namespace DM___Client.GUIPages
                 if (ownCreaturePower > oppCreaturePower)
                 {
                     // animate sending opponent's creature to his graveyard
-                    animateBattleToGraveyard(oppCreatureIndex, false);
+                    animateBattleToGraveyard(oppCreatureIndex, OPP);
 
                     // update info board
-                    txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+                    updateInfoBoard("grave", OPP, 1);
 
                     // if his creature was poisonous
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(ownCreatureIndex, true);
-                        txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
+                        animateBattleToGraveyard(ownCreatureIndex, OWN);
+                        updateInfoBoard("grave", OWN, 1);
                     }
                 }
                 else
                 if (ownCreaturePower < oppCreaturePower)
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, true);
-                    txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
+                    animateBattleToGraveyard(ownCreatureIndex, OWN);
+                    updateInfoBoard("grave", OWN, 1);
                     if (hasEffect(ownCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(oppCreatureIndex, false);
-                        txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+                        animateBattleToGraveyard(oppCreatureIndex, OPP);
+                        updateInfoBoard("grave", OPP, 1);
                     }
                 }
                 else
                 {
-                    animateBattleToGraveyard(oppCreatureIndex, false);
-                    animateBattleToGraveyard(ownCreatureIndex, true);
-                    txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
-                    txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
+                    animateBattleToGraveyard(oppCreatureIndex, OPP);
+                    animateBattleToGraveyard(ownCreatureIndex, OWN);
+                    updateInfoBoard("grave", OWN, 1);
+                    updateInfoBoard("grave", OPP, 1);
                 }
             }
             else
@@ -520,31 +522,31 @@ namespace DM___Client.GUIPages
                 
                 if (oppCreaturePower > ownCreaturePower)
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, true);
-                    txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
+                    animateBattleToGraveyard(ownCreatureIndex, OWN);
+                    updateInfoBoard("grave", OWN, 1);
                     if (hasEffect(ownCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(oppCreatureIndex, false);
-                        txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+                        animateBattleToGraveyard(oppCreatureIndex, OPP);
+                        updateInfoBoard("grave", OWN, 1);
                     }
                 }
                 else
                 if (oppCreaturePower < ownCreaturePower)
                 {
-                    animateBattleToGraveyard(oppCreatureIndex, false);
-                    txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+                    animateBattleToGraveyard(oppCreatureIndex, OPP);
+                    updateInfoBoard("grave", OWN, 1);
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(ownCreatureIndex, true);
-                        txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
+                        animateBattleToGraveyard(ownCreatureIndex, OWN);
+                        updateInfoBoard("grave", OWN, 1);
                     }
                 }
                 else
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, true);
-                    animateBattleToGraveyard(oppCreatureIndex, false);
-                    txtOwnGrave.Text = (Int32.Parse(txtOwnGrave.Text) + 1).ToString();
-                    txtOppGrave.Text = (Int32.Parse(txtOppGrave.Text) + 1).ToString();
+                    animateBattleToGraveyard(ownCreatureIndex, OWN);
+                    animateBattleToGraveyard(oppCreatureIndex, OPP);
+                    updateInfoBoard("grave", OWN, 1);
+                    updateInfoBoard("grave", OPP, 1);
                 }
             }
         }
