@@ -186,7 +186,7 @@ namespace DM___Client.Controllers
 
         private void processSendTo(GameMessage message)
         {
-            parent.processSendTo(message.intArguments, message.stringArguments[0], message.stringArguments[1]);
+            parent.processOppSendTo(message.intArguments, message.stringArguments[0], message.stringArguments[1]);
         }
     }
 }

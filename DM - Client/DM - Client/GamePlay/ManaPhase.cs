@@ -49,8 +49,8 @@ namespace DM___Client.GUIPages
                 addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
 
                 // we update the info board
-                txtOwnHand.Text = (Int32.Parse(txtOwnHand.Text) - 1).ToString();
-                txtOwnMana.Text = (Int32.Parse(txtOwnMana.Text) + 1).ToString();
+                updateInfoBoard("hand", OWN, -1);
+                updateInfoBoard("mana", OWN, 1);
 
                 // we want to load the summon phase AFTER all the animations have played out so that's why we insert an animation object which is actually a notification and not an animation
                 // which will trigger the loadSummonPhase method after all the animations have ended
