@@ -527,14 +527,14 @@ namespace DM___Client.GUIPages
                     if (hasEffect(ownCreature, "Poisonous"))
                     {
                         animateBattleToGraveyard(oppCreatureIndex, OPP);
-                        updateInfoBoard("grave", OWN, 1);
+                        updateInfoBoard("grave", OPP, 1);
                     }
                 }
                 else
                 if (oppCreaturePower < ownCreaturePower)
                 {
                     animateBattleToGraveyard(oppCreatureIndex, OPP);
-                    updateInfoBoard("grave", OWN, 1);
+                    updateInfoBoard("grave", OPP, 1);
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
                         animateBattleToGraveyard(ownCreatureIndex, OWN);
