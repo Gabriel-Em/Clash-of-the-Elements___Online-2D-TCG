@@ -73,7 +73,7 @@
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Models\Collection\Card.cs" />
     <Compile Include="Models\Messages\ClientMessage.cs" />
-    <Compile Include="Models\Game.cs" />
+    <Compile Include="Models\InGameData\Game.cs" />
     <Compile Include="Models\Lobby\GameRoom.cs" />
     <Compile Include="Models\Messages\GameMessage.cs" />
     <Compile Include="Models\Messages\Message.cs" />
