@@ -80,7 +80,145 @@ namespace DM___Client.GUIPages
             validSelections = new List<CardGUIModel>();
 
             validSelections.Clear();
-            switch(se.TargetFrom)
+
+            getValidSelections(se, out validSelections, out friendlyFrom);
+
+            if (validSelections.Count > 0)
+            {
+                gUISelect = null;
+                List<int> selectedTargetIndexes;
+
+                // if you must select a number of cards from opponent's mana zone
+                if (se.Arguments[0] != ALL)
+                {
+                    selectMessage = string.Format("You must select a total of {0} card(s) from your {1}.", Math.Min(se.Arguments[0], validSelections.Count), friendlyFrom);
+
+                    gUISelect = new GUIWindows.GUISelect(validSelections, selectMessage, se.Arguments[0], null);
+                    gUISelect.removeCancelButton();
+                    gUISelect.ShowDialog();
+
+                    selectedTargetIndexes = gUISelect.selected;
+                }
+                else
+                {
+                    selectedTargetIndexes = new List<int>();
+
+                    for (int i = 0; i < validSelections.Count; i++)
+                        selectedTargetIndexes.Add(i);
+                }
+
+                switch (se.TargetTo)
+                {
+                    case "OppHand":
+                        sendToOppHand(se, selectedTargetIndexes);
+                        break;
+                    case "OwnHand":
+                        sendToOwnHand(se, selectedTargetIndexes);
+                        break;
+                    case "OppGrave":
+                        sendToOppGrave(se, selectedTargetIndexes);
+                        break;
+                    case "OwnGround":
+                        sendToOwnGround(se, selectedTargetIndexes);
+                        break;
+                }
+            }
+        }
+
+        private void sendToOppHand(SpecialEffect se, List<int> selectedTargetIndexes)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OppMana":
+                    // notify the server that we triggered a SendTo effect
+                    // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
+                    sendSendTo(selectedTargetIndexes, "OwnMana", "OwnHand");
+
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateManaToHandOpp(index);
+                        updateInfoBoard("mana", OPP, -1);
+                        updateInfoBoard("hand", OPP, 1);
+                    }
+                    break;
+                case "OppGround":
+                    sendSendTo(selectedTargetIndexes, "OwnGround", "OwnHand");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateBattleToHandOpp(index);
+                        updateInfoBoard("hand", OPP, 1);
+                    }
+                    break;
+
+            }
+        }
+
+        private void sendToOwnHand(SpecialEffect se, List<int> selectedTargetIndexes)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OwnMana":
+                    sendSendTo(selectedTargetIndexes, "OppMana", "OppHand");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateManaToHandOwn(index);
+                        updateInfoBoard("mana", OWN, -1);
+                        updateInfoBoard("hand", OWN, 1);
+                    }
+                    break;
+                case "OwnGrave":
+                    sendSendTo(selectedTargetIndexes, "OppGrave", "OppHand");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateGraveyardToHandOwn(index);
+                        updateInfoBoard("grave", OWN, -1);
+                        updateInfoBoard("hand", OWN, 1);
+                    }
+                    break;
+                case "OwnGround":
+                    sendSendTo(selectedTargetIndexes, "OppGround", "OppHand");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateBattleToHandOwn(index);
+                        updateInfoBoard("hand", OWN, 1);
+                    }
+                    break;
+            }
+        }
+
+        private void sendToOppGrave(SpecialEffect se, List<int> selectedTargetIndexes)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OppGround":
+                    sendSendTo(selectedTargetIndexes, "OwnGround", "OwnGrave");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateBattleToGraveyard(index, OPP);
+                        updateInfoBoard("grave", OPP, 1);
+                    }
+                    break;
+            }
+        }
+
+        private void sendToOwnGround(SpecialEffect se, List<int> selectedTargetIndexes)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OwnGrave":
+                    sendSendTo(selectedTargetIndexes, "OppGrave", "OppGround");
+                    foreach (int index in selectedTargetIndexes)
+                    {
+                        animateGraveyardToBattle(index, OWN);
+                        updateInfoBoard("grave", OWN, -1);
+                    }
+                    break;
+            }
+        }
+
+        private void getValidSelections(SpecialEffect se, out List<CardGUIModel> validSelections, out string friendlyFrom)
+        {
+            switch (se.TargetFrom)
             {
                 case "OwnMana":
                     validSelections = listOwnManaZone;
@@ -110,121 +248,6 @@ namespace DM___Client.GUIPages
                     validSelections = new List<CardGUIModel>();
                     friendlyFrom = "";
                     break;
-            }
-
-            if (validSelections.Count > 0)
-            {
-                gUISelect = null;
-                List<int> selectedTargetIndexes;
-
-                // if you must select a number of cards from opponent's mana zone
-                if (se.Arguments[0] != ALL)
-                {
-                    selectMessage = string.Format("You must select a total of {0} card(s) from your {1}.", Math.Min(se.Arguments[0], validSelections.Count), friendlyFrom);
-
-                    gUISelect = new GUIWindows.GUISelect(validSelections, selectMessage, se.Arguments[0], null);
-                    gUISelect.removeCancelButton();
-                    gUISelect.ShowDialog();
-
-                    selectedTargetIndexes = gUISelect.selected;
-                }
-                else
-                {
-                    selectedTargetIndexes = new List<int>();
-
-                    for (int i = 0; i < validSelections.Count; i++)
-                        selectedTargetIndexes.Add(i);
-                }
-
-                switch (se.TargetTo)
-                {
-                    case "OppHand":
-                        switch (se.TargetFrom)
-                        {
-                            case "OppMana":
-                                // notify the server that we triggered a SendTo effect
-                                // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
-                                sendSendTo(selectedTargetIndexes, "OwnMana", "OwnHand");
-
-                                foreach (int index in selectedTargetIndexes)
-                                {
-                                    animateManaToHandOpp(index);
-                                    updateInfoBoard("mana", OPP, -1);
-                                    updateInfoBoard("hand", OPP, 1);
-                                }
-                                break;
-                            case "OppGround":
-                                sendSendTo(selectedTargetIndexes, "OwnGround", "OwnHand");
-                                foreach (int index in selectedTargetIndexes)
-                                {
-                                    animateBattleToHandOpp(index);
-                                    updateInfoBoard("hand", OPP, 1);
-                                }
-                                break;
-                            
-                        }
-                        break;
-                    case "OwnHand":
-                        {
-                            switch (se.TargetFrom)
-                            {
-                                case "OwnMana":
-                                    sendSendTo(selectedTargetIndexes, "OppMana", "OppHand");
-                                    foreach (int index in selectedTargetIndexes)
-                                    {
-                                        animateManaToHandOwn(index);
-                                        updateInfoBoard("mana", OWN, -1);
-                                        updateInfoBoard("hand", OWN, 1);
-                                    }
-                                    break;
-                                case "OwnGrave":
-                                    sendSendTo(selectedTargetIndexes, "OppGrave", "OppHand");
-                                    foreach (int index in selectedTargetIndexes)
-                                    {
-                                        animateGraveyardToHandOwn(index);
-                                        updateInfoBoard("grave", OWN, -1);
-                                        updateInfoBoard("hand", OWN, 1);
-                                    }
-                                    break;
-                                case "OwnGround":
-                                    sendSendTo(selectedTargetIndexes, "OppGround", "OppHand");
-                                    foreach (int index in selectedTargetIndexes)
-                                    {
-                                        animateBattleToHandOwn(index);
-                                        updateInfoBoard("hand", OWN, 1);
-                                    }
-                                    break;
-                            }
-                        }
-                        break;
-                    case "OppGrave":
-                        switch(se.TargetFrom)
-                        {
-                            case "OppGround":
-                                sendSendTo(selectedTargetIndexes, "OwnGround", "OwnGrave");
-                                foreach (int index in selectedTargetIndexes)
-                                {
-                                    animateBattleToGraveyard(index, OPP);
-                                    updateInfoBoard("grave", OPP, 1);
-                                }
-                                break;
-                        }
-                        
-                        break;
-                    case "OwnGround":
-                        switch(se.TargetFrom)
-                        {
-                            case "OwnGrave":
-                                sendSendTo(selectedTargetIndexes, "OppGrave", "OppGround");
-                                foreach (int index in selectedTargetIndexes)
-                                {
-                                    animateGraveyardToBattle(index, OWN);
-                                    updateInfoBoard("grave", OWN, -1);
-                                }
-                                break;
-                        }
-                        break;
-                }
             }
         }
 
