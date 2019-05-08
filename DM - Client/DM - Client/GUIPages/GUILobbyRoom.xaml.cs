@@ -49,7 +49,6 @@ namespace DM___Client.GUIPages
             ctrl = new Controllers.LobbyRoomController(this, com_);
 
             // initialize unitialized data
-
             chatWindowEmpty = true;
             listGameRoomsGUI = new List<Models.GameRoomGUIModel>();
             
@@ -102,16 +101,30 @@ namespace DM___Client.GUIPages
         {
             foreach(string user in Users)
             {
-                ListBoxItem newItem = new ListBoxItem();
-                newItem.Content = user;
-                newItem.FontSize = 15;
-                newItem.FontWeight = FontWeights.Bold;
-                newItem.Foreground = Brushes.Black;
-                newItem.Cursor = Cursors.Hand;
-                newItem.Margin = new Thickness(0, 0, 0, 3);
-                listBoxUsers.Items.Add(newItem);
+                if (!checkLobbyRoomUserAlreadyDisplayed(user))
+                {
+                    ListBoxItem newItem = new ListBoxItem();
+                    newItem.Content = user;
+                    newItem.FontSize = 15;
+                    newItem.FontWeight = FontWeights.Bold;
+                    newItem.Foreground = Brushes.Black;
+                    newItem.Cursor = Cursors.Hand;
+                    newItem.Margin = new Thickness(0, 0, 0, 3);
+                    listBoxUsers.Items.Add(newItem);
+                }
             }
             listBoxUsers.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Content", System.ComponentModel.ListSortDirection.Ascending));
+        }
+
+        // check user already displayed
+        private bool checkLobbyRoomUserAlreadyDisplayed(string username)
+        {
+            foreach(ListBoxItem item in listBoxUsers.Items)
+            {
+                if (item.Content.ToString() == username)
+                    return true;
+            }
+            return false;
         }
 
         // removes a user that left the lobby from GUI
@@ -330,6 +343,12 @@ namespace DM___Client.GUIPages
             {
                 gameRoomGUI.setState(state);
             }
+        }
+
+        // triggers when you're trying to create/join a room while you're already in one
+        public void alreadyInARoom()
+        {
+            MessageBox.Show("You cannot join or create rooms while you're already in one!", "Warning!", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         // updates the GUI of a game room when a user has set himself as ready

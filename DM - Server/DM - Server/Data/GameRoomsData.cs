@@ -17,6 +17,16 @@ namespace DM___Server.Data
             GameRooms = new List<Models.GameRoom>();
         }
 
+        public bool checkUserAlreadyInRoom(string username)
+        {
+            foreach (Models.GameRoom room in GameRooms)
+            {
+                if (room.Owner.Username == username || (room.Guest != null && room.Guest.Username == username))
+                    return true;
+            }
+            return false;
+        }
+
         public int getFirstRoomIDAvailable()
         {
             lock (gameRoomLock)

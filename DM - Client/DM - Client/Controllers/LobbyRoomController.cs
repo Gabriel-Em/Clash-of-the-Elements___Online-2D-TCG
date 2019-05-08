@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DM___Client.Models;
 
 namespace DM___Client.Controllers
 {
@@ -100,6 +101,9 @@ namespace DM___Client.Controllers
                     break;
                 case "SETROOMSTATE":
                     processSetRoomState(message);
+                    break;
+                case "ALREADYINAROOM":
+                    parent.alreadyInARoom();
                     break;
                 default: break;
             }
