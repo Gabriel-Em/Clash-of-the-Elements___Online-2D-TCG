@@ -52,6 +52,7 @@ namespace DM___Client.GUIPages
         private Button btnAttackCreatures;
         private Button btnEndTurn;
         private Button btnWin;
+        private Button btnSurrender;
         #endregion
 
         private int ableToSelectLimit;
@@ -124,6 +125,11 @@ namespace DM___Client.GUIPages
             btnAttackSafeguards = getActionButton();
             btnAttackCreatures = getActionButton();
             btnWin = getActionButton();
+            btnWin.Content = "Attack Opponent!";
+            btnWin.Click += BtnWin_Click;
+            btnSurrender = getActionButton();
+            btnSurrender.Click += BtnSurrender_Click;
+            btnSurrender.Content = "Surrender";
             btnPlayAsMana.Content = "Play as Mana";
             btnPlayAsMana.Click += BtnPlayAsMana_Click;
             btnNextPhase.Content = "Next Phase";
@@ -136,8 +142,7 @@ namespace DM___Client.GUIPages
             btnAttackCreatures.Click += BtnAttackCreatures_Click;
             btnEndTurn.Content = "End Turn";
             btnEndTurn.Click += BtnEndTurn_Click;
-            btnWin.Content = "Attack Opponent!";
-            btnWin.Click += BtnWin_Click;
+
         }
 
         private void initZoomedInImage()
@@ -575,6 +580,15 @@ namespace DM___Client.GUIPages
             stopListening();
             ctrl.send(new Models.ClientMessage("JOINLOBBY"));
             parent.loadEndGame(youHaveWon);
+        }
+
+        private void BtnSurrender_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to surrender?", "", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                ctrl.send(new Models.GameMessage("ISURRENDER"));
+                loadEndGame(false);
+            }
         }
     }
 }

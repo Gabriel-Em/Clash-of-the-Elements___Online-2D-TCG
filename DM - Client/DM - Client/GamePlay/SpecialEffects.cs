@@ -274,7 +274,11 @@ namespace DM___Client.GUIPages
                         {
                             case "OwnHand":
                                 foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("mana", OWN, -1);
+                                    updateInfoBoard("hand", OWN, 1);
                                     animateManaToHandOwn(index);
+                                }
                                 break;
                         }
                         break;
@@ -285,7 +289,11 @@ namespace DM___Client.GUIPages
                         {
                             case "OppHand":
                                 foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("mana", OPP, -1);
+                                    updateInfoBoard("hand", OPP, 1);
                                     animateManaToHandOpp(index);
+                                }
                                 break;
                         }
                     }
@@ -296,11 +304,17 @@ namespace DM___Client.GUIPages
                         {
                             case "OwnHand":
                                 foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("hand", OWN, 1);
                                     animateBattleToHandOwn(index);
+                                }
                                 break;
                             case "OwnGrave":
                                 foreach (int index in arguments)
-                                    animateBattleToGraveyard(index, true);
+                                {
+                                    updateInfoBoard("grave", OWN, 1);
+                                    animateBattleToGraveyard(index, OWN);
+                                }
                                 break;
                         }
                     }
@@ -311,11 +325,18 @@ namespace DM___Client.GUIPages
                         {
                             case "OppGround":
                                 foreach (int index in arguments)
-                                    animateGraveyardToBattle(index, false);
+                                {
+                                    updateInfoBoard("grave", OPP, -1);
+                                    animateGraveyardToBattle(index, OPP);
+                                }
                                 break;
                             case "OppHand":
                                 foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("grave", OPP, -1);
+                                    updateInfoBoard("hand", OPP, 1);
                                     animateGraveyardToHandOpp(index);
+                                }
                                 break;
                         }
                     }
@@ -326,7 +347,10 @@ namespace DM___Client.GUIPages
                         {
                             case "OppHand":
                                 foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("hand", OPP, 1);
                                     animateBattleToHandOpp(index);
+                                }
                                 break;
                         }
                     }
@@ -336,7 +360,7 @@ namespace DM___Client.GUIPages
 
         public void processOppDrew()
         {
-            updateInfoBoard("Deck", OPP, 1);
+            updateInfoBoard("hand", OPP, 1);
             animateDrawCardOPP();
         }
     }

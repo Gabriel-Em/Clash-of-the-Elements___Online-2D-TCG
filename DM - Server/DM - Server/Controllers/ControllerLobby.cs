@@ -33,6 +33,7 @@ namespace DM___Server.Controllers
             else
                 response.responseCommandToSender = "POPULATELOBBYROOM";
 
+
             return response;
         }
 
@@ -128,11 +129,20 @@ namespace DM___Server.Controllers
             // if the user that requested to create a game room has any available decks that it may play with
             if (db.userHasPlayableDecks(lobbyRoomData.getUsernameBySocket(sender)))
             {
-                Models.GameRoom room = gameRoomData.createNewGameRoom(lobbyRoomData.getUserBySocket(sender));
+                User user = lobbyRoomData.getUserBySocket(sender);
 
-                response.socketsToNotify = lobbyRoomData.lobbyRoomUsersToSocketList();
-                response.commandStringArgumentsToSockets = new List<string>() { room.ToString() };
-                response.responseCommandToSockets = "ADDGAMEROOM";
+                if (gameRoomData.checkUserAlreadyInRoom(user.Username))
+                {
+                    response.responseCommandToSender = "ALREADYINAROOM";
+                }
+                else
+                {
+                    Models.GameRoom room = gameRoomData.createNewGameRoom(user);
+
+                    response.socketsToNotify = lobbyRoomData.lobbyRoomUsersToSocketList();
+                    response.commandStringArgumentsToSockets = new List<string>() { room.ToString() };
+                    response.responseCommandToSockets = "ADDGAMEROOM";
+                }
             }
             else
                 response.responseCommandToSender = "DECKSREQUIREDTOJOIN";
@@ -166,13 +176,20 @@ namespace DM___Server.Controllers
             // if the user that requested to join has available decks
             if (db.userHasPlayableDecks(user.Username))
             {
-                // if the user was able to join
-                if (gameRoomData.linkUserToRoom(user, Int32.Parse(message.stringArguments[0])))
+                if (gameRoomData.checkUserAlreadyInRoom(user.Username))
                 {
-                    response.responseCommandToSockets = "LINKUSERTOROOM";
-                    response.commandStringArgumentsToSockets.Add(user.NickName);
-                    response.commandStringArgumentsToSockets.Add(message.stringArguments[0]);
-                    response.socketsToNotify = lobbyRoomData.lobbyRoomUsersToSocketList();
+                    response.responseCommandToSender = "ALREADYINAROOM";
+                }
+                else
+                {
+                    // if the user was able to join
+                    if (gameRoomData.linkUserToRoom(user, Int32.Parse(message.stringArguments[0])))
+                    {
+                        response.responseCommandToSockets = "LINKUSERTOROOM";
+                        response.commandStringArgumentsToSockets.Add(user.NickName);
+                        response.commandStringArgumentsToSockets.Add(message.stringArguments[0]);
+                        response.socketsToNotify = lobbyRoomData.lobbyRoomUsersToSocketList();
+                    }
                 }
             }
             else
