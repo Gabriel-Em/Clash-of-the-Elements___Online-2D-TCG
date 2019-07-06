@@ -52,7 +52,6 @@ namespace DM___Client.GUIPages
         private Button btnAttackCreatures;
         private Button btnEndTurn;
         private Button btnWin;
-        private Button btnSurrender;
         #endregion
 
         private int ableToSelectLimit;
@@ -127,9 +126,6 @@ namespace DM___Client.GUIPages
             btnWin = getActionButton();
             btnWin.Content = "Attack Opponent!";
             btnWin.Click += BtnWin_Click;
-            btnSurrender = getActionButton();
-            btnSurrender.Click += BtnSurrender_Click;
-            btnSurrender.Content = "Surrender";
             btnPlayAsMana.Content = "Play as Mana";
             btnPlayAsMana.Click += BtnPlayAsMana_Click;
             btnNextPhase.Content = "Next Phase";

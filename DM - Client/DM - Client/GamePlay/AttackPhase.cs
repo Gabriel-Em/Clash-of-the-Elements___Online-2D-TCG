@@ -48,7 +48,6 @@ namespace DM___Client.GUIPages
                 actionButtons.Children.Add(btnAttackSafeguards);
             actionButtons.Children.Add(btnAttackCreatures);
             actionButtons.Children.Add(btnEndTurn);
-            actionButtons.Children.Add(btnSurrender);
         }
 
         private void BtnAttackSafeguards_Click(object sender, RoutedEventArgs e)
