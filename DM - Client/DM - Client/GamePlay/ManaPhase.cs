@@ -25,7 +25,6 @@ namespace DM___Client.GUIPages
             actionButtons.Children.Clear();
             actionButtons.Children.Add(btnPlayAsMana);
             actionButtons.Children.Add(btnNextPhase);
-            actionButtons.Children.Add(btnSurrender);
         }
 
         private void BtnPlayAsMana_Click(object sender, RoutedEventArgs e)

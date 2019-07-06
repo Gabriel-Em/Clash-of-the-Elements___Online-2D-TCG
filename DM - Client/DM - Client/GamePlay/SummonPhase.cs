@@ -28,7 +28,6 @@ namespace DM___Client.GUIPages
             actionButtons.Children.Clear();
             actionButtons.Children.Add(btnPlayCard);
             actionButtons.Children.Add(btnNextPhase);
-            actionButtons.Children.Add(btnSurrender);
         }
 
         private void BtnPlayCard_Click(object sender, RoutedEventArgs e)

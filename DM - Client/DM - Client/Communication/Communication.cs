@@ -39,7 +39,7 @@ namespace DM___Client
 
         // Server's Port and IP Address
         private int PORT = 100;
-        private IPAddress serverAddress = IPAddress.Parse("127.0.0.1");
+        private IPAddress serverAddress = IPAddress.Parse("78.96.147.160");
 
         // the raw bytes we received from the server (might be an incomplete message, so we keep storing bytes from the server until we have a complete message
         private string storage;
