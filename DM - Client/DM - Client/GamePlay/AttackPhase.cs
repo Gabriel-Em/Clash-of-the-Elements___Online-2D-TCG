@@ -477,36 +477,27 @@ namespace DM___Client.GUIPages
                 // if we win the battle
                 if (ownCreaturePower > oppCreaturePower)
                 {
-                    // animate sending opponent's creature to his graveyard
-                    animateBattleToGraveyard(oppCreatureIndex, OPP);
-
-                    // update info board
-                    updateInfoBoard("grave", OPP, 1);
+                    killCreature(oppCreature, oppCreatureIndex, OPP);
 
                     // if his creature was poisonous
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(ownCreatureIndex, OWN);
-                        updateInfoBoard("grave", OWN, 1);
+                        killCreature(ownCreature, ownCreatureIndex, OWN);
                     }
                 }
                 else
                 if (ownCreaturePower < oppCreaturePower)
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, OWN);
-                    updateInfoBoard("grave", OWN, 1);
+                    killCreature(ownCreature, ownCreatureIndex, OWN);
                     if (hasEffect(ownCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(oppCreatureIndex, OPP);
-                        updateInfoBoard("grave", OPP, 1);
+                        killCreature(oppCreature, oppCreatureIndex, OPP);
                     }
                 }
                 else
                 {
-                    animateBattleToGraveyard(oppCreatureIndex, OPP);
-                    animateBattleToGraveyard(ownCreatureIndex, OWN);
-                    updateInfoBoard("grave", OWN, 1);
-                    updateInfoBoard("grave", OPP, 1);
+                    killCreature(ownCreature, ownCreatureIndex, OWN);
+                    killCreature(oppCreature, oppCreatureIndex, OPP);
                 }
             }
             else
@@ -522,32 +513,47 @@ namespace DM___Client.GUIPages
                 
                 if (oppCreaturePower > ownCreaturePower)
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, OWN);
-                    updateInfoBoard("grave", OWN, 1);
+                    killCreature(ownCreature, ownCreatureIndex, OWN);
                     if (hasEffect(ownCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(oppCreatureIndex, OPP);
-                        updateInfoBoard("grave", OPP, 1);
+                        killCreature(oppCreature, oppCreatureIndex, OPP);
                     }
                 }
                 else
                 if (oppCreaturePower < ownCreaturePower)
                 {
-                    animateBattleToGraveyard(oppCreatureIndex, OPP);
-                    updateInfoBoard("grave", OPP, 1);
+                    killCreature(oppCreature, oppCreatureIndex, OPP);
                     if (hasEffect(oppCreature, "Poisonous"))
                     {
-                        animateBattleToGraveyard(ownCreatureIndex, OWN);
-                        updateInfoBoard("grave", OWN, 1);
+                        killCreature(ownCreature, ownCreatureIndex, OWN);
                     }
                 }
                 else
                 {
-                    animateBattleToGraveyard(ownCreatureIndex, OWN);
-                    animateBattleToGraveyard(oppCreatureIndex, OPP);
-                    updateInfoBoard("grave", OWN, 1);
-                    updateInfoBoard("grave", OPP, 1);
+                    killCreature(ownCreature, ownCreatureIndex, OWN);
+                    killCreature(oppCreature, oppCreatureIndex, OPP);
                 }
+            }
+        }
+
+        private void killCreature(Card card, int cardIndex, bool own)
+        {
+
+            if (hasEffect(card, "Unkillable"))
+            {
+                if (own)
+                    animateBattleToHandOwn(cardIndex);
+                else
+                    animateBattleToHandOpp(cardIndex);
+                updateInfoBoard("hand", own, 1);
+            }
+            else
+            {
+                if (own)
+                    animateBattleToGraveyard(cardIndex, own);
+                else
+                    animateBattleToGraveyard(cardIndex, own);
+                updateInfoBoard("grave", own, 1);
             }
         }
     }

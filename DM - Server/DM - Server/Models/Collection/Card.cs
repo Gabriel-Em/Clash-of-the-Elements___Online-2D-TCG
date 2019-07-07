@@ -11,6 +11,7 @@ namespace DM___Server.Models
     {
         public int ID { get; set; }
         public string Name { get; set; }
+        public string Set { get; set; }
         public string Type { get; set; }
         public string Element { get; set; }
         public int Cost { get; set; }
@@ -23,6 +24,7 @@ namespace DM___Server.Models
         {
             ID = -1;
             Name = null;
+            Set = null;
             Type = null;
             Element = null;
             Cost = -1;
@@ -35,6 +37,7 @@ namespace DM___Server.Models
         public Card(
             int ID_, 
             string Name_, 
+            string Set_,
             string Type_, 
             string Element_, 
             int Cost_, string Race_, 
@@ -44,6 +47,7 @@ namespace DM___Server.Models
         {
             ID = ID_;
             Name = Name_;
+            Set = Set_;
             Type = Type_;
             Element = Element_;
             Cost = Cost_;
@@ -57,6 +61,7 @@ namespace DM___Server.Models
         {
             ID = card.ID;
             Name = card.Name;
+            Set = card.Set;
             Type = card.Type;
             Element = card.Element;
             Cost = card.Cost;

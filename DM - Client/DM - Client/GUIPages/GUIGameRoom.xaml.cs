@@ -254,6 +254,7 @@ namespace DM___Client.GUIPages
                     listOwnSafeGuardZone,
                     safeGuard,
                     AnimationConstants.DESTINATIONSAFEGUARD);
+                animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
             }
@@ -279,6 +280,7 @@ namespace DM___Client.GUIPages
                     listOppSafeguardZone, 
                     safeGuard,
                     AnimationConstants.DESTINATIONSAFEGUARD);
+                animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
             }
@@ -303,6 +305,7 @@ namespace DM___Client.GUIPages
                     listHand,
                     card,
                     AnimationConstants.DESTINATIONOWNHAND);
+                animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
             }

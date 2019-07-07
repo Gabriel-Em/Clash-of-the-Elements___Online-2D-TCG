@@ -27,6 +27,7 @@ namespace DM___Server
         {
             int ID;
             string Name;
+            string Set;
             string Type;
             string Element;
             int Cost;
@@ -49,6 +50,7 @@ namespace DM___Server
 
                         ID = Int32.Parse(reader["ID"].ToString());
                         Name = reader["Name"].ToString();
+                        Set = reader["Set"].ToString();
                         Type = reader["Type"].ToString();
                         Element = reader["Element"].ToString();
                         Cost = Int32.Parse(reader["Cost"].ToString());
@@ -63,13 +65,13 @@ namespace DM___Server
                         {
                             SpecialEffects = parseDBSpecialEffects(reader);
                         }
-                        cards.Add(new Models.Card(ID, Name, Type, Element, Cost, Race, Text, Power, SpecialEffects));
+                        cards.Add(new Models.Card(ID, Name, Set, Type, Element, Cost, Race, Text, Power, SpecialEffects));
                     }
                 }
             }
             catch (Exception ex)
             {
-                logger.Log(ex.Message);
+                logger.Log(ex.ToString());
             }
             finally
             {
@@ -89,26 +91,29 @@ namespace DM___Server
             string[] targetFrom = reader["Effect Target From"].ToString().Split(';');
             string[] targetTo = reader["Effect Target To"].ToString().Split(';');
 
-            for (int i = 0; i < effects.Length; i++)
+            if (effects[0] != "None")
             {
-                string[] strArgs = rawArguments[i].Split('&');
-                List<int> arguments = new List<int>();
-
-                foreach (string strArg in strArgs)
+                for (int i = 0; i < effects.Length; i++)
                 {
-                    arguments.Add(Int32.Parse(strArg));
-                }
+                    string[] strArgs = rawArguments[i].Split('&');
+                    List<int> arguments = new List<int>();
 
-                SpecialEffects.Add(
-                    new Models.SpecialEffect(
-                        effects[i],
-                        triggers[i],
-                        conditions[i] != "None" ? conditions[i] : null,
-                        arguments,
-                        targetFrom[i] != "None" ? targetFrom[i] : null,
-                        targetTo[i] != "None" ? targetTo[i] : null
-                        )
-                        );
+                    foreach (string strArg in strArgs)
+                    {
+                        arguments.Add(Int32.Parse(strArg));
+                    }
+
+                    SpecialEffects.Add(
+                        new Models.SpecialEffect(
+                            effects[i],
+                            triggers[i] != "None" ? triggers[i] : null,
+                            conditions[i] != "None" ? conditions[i] : null,
+                            arguments.Count != 0 ? arguments : null,
+                            targetFrom[i] != "None" ? targetFrom[i] : null,
+                            targetTo[i] != "None" ? targetTo[i] : null
+                            )
+                            );
+                }
             }
 
             return SpecialEffects;

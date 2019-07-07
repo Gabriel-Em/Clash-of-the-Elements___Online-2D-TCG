@@ -20,6 +20,9 @@ namespace DM___Client.Models.GUIModels
         private bool isSelected { get { if (Border.BorderBrush == Brushes.Gold) return true; return false; } }
         private Log.Logger logger;
 
+        private string cardBackPath = "/Images/GUI/CardBack.png";
+        private string cardsPath = "/Images/Cards/";
+
         public CardGUIModel cardGUI;
         public Border Border;
 
@@ -55,10 +58,21 @@ namespace DM___Client.Models.GUIModels
             try
             {
                 if (cardGUI.Card == null)
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/GUI/CardBack.png", UriKind.Absolute));
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardBackPath),
+                            UriKind.Absolute));
                 else
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + cardGUI.Card.Name + ".png", UriKind.Absolute));
-
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            cardGUI.Card.Set,
+                            cardGUI.Card.Name),
+                            UriKind.Absolute));
             }
             catch (Exception ex)
             {

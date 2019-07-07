@@ -154,9 +154,14 @@
             </Border>
             <Border Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="0,0,70,0"/>
             <Border Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,0,70,0">
-                <StackPanel x:Name="actionButtons" HorizontalAlignment="Stretch" Margin="5" VerticalAlignment="Stretch" Background="Transparent">
+                <Grid>
+                    <StackPanel x:Name="actionButtons" HorizontalAlignment="Stretch" Margin="5,5,5,40" VerticalAlignment="Stretch" Background="Transparent">
 
-                </StackPanel>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,5">
+                        <Button x:Name="btnSurrender" Style="{StaticResource buttonStyle}" Content="Surrender" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,0,0" Height="30" Width="130" HorizontalAlignment="Center" Click="BtnSurrender_Click"/>
+                    </StackPanel>
+                </Grid>
             </Border>
             <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="45,0,20,0"/>
             <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="45,0,20,0">
@@ -232,7 +237,7 @@
 
             </Grid>
             <Border Name="oppDeckBorder" Grid.Row="1" Grid.Column="4"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
-            <Image Grid.Row="1" Grid.Column="4" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="5,0,0,7"></Image>
+            <Image Grid.Row="1" Grid.Column="4" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
             <Border Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SafeguardColor}" Opacity="0.8" CornerRadius="5" Margin="15,5,15,5"/>
             <Border Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
@@ -248,7 +253,7 @@
             </Grid>
             
             <Border Name ="ownDeckBorder" Grid.Row="4" Grid.Column="9"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
-            <Image Grid.Row="4" Grid.Column="9" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="5,0,0,7"></Image>
+            <Image Grid.Row="4" Grid.Column="9" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
 
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SafeguardColor}" Opacity="0.8" CornerRadius="5" Margin="15,5,15,5"/>
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
