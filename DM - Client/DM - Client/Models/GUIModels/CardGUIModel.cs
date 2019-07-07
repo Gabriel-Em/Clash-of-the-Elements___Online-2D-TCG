@@ -20,6 +20,9 @@ namespace DM___Client.Models
         private bool isSelected { get { return Border.BorderBrush == Brushes.Gold; } }
         private Log.Logger logger;
 
+        private string cardBackPath = "/Images/GUI/CardBack.png";
+        private string cardsPath = "/Images/Cards/";
+
         public Models.CardWithGameProperties Card;
         public Border Border;
 
@@ -31,8 +34,9 @@ namespace DM___Client.Models
 
             // Border
             Border = new Border();
-            Border.Width = 73;
+            Border.Width = 75;
             Border.Height = 100;
+            
             Border.VerticalAlignment = VerticalAlignment.Top;
             Border.HorizontalAlignment = HorizontalAlignment.Left;
             Border.Margin = margin;
@@ -53,12 +57,24 @@ namespace DM___Client.Models
             try
             {
                 if (Card == null)
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/GUI/CardBack.png", UriKind.Absolute));
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardBackPath),
+                            UriKind.Absolute));
                 else
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Card.Name + ".png", UriKind.Absolute));
-                
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            Card.Set,
+                            Card.Name),
+                            UriKind.Absolute));
+
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Log(ex.ToString());
             }
@@ -125,9 +141,22 @@ namespace DM___Client.Models
             try
             {
                 if (Card == null)
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/GUI/CardBack.png", UriKind.Absolute));
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardBackPath),
+                            UriKind.Absolute));
                 else
-                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Card.Name + ".png", UriKind.Absolute));
+                    Image.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            Card.Set,
+                            Card.Name),
+                            UriKind.Absolute));
+
             }
             catch (Exception ex)
             {

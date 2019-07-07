@@ -32,8 +32,8 @@ namespace DM___Client.Models
 
         private bool OwnRoom { get; set; }
 
-        private string COLORNOTREADY = "#FF0000";
-        private string COLORREADY = "#008000";
+        private string COLORNOTREADY = "#FE2E2E";
+        private string COLORREADY = "#00FF00";
 
         private Log.Logger logger;
 
@@ -218,7 +218,7 @@ namespace DM___Client.Models
         {
             // you're setting yourself as ready to begin the match
             readyButton.IsEnabled = false;
-            mainButton.IsEnabled = false;
+            readyButton.Background = Brushes.Green;
             Parent.sendReadyNotification(ID);
         }
 
@@ -228,6 +228,7 @@ namespace DM___Client.Models
             borderForP1.Background = Brushes.Gold;
             borderForP2.Background = Brushes.Gold;
             readyButton.IsEnabled = false;
+            readyButton.Background = Brushes.Black;
             if (!OwnRoom)
             {
                 if (guestNickName == nickName)
@@ -235,9 +236,9 @@ namespace DM___Client.Models
                     mainButton.Content = "Join";
                     mainButtonIsJoin = true;
                 }
-                mainButton.IsEnabled = true;
             }
 
+            mainButton.IsEnabled = true;
             guestNickName = "*";
         }
 
@@ -266,7 +267,11 @@ namespace DM___Client.Models
                     readyButton.IsEnabled = true;
                 }
                 else
+                {
                     mainButton.IsEnabled = false;   // if someone else joined another room
+                    borderForP1.Background = (Brush)bc.ConvertFrom("#6E6E6E");
+                    borderForP2.Background = (Brush)bc.ConvertFrom("#6E6E6E");
+                }
             }
         }
 

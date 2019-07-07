@@ -80,7 +80,7 @@ namespace DM___Client.Models
 
         private void Btn_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Parent.displayZoomedInImage(Card.Name, Border);
+            Parent.displayZoomedInImage(Card.Name, Card.Set, Border);
         }
 
         private void Btn_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

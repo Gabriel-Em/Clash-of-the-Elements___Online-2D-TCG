@@ -36,6 +36,8 @@ namespace DM___Client.GUIPages
         private Image zoomedImage;
         private int selectedDeckID;
 
+        private string cardsPath = "/Images/Cards/";
+
         private const int COMPARELESSTHANOREQUAL = 8;
         private const int COMPAREGREATERTHANOREQUAL = 9;
         private const int COMPAREEQUAL = 10;
@@ -145,12 +147,20 @@ namespace DM___Client.GUIPages
                 {
                     try
                     {
-                        listGuiImages[i - index].Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + Cards[i].Name + ".png", UriKind.Absolute));
+                        listGuiImages[i - index].Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            Cards[i].Set,
+                            Cards[i].Name),
+                            UriKind.Absolute));
                         if (listGuiCardButtons[i - index].Visibility == Visibility.Hidden)
                             listGuiCardButtons[i - index].Visibility = Visibility.Visible;
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        logger.Log(ex.ToString());
                         listGuiImages[i - index].Source = null;
                         listGuiCardButtons[i - index].Visibility = Visibility.Hidden;
                     }
@@ -183,7 +193,14 @@ namespace DM___Client.GUIPages
             int index = Int32.Parse(img.Name.Substring(9));
             try
             {
-                zoomedImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + ctrl.filteredCollection[ctrl.currentIndex + index - 1].Name + ".png", UriKind.Absolute));
+                zoomedImage.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            ctrl.filteredCollection[ctrl.currentIndex + index - 1].Set,
+                            ctrl.filteredCollection[ctrl.currentIndex + index - 1].Name),
+                            UriKind.Absolute));
             }
             catch (Exception ex)
             {
@@ -195,11 +212,18 @@ namespace DM___Client.GUIPages
             zoomedImage.Visibility = Visibility.Visible;
         }
 
-        public void displayZoomedInImage(string cardName, Border border)
+        public void displayZoomedInImage(string cardName, string cardSet, Border border)
         {
             try
             {
-                zoomedImage.Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "/Images/Cards/" + cardName + ".png", UriKind.Absolute));
+                zoomedImage.Source = new System.Windows.Media.Imaging.BitmapImage(
+                        new Uri(
+                            string.Format("{0}{1}{2}/{3}.jpg",
+                            AppDomain.CurrentDomain.BaseDirectory,
+                            cardsPath,
+                            cardSet,
+                            cardName),
+                            UriKind.Absolute));
             }
             catch (Exception ex)
             {
@@ -541,7 +565,7 @@ namespace DM___Client.GUIPages
 
             if (deck.Count == 40)
             {
-                MessageBox.Show("This deck contains 40 cards. You cannot add any more", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("This deck contains 40 cards. You cannot add any more.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
