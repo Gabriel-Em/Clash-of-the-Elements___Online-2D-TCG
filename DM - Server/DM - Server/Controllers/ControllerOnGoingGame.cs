@@ -359,7 +359,10 @@ namespace DM___Server.Controllers
             Models.Game game = onGoingGamesData.getGameByID(message.GameID);
             string victorUsername;
             string defeatedUsername;
-            
+
+            if (game == null)
+                return response;
+
             if (game.isPlayer1(sender))
             {
                 victorUsername = lobbyRoomData.getUsernameBySocket(game.Player2Socket);

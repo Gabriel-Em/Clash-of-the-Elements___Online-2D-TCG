@@ -10,6 +10,7 @@ namespace DM___Server.Data
     public class OnGoingGamesData
     {
         private List<Models.Game> OnGoingGames;
+        private object onGoingGamesLock = new object();
 
         public OnGoingGamesData()
         {
@@ -34,19 +35,26 @@ namespace DM___Server.Data
             return null;
         }
 
-        public void removeClient(Socket clientSocket)
+        public void removeGameByClient(Socket clientSocket)
         {
-            for (int i = 0; i < OnGoingGames.Count; i++)
-                if (OnGoingGames[i].Player1Socket == clientSocket || OnGoingGames[i].Player2Socket == clientSocket)
-                {
-                    OnGoingGames.RemoveAt(i);
-                    break;
-                }
+            lock (onGoingGamesLock)
+            {
+                for (int i = 0; i < OnGoingGames.Count; i++)
+                    if (OnGoingGames[i].Player1Socket == clientSocket || OnGoingGames[i].Player2Socket == clientSocket)
+                    {
+                        OnGoingGames.RemoveAt(i);
+                        break;
+                    }
+            }
         }
 
         public void removeGame(Models.Game game)
         {
-            OnGoingGames.Remove(game);
+            lock (onGoingGamesLock)
+            {
+                if (OnGoingGames.IndexOf(game) >= 0)
+                    OnGoingGames.Remove(game);
+            }
         }
     }
 }

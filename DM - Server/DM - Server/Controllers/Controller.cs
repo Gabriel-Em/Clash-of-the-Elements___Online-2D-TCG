@@ -214,7 +214,7 @@ namespace DM___Server
         {
             lobbyRoomData.removeClient(clientSocket);
             gameRoomData.removeClient(clientSocket);
-            onGoingGamesData.removeClient(clientSocket);
+            onGoingGamesData.removeGameByClient(clientSocket);
         }
     }
 }
