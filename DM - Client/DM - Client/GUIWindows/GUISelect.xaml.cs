@@ -64,7 +64,7 @@ namespace DM___Client.GUIWindows
                     margin.Left += 75;
                 }
                 SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
-                grdSelect.Children.Add(sCard.Border);
+                grdSelectOwn.Children.Add(sCard.Border);
                 cards.Add(sCard);
             }
         }
