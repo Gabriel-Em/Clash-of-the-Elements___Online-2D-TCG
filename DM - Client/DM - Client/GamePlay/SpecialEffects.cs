@@ -93,11 +93,17 @@ namespace DM___Client.GUIPages
                 {
                     selectMessage = string.Format("You must select a total of {0} card(s) from your {1}.", Math.Min(se.Arguments[0], validSelections.Count), friendlyFrom);
 
-                    gUISelect = new GUIWindows.GUISelect(validSelections, selectMessage, se.Arguments[0], null);
+                    gUISelect = new GUIWindows.GUISelect(
+                        new List<CardGUIModel>(),
+                        validSelections, 
+                        selectMessage,
+                        "mana zone",
+                        0,
+                        se.Arguments[0]);
                     gUISelect.removeCancelButton();
                     gUISelect.ShowDialog();
 
-                    selectedTargetIndexes = gUISelect.selected;
+                    selectedTargetIndexes = gUISelect.oppSelected;
                 }
                 else
                 {

@@ -78,12 +78,19 @@ namespace DM___Client.GUIPages
 
                     // create the gui that allows us to select the safeguards that we want to attack
                     message = string.Format("You must select a total of {0} safeguard(s).", attackTargetCount);
-                    guiSelect = new GUIWindows.GUISelect(listOppSafeguardZone, message, attackTargetCount, null);
+                    guiSelect = new GUIWindows.GUISelect(
+                        new List<CardGUIModel>(),
+                        listOppSafeguardZone,
+                        message,
+                        "shield zone",
+                        0,
+                        attackTargetCount
+                        );
                     guiSelect.ShowDialog();
 
                     if (!guiSelect.wasCanceled)
                     {
-                        selectedSafeguards = guiSelect.selected;
+                        selectedSafeguards = guiSelect.oppSelected;
 
                         // notify server of our attack so it can notify our opponent
                         sendAttack(selectedSafeguards, true);
@@ -122,13 +129,20 @@ namespace DM___Client.GUIPages
                 else
                 {
                     message = ("You must select a creature to attack.");
-                    guiSelect = new GUIWindows.GUISelect(validSelections, message, 1, null);
+                    guiSelect = new GUIWindows.GUISelect(
+                        new List<CardGUIModel>(),
+                        validSelections,
+                        message,
+                        "battle zone",
+                        0,
+                        1
+                        );
 
                     guiSelect.ShowDialog();
                     if (!guiSelect.wasCanceled)
                     {
                         // translate selected card indexes to listOppBattleGround indexes
-                        index = listOppBattleGround.IndexOf(validSelections[guiSelect.selected[0]]);
+                        index = listOppBattleGround.IndexOf(validSelections[guiSelect.oppSelected[0]]);
 
                         // notify server of our attack so it can notify our opponent
                         sendAttack(new List<int>() { index }, false);
@@ -224,7 +238,14 @@ namespace DM___Client.GUIPages
                 defenders = getOwnDefendersThatCanBlock();
                 message = "Select one defender to block the attack with, or don't block at all.";
 
-                gUISelect = new GUIWindows.GUISelect(defenders, message, 1, null);
+                gUISelect = new GUIWindows.GUISelect(
+                    defenders,
+                    new List<CardGUIModel>(),
+                    message,
+                    "defenders",
+                    1,
+                    0
+                    );
                 gUISelect.replaceCancelButtonMessage("Don't defend");
                 gUISelect.ShowDialog();
 
@@ -239,7 +260,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.selected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
 
                 engageBattleOWN(index);
 
@@ -276,7 +297,14 @@ namespace DM___Client.GUIPages
                 defenders = getOwnDefendersThatCanBlock();
                 message = "Select one defender to block the attack with, or don't block at all.";
 
-                gUISelect = new GUIWindows.GUISelect(defenders, message, 1, null);
+                gUISelect = new GUIWindows.GUISelect(
+                    defenders,
+                    new List<CardGUIModel>(),
+                    message,
+                    "defenders",
+                    1,
+                    0
+                    );
                 gUISelect.replaceCancelButtonMessage("Don't defend");
                 gUISelect.ShowDialog();
 
@@ -291,7 +319,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.selected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
 
                 engageBattleOWN(index);
 
@@ -399,7 +427,14 @@ namespace DM___Client.GUIPages
                 {
                     message = "Select one defender to block the attack with, or don't block at all.";
 
-                    gUISelect = new GUIWindows.GUISelect(defenders, message, 1, null);
+                    gUISelect = new GUIWindows.GUISelect(
+                        defenders,
+                    new List<CardGUIModel>(),
+                    message,
+                    "defenders",
+                    1,
+                    0
+                    );
                     gUISelect.replaceCancelButtonMessage("Don't defend");
                     gUISelect.ShowDialog();
 
@@ -415,7 +450,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.selected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
 
                 engageBattleOWN(index);
 
