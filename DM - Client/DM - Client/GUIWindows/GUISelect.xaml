@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DM___Client.GUIWindows"
         mc:Ignorable="d"
-        Title="Select" Height="430" Width="850" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+        Title="Select" Height="450" Width="850" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
     <Window.Resources>
         <Style x:Key="buttonStyle" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -68,8 +68,8 @@
                 <StackPanel>
                     <TextBlock x:Name="messageBlockOwn"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Own cards" TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
                     <Grid Margin="0,5,0,0">
-                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="100"/>
-                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="100">
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110"/>
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
                                 <Grid x:Name="grdSelectOwn"/>
                             </ScrollViewer>
@@ -81,8 +81,8 @@
                 <StackPanel>
                     <TextBlock x:Name="messageBlockOpp"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Opponent's cards" TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
                     <Grid Margin="0,5,0,0">
-                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="100"/>
-                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="100">
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110"/>
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110">
                             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
                                 <Grid x:Name="grdSelectOpp"/>
                             </ScrollViewer>

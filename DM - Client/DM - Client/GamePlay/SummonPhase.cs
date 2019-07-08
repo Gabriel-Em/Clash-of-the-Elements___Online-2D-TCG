@@ -62,7 +62,15 @@ namespace DM___Client.GUIPages
 
                 // create a GUI that will allow us to select the mana that we want to engage to pay the cost of the card we want to summon
                 message = string.Format("You must select a total of {0} mana, out of which at least one must be of {1} type.", selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
-                guiSelect = new GUIWindows.GUISelect(validSelections, message, selectedCards[0].Card.Cost, selectedCards[0].Card.Element);
+                guiSelect = new GUIWindows.GUISelect(
+                    validSelections,
+                    new List<Models.CardGUIModel>(),
+                    message,
+                    "mana zone",
+                    selectedCards[0].Card.Cost,
+                    0,
+                    false,
+                    selectedCards[0].Card.Element);
                 guiSelect.ShowDialog();
 
                 if (!guiSelect.wasCanceled)
@@ -72,7 +80,7 @@ namespace DM___Client.GUIPages
                     selectedMana = new List<int>();
 
                     // translate the selected indexes from the validSelections to indexes from the listOwnManaZone
-                    foreach (int selectedIndex in guiSelect.selected)
+                    foreach (int selectedIndex in guiSelect.ownSelected)
                         selectedMana.Add(listOwnManaZone.IndexOf(validSelections[selectedIndex]));
 
                     index = listHand.IndexOf(selectedCards[0]);

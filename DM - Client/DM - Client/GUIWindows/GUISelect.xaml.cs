@@ -23,10 +23,13 @@ namespace DM___Client.GUIWindows
     /// </summary>
     public partial class GUISelect : Window
     {
-        private List<SelectGUI_CardGUIModel> cards;
+        private List<SelectGUI_CardGUIModel> ownCards;
+        private List<SelectGUI_CardGUIModel> oppCards;
 
-        private int count;
+        private int ownCount;
+        private int oppCount;
         private string element;
+        private bool treatCountAsOne;
 
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
@@ -37,35 +40,54 @@ namespace DM___Client.GUIWindows
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        public List<int> selected;
+        public List<int> ownSelected;
+        public List<int> oppSelected;
         public bool wasCanceled = true;
 
-        public GUISelect(List<CardGUIModel> listOfCards, string message, int count, string element)
+        public GUISelect(List<CardGUIModel> ownCards, List<CardGUIModel> oppCards, string message, string zone, int ownCount, int oppCount, bool treatCountAsOne=false, string element=null)
         {
-            Thickness margin;
-
             InitializeComponent();
 
-            this.count = Math.Min(listOfCards.Count, count);
+            this.treatCountAsOne = treatCountAsOne;
+
+            this.ownCount = Math.Min(ownCards.Count, ownCount);
+            this.oppCount = Math.Min(oppCards.Count, oppCount);
+
             this.element = element;
 
             messageBlock.Text = message;
+            messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, this.ownCount);
+            messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, this.oppCount);
 
-            cards = new List<SelectGUI_CardGUIModel>();
-            selected = new List<int>();
+            ownSelected = new List<int>();
+            oppSelected = new List<int>();
 
-            foreach (CardGUIModel cardGUI in listOfCards)
+            this.ownCards = new List<SelectGUI_CardGUIModel>();
+            this.oppCards = new List<SelectGUI_CardGUIModel>();
+
+            cardsToGUI(ownCards, true);
+            cardsToGUI(oppCards, false);
+        }
+
+        private void cardsToGUI(List<CardGUIModel> cardList, bool own)
+        {
+            Thickness margin;
+
+            foreach (CardGUIModel cardGUI in cardList)
             {
-                if (cards.Count == 0)
+                if (own && ownCards.Count == 0 || !own && oppCards.Count == 0)
                     margin = new Thickness(10, 0, 0, 0);
                 else
                 {
-                    margin = cards[cards.Count - 1].Border.Margin;
+                    margin = cardList[cardList.Count - 1].Border.Margin;
                     margin.Left += 75;
                 }
                 SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
                 grdSelectOwn.Children.Add(sCard.Border);
-                cards.Add(sCard);
+                if (own)
+                    this.ownCards.Add(sCard);
+                else
+                    this.oppCards.Add(sCard);
             }
         }
 
@@ -74,22 +96,42 @@ namespace DM___Client.GUIWindows
             string message;
             bool foundElement;
 
-            if (selected.Count != count)
+            if ((treatCountAsOne && (ownSelected.Count + oppSelected.Count) != ownCount) ||
+                (!treatCountAsOne && (ownSelected.Count != ownCount)))
             {
-                message = string.Format("You need to select {0} card(s).", count);
+                message = string.Format("You need to select {0} of your own card(s).", ownCount);
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
+            if ((treatCountAsOne && (ownSelected.Count + oppSelected.Count) != ownCount) ||
+                (!treatCountAsOne && (oppSelected.Count != oppCount)))
+            {
+                message = string.Format("You need to select {0} of your opponent's card(s).", oppCount);
+                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            
             if (element != null)
             {
                 foundElement = false;
-                foreach (int index in selected)
+                foreach (int index in ownSelected)
                 {
-                    if (cards[index].cardGUI.Card.Element == element)
+                    if (ownCards[index].cardGUI.Card.Element == element)
                     {
                         foundElement = true;
                         break;
+                    }
+                }
+
+                if (!foundElement)
+                {
+                    foreach (int index in oppSelected)
+                    {
+                        if (oppCards[index].cardGUI.Card.Element == element)
+                        {
+                            foundElement = true;
+                            break;
+                        }
                     }
                 }
 
@@ -100,8 +142,11 @@ namespace DM___Client.GUIWindows
                     return;
                 }
             }
-            selected.Sort();
+
+            oppSelected.Sort();
+            ownSelected.Sort();
             wasCanceled = false;
+
             Close();
         }
 
@@ -113,12 +158,26 @@ namespace DM___Client.GUIWindows
 
         public void addToSelectedCards(SelectGUI_CardGUIModel card)
         {
-            selected.Add(cards.IndexOf(card));
+            if (ownCards.Contains(card))
+            {
+                ownSelected.Add(ownCards.IndexOf(card));
+            }
+            else
+            {
+                oppSelected.Add(oppCards.IndexOf(card));
+            }
         }
 
         public void removeFromSelectedCards(SelectGUI_CardGUIModel card)
         {
-            selected.Remove(cards.IndexOf(card));
+            if (ownCards.Contains(card))
+            {
+                ownSelected.Remove(ownCards.IndexOf(card));
+            }
+            else
+            {
+                oppSelected.Remove(oppCards.IndexOf(card));
+            }
         }
 
         public void replaceCancelButtonMessage(string message)

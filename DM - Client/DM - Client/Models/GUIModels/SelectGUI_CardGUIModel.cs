@@ -34,7 +34,7 @@ namespace DM___Client.Models.GUIModels
 
             // Border
             Border = new Border();
-            Border.Width = 73;
+            Border.Width = 75;
             Border.Height = 100;
             Border.HorizontalAlignment = HorizontalAlignment.Left;
             Border.Margin = margin;
