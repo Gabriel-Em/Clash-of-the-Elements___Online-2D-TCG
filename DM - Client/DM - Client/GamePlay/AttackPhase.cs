@@ -515,7 +515,7 @@ namespace DM___Client.GUIPages
                     killCreature(oppCreature, oppCreatureIndex, OPP);
 
                     // if his creature was poisonous
-                    if (hasEffect(oppCreature, "Poisonous"))
+                    if (hasEffect(oppCreature, "Poisonous") || hasEffect(ownCreature, "OnePunch"))
                     {
                         killCreature(ownCreature, ownCreatureIndex, OWN);
                     }
@@ -524,7 +524,7 @@ namespace DM___Client.GUIPages
                 if (ownCreaturePower < oppCreaturePower)
                 {
                     killCreature(ownCreature, ownCreatureIndex, OWN);
-                    if (hasEffect(ownCreature, "Poisonous"))
+                    if (hasEffect(ownCreature, "Poisonous") || hasEffect(oppCreature, "OnePunch"))
                     {
                         killCreature(oppCreature, oppCreatureIndex, OPP);
                     }
@@ -549,7 +549,7 @@ namespace DM___Client.GUIPages
                 if (oppCreaturePower > ownCreaturePower)
                 {
                     killCreature(ownCreature, ownCreatureIndex, OWN);
-                    if (hasEffect(ownCreature, "Poisonous"))
+                    if (hasEffect(ownCreature, "Poisonous") || hasEffect(oppCreature, "OnePunch"))
                     {
                         killCreature(oppCreature, oppCreatureIndex, OPP);
                     }
@@ -558,7 +558,7 @@ namespace DM___Client.GUIPages
                 if (oppCreaturePower < ownCreaturePower)
                 {
                     killCreature(oppCreature, oppCreatureIndex, OPP);
-                    if (hasEffect(oppCreature, "Poisonous"))
+                    if (hasEffect(oppCreature, "Poisonous") || hasEffect(ownCreature, "OnePunch"))
                     {
                         killCreature(ownCreature, ownCreatureIndex, OWN);
                     }
