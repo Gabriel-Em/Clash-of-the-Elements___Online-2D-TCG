@@ -64,7 +64,7 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" Text="..." TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <StackPanel>
                     <TextBlock x:Name="messageBlockOwn"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Own cards" TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
                     <Grid Margin="0,5,0,0">
@@ -77,7 +77,7 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="2">
+            <Grid Grid.Row="1">
                 <StackPanel>
                     <TextBlock x:Name="messageBlockOpp"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Opponent's cards" TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
                     <Grid Margin="0,5,0,0">
@@ -90,7 +90,7 @@
                     </Grid>
                 </StackPanel>
             </Grid>
-            <Grid VerticalAlignment="Bottom" Grid.Row="3" Margin="0,0,0,10">
+            <Grid x:Name="grdButtons" VerticalAlignment="Bottom" Grid.Row="3" Margin="0,0,0,10">
                 <Button Grid.Row ="2" x:Name="btnSelect" Style="{StaticResource buttonStyle}" Content="Select" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,160,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnSelect_Click"/>
                 <Button Grid.Row ="2" x:Name="btnCancel" Style="{StaticResource buttonStyle}" Content="Cancel" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="160,0,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnCancel_Click"/>
             </Grid>

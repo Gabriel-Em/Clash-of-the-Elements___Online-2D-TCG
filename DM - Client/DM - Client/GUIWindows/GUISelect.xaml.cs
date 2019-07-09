@@ -29,6 +29,7 @@ namespace DM___Client.GUIWindows
         private int ownCount;
         private int oppCount;
         private string element;
+        private string zone;
         private bool treatCountAsOne;
 
         private const int GWL_STYLE = -16;
@@ -54,6 +55,7 @@ namespace DM___Client.GUIWindows
             this.oppCount = Math.Min(oppCards.Count, oppCount);
 
             this.element = element;
+            this.zone = zone;
 
             messageBlock.Text = message;
             messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, this.ownCount);
@@ -79,15 +81,28 @@ namespace DM___Client.GUIWindows
                     margin = new Thickness(10, 0, 0, 0);
                 else
                 {
-                    margin = cardList[cardList.Count - 1].Border.Margin;
+                    if (own)
+                    {
+                        margin = ownCards[ownCards.Count - 1].Border.Margin;
+                    }
+                    else
+                    {
+                        margin = oppCards[oppCards.Count - 1].Border.Margin;
+                    }
                     margin.Left += 75;
                 }
                 SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
-                grdSelectOwn.Children.Add(sCard.Border);
+
                 if (own)
+                {
                     this.ownCards.Add(sCard);
+                    grdSelectOwn.Children.Add(sCard.Border);
+                }
                 else
+                {
                     this.oppCards.Add(sCard);
+                    grdSelectOpp.Children.Add(sCard.Border);
+                }
             }
         }
 
@@ -96,17 +111,15 @@ namespace DM___Client.GUIWindows
             string message;
             bool foundElement;
 
-            if ((treatCountAsOne && (ownSelected.Count + oppSelected.Count) != ownCount) ||
-                (!treatCountAsOne && (ownSelected.Count != ownCount)))
+            if (ownCount != 0)
             {
-                message = string.Format("You need to select {0} of your own card(s).", ownCount);
+                message = string.Format("You need to select {0} more of your own card(s).", ownCount);
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            if ((treatCountAsOne && (ownSelected.Count + oppSelected.Count) != ownCount) ||
-                (!treatCountAsOne && (oppSelected.Count != oppCount)))
+            if (oppCount != 0)
             {
-                message = string.Format("You need to select {0} of your opponent's card(s).", oppCount);
+                message = string.Format("You need to select {0} more of your opponent's card(s).", oppCount);
                 MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -156,16 +169,39 @@ namespace DM___Client.GUIWindows
             Close();
         }
 
-        public void addToSelectedCards(SelectGUI_CardGUIModel card)
+        public int addToSelectedCards(SelectGUI_CardGUIModel card)
         {
             if (ownCards.Contains(card))
             {
-                ownSelected.Add(ownCards.IndexOf(card));
+                if (ownCount > 0)
+                {
+                    ownSelected.Add(ownCards.IndexOf(card));
+                    messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, --(this.ownCount));
+                    if (treatCountAsOne)
+                    {
+                        if (oppCards.Count > 0)
+                            messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, --(this.oppCount));
+                    }
+                }
+                else
+                    return - 1;
             }
             else
             {
-                oppSelected.Add(oppCards.IndexOf(card));
+                if (oppCount > 0)
+                {
+                    oppSelected.Add(oppCards.IndexOf(card));
+                    messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, --(this.oppCount));
+                    if (treatCountAsOne)
+                    {
+                        if (ownCards.Count > 0)
+                            messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, --(this.ownCount));
+                    }
+                }
+                else
+                    return -1;
             }
+            return 0;
         }
 
         public void removeFromSelectedCards(SelectGUI_CardGUIModel card)
@@ -173,10 +209,22 @@ namespace DM___Client.GUIWindows
             if (ownCards.Contains(card))
             {
                 ownSelected.Remove(ownCards.IndexOf(card));
+                messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, ++(this.ownCount));
+                if (treatCountAsOne)
+                {
+                    if (oppCount < oppCards.Count)
+                        messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, ++(this.oppCount));
+                }
             }
             else
             {
                 oppSelected.Remove(oppCards.IndexOf(card));
+                messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, ++(this.oppCount));
+                if (treatCountAsOne)
+                {
+                    if (ownCount < ownCards.Count)
+                        messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, ++(this.ownCount));
+                }
             }
         }
 
@@ -187,7 +235,7 @@ namespace DM___Client.GUIWindows
 
         public void removeCancelButton()
         {
-            grdParent.Children.Remove(btnCancel);
+            grdButtons.Children.Remove(btnCancel);
             btnSelect.Margin = new Thickness(0);
         }
 

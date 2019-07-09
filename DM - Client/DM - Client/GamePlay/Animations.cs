@@ -69,12 +69,13 @@ namespace DM___Client.GUIPages
         private void animatePlayAsManaOWN(int cardIndex)
         {
             Models.CardGUIModel card;
-            Animations.MoveAnimation animation;
+            Animations.MoveAnimation moveAnimation;
+            Animations.RotateAnimation rotateAnimation;
 
             // select origin and create destination
             card = listHand[cardIndex];
 
-            animation = new Animations.MoveAnimation(
+            moveAnimation = new Animations.MoveAnimation(
                 grdHand, 
                 grdOwnMana, 
                 grdParent, 
@@ -82,13 +83,18 @@ namespace DM___Client.GUIPages
                 listOwnManaZone, 
                 card,
                 AnimationConstants.DESTINATIONMANA);
-            addAnimation(animation);
+            rotateAnimation = new RotateAnimation(true, 180);
+            rotateAnimation.border = card.Border;
+
+            addAnimation(moveAnimation);
+            //addAnimation(rotateAnimation);
         }
 
         public void animatePlayAsManaOPP(int cardID)
         {
             Models.CardGUIModel card;
-            Animations.MoveAnimation animation;
+            Animations.MoveAnimation moveAnimation;
+            Animations.RotateAnimation rotateAnimation;
 
             // create the origin and destination cards
 
@@ -97,7 +103,7 @@ namespace DM___Client.GUIPages
             // add cards to grids
             grdParent.Children.Add(card.Border);
 
-            animation = new Animations.MoveAnimation(
+            moveAnimation = new Animations.MoveAnimation(
                 grdParent, 
                 grdOppMana,
                 grdParent, 
@@ -106,7 +112,10 @@ namespace DM___Client.GUIPages
                 card,
    
                 AnimationConstants.DESTINATIONMANA);
-            addAnimation(animation);
+            rotateAnimation = new RotateAnimation(true, 180);
+            rotateAnimation.border = card.Border;
+            addAnimation(moveAnimation);
+            //addAnimation(rotateAnimation);
         }
 
         // Summon Phase
