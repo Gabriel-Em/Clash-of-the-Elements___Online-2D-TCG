@@ -409,6 +409,60 @@ namespace DM___Client.GUIPages
             addAnimation(animation);
         }
 
+        private void animateManaToGraveOpp(int cardIndex)
+        {
+            Models.CardGUIModel card;
+            Animations.MoveAnimation animation;
+
+            // select origin
+
+            card = listOppManaZone[cardIndex];
+
+            if (card.Card.isEngaged)
+            {
+                Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
+                rotateAnimation.border = card.Border;
+                addAnimation(rotateAnimation);
+            }
+
+            animation = new Animations.MoveAnimation(
+                grdOppMana,
+                grdOppGrave,
+                grdParent,
+                listOppManaZone,
+                listOppGraveyard,
+                card,
+                AnimationConstants.DESTINATIONGRAVE);
+            addAnimation(animation);
+        }
+
+        private void animateManaToGraveOwn(int cardIndex)
+        {
+            Models.CardGUIModel card;
+            Animations.MoveAnimation animation;
+
+            // select origin
+
+            card = listOwnManaZone[cardIndex];
+
+            if (card.Card.isEngaged)
+            {
+                Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
+                rotateAnimation.border = card.Border;
+                addAnimation(rotateAnimation);
+            }
+
+            animation = new Animations.MoveAnimation(
+                grdOwnMana,
+                grdOwnGrave,
+                grdParent,
+                listOwnManaZone,
+                listOwnGraveyard,
+                card,
+                AnimationConstants.DESTINATIONGRAVE);
+            addAnimation(animation);
+        }
+
         private void animateManaToHandOwn(int cardIndex)
         {
             Models.CardGUIModel card;

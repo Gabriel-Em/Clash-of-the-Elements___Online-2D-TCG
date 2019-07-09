@@ -245,6 +245,8 @@ namespace DM___Server.Controllers
             Models.Game game = onGoingGamesData.getGameByID(message.GameID);
             List<int> cardIDs = new List<int>();
 
+            message.intArguments.Reverse();
+
             if (game.isPlayer1(sender))
             {
                 foreach (int index in message.intArguments)

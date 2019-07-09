@@ -51,8 +51,16 @@ namespace DM___Client.GUIWindows
 
             this.treatCountAsOne = treatCountAsOne;
 
-            this.ownCount = Math.Min(ownCards.Count, ownCount);
-            this.oppCount = Math.Min(oppCards.Count, oppCount);
+            if (treatCountAsOne)
+            {
+                this.ownCount = Math.Min(ownCards.Count + oppCards.Count, ownCount);
+                this.oppCount = this.ownCount;
+            }
+            else
+            {
+                this.ownCount = Math.Min(ownCards.Count, ownCount);
+                this.oppCount = Math.Min(oppCards.Count, oppCount);
+            }
 
             this.element = element;
             this.zone = zone;
@@ -111,19 +119,31 @@ namespace DM___Client.GUIWindows
             string message;
             bool foundElement;
 
-            if (ownCount != 0)
+            if (treatCountAsOne)
             {
-                message = string.Format("You need to select {0} more of your own card(s).", ownCount);
-                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                if (ownCount != 0 || oppCount != 0)
+                {
+                    message = string.Format("You need to select {0} more of your own and/or opponent's card(s).", ownCount);
+                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
-            if (oppCount != 0)
+            else
             {
-                message = string.Format("You need to select {0} more of your opponent's card(s).", oppCount);
-                MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
+                if (ownCount != 0)
+                {
+                    message = string.Format("You need to select {0} more of your own card(s).", ownCount);
+                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if (oppCount != 0)
+                {
+                    message = string.Format("You need to select {0} more of your opponent's card(s).", oppCount);
+                    MessageBox.Show(message, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
-            
+
             if (element != null)
             {
                 foundElement = false;
@@ -179,8 +199,7 @@ namespace DM___Client.GUIWindows
                     messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, --(this.ownCount));
                     if (treatCountAsOne)
                     {
-                        if (oppCards.Count > 0)
-                            messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, --(this.oppCount));
+                        messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, --(this.oppCount));
                     }
                 }
                 else
@@ -194,8 +213,7 @@ namespace DM___Client.GUIWindows
                     messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, --(this.oppCount));
                     if (treatCountAsOne)
                     {
-                        if (ownCards.Count > 0)
-                            messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, --(this.ownCount));
+                        messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, --(this.ownCount));
                     }
                 }
                 else
@@ -212,8 +230,7 @@ namespace DM___Client.GUIWindows
                 messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, ++(this.ownCount));
                 if (treatCountAsOne)
                 {
-                    if (oppCount < oppCards.Count)
-                        messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, ++(this.oppCount));
+                    messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, ++(this.oppCount));
                 }
             }
             else
@@ -222,8 +239,7 @@ namespace DM___Client.GUIWindows
                 messageBlockOpp.Text = string.Format("Opp {0} [{1} remaining]", zone, ++(this.oppCount));
                 if (treatCountAsOne)
                 {
-                    if (ownCount < ownCards.Count)
-                        messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, ++(this.ownCount));
+                    messageBlockOwn.Text = string.Format("Own {0} [{1} remaining]", zone, ++(this.ownCount));
                 }
             }
         }
