@@ -219,7 +219,21 @@ namespace DM___Client.GUIPages
                             updateInfoBoard("grave", OWN, 1);
                         }
                     }
+                    break;
+                case "OwnGround":
+                    // notify the server that we triggered a SendTo effect
+                    // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
 
+                    if (selectedTargetIndexesOwn.Count > 0)
+                    {
+                        sendSendTo(selectedTargetIndexesOwn, "OppGround", "OppGrave");
+
+                        foreach (int index in selectedTargetIndexesOwn)
+                        {
+                            animateBattleToGraveyard(index, true);
+                            updateInfoBoard("grave", OWN, 1);
+                        }
+                    }
                     break;
             }
         }
@@ -464,6 +478,13 @@ namespace DM___Client.GUIPages
                                 {
                                     updateInfoBoard("hand", OPP, 1);
                                     animateBattleToHandOpp(index);
+                                }
+                                break;
+                            case "OppGrave":
+                                foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("grave", OPP, 1);
+                                    animateBattleToGraveyard(index, false);
                                 }
                                 break;
                         }
