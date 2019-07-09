@@ -143,7 +143,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -173,7 +173,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -227,7 +227,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -257,7 +257,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -292,7 +292,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -317,7 +317,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -351,7 +351,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -386,7 +386,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -417,7 +417,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -463,7 +463,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {
@@ -491,7 +491,7 @@ namespace DM___Server
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(ex.Message);
+                    logger.Log(ex.ToString());
                 }
                 finally
                 {

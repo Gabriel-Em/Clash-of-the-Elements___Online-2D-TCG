@@ -40,7 +40,7 @@ namespace DM___Client.GUIPages
             foreach (SpecialEffect se in card.SpecialEffects)
             {
                 if (se.Effect == "BloodThirst")
-                    return (se.Arguments[0]);
+                    return (card.Power + se.Arguments[0]);
             }
             return card.Power;
         }
@@ -76,8 +76,10 @@ namespace DM___Client.GUIPages
             GUIWindows.GUISelect gUISelect;
             Tuple<List<CardGUIModel>, List<CardGUIModel>> tuple;
             string selectMessage, friendlyFrom;
+            bool treatCountAsOne;
 
             tuple = getValidSelections(se, out friendlyFrom);
+            treatCountAsOne = se.TargetFrom.Contains("Any") ? true : false;
 
             if (tuple.Item1.Count > 0 || tuple.Item2.Count > 0)
             {
@@ -92,9 +94,10 @@ namespace DM___Client.GUIPages
                     {
                         if (tuple.Item2.Count > 0)
                         {
-                            selectMessage = string.Format("You must select a total of {0} card(s) from your and {1} cards from your opponent's {2}.",
-                                Math.Min(se.Arguments[0], tuple.Item1.Count),
-                                Math.Min(se.Arguments[0], tuple.Item2.Count),
+                            selectMessage = string.Format("You must select a total of {0} cards from your {3} {1} {2} cards from your opponent's {3}.",
+                                treatCountAsOne ? Math.Min(tuple.Item1.Count + tuple.Item1.Count, se.Arguments[0]) : Math.Min(tuple.Item1.Count, se.Arguments[0]),
+                                treatCountAsOne ? "or" : "and",
+                                treatCountAsOne ? Math.Min(tuple.Item1.Count + tuple.Item1.Count, se.Arguments[0]) : Math.Min(tuple.Item2.Count, se.Arguments[0]),
                                 friendlyFrom);
                         }
                         else
@@ -118,8 +121,8 @@ namespace DM___Client.GUIPages
                         tuple.Item2, 
                         selectMessage,
                         friendlyFrom,
-                        tuple.Item1.Count == 0 ? 0 : se.Arguments[0],
-                        tuple.Item2.Count == 0 ? 0 : se.Arguments[0],
+                        tuple.Item1.Count == 0 ? 0 : Math.Min(tuple.Item1.Count, se.Arguments[0]),
+                        tuple.Item2.Count == 0 ? 0 : Math.Min(tuple.Item2.Count, se.Arguments[0]),
                         se.TargetFrom.Contains("Any") ? true : false);
                     gUISelect.removeCancelButton();
                     gUISelect.ShowDialog();
@@ -145,6 +148,9 @@ namespace DM___Client.GUIPages
                         break;
                     case "OwnHand":
                         sendToOwnHand(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        break;
+                    case "OwnGrave":
+                        sendToOwnGrave(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
                         break;
                     case "OppGrave":
                         sendToOppGrave(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
@@ -183,13 +189,37 @@ namespace DM___Client.GUIPages
                     {
                         sendSendTo(selectedTargetIndexesOpp, "OwnGround", "OwnHand");
 
-                        foreach (int index in selectedTargetIndexesOwn)
+                        foreach (int index in selectedTargetIndexesOpp)
                         {
                             animateBattleToHandOpp(index);
                             updateInfoBoard("ground", OPP, -1);
                             updateInfoBoard("hand", OPP, 1);
                         }
                     }
+                    break;
+            }
+        }
+
+        private void sendToOwnGrave(SpecialEffect se, List<int> selectedTargetIndexesOwn, List<int> selectedTargetIndexesOpp)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OwnMana":
+                    // notify the server that we triggered a SendTo effect
+                    // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
+
+                    if (selectedTargetIndexesOwn.Count > 0)
+                    {
+                        sendSendTo(selectedTargetIndexesOwn, "OppMana", "OppGrave");
+
+                        foreach (int index in selectedTargetIndexesOwn)
+                        {
+                            animateManaToGraveOwn(index);
+                            updateInfoBoard("mana", OWN, -1);
+                            updateInfoBoard("grave", OWN, 1);
+                        }
+                    }
+
                     break;
             }
         }
@@ -369,6 +399,14 @@ namespace DM___Client.GUIPages
                                     updateInfoBoard("mana", OPP, -1);
                                     updateInfoBoard("hand", OPP, 1);
                                     animateManaToHandOpp(index);
+                                }
+                                break;
+                            case "OppGrave":
+                                foreach (int index in arguments)
+                                {
+                                    updateInfoBoard("mana", OPP, -1);
+                                    updateInfoBoard("grave", OPP, 1);
+                                    animateManaToGraveOpp(index);
                                 }
                                 break;
                         }
