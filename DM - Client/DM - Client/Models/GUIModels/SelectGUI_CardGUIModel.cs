@@ -95,8 +95,12 @@ namespace DM___Client.Models.GUIModels
 
         public void select()
         {
-            Border.BorderBrush = Brushes.Gold;
-            parent.addToSelectedCards(this);
+            int result;
+
+            result = parent.addToSelectedCards(this);
+
+            if (result == 0)
+                Border.BorderBrush = Brushes.Gold;
         }
         public void deselect()
         {

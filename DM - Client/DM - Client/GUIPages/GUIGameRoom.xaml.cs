@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using DM___Client.Animations;
+using DM___Client.Models;
 
 namespace DM___Client.GUIPages
 {
@@ -528,7 +529,11 @@ namespace DM___Client.GUIPages
                                 animationsAndEvents[0].alignAnimation.startAnimation();
                             break;
                         case AnimationConstants.TYPELOAD:
-                            animationsAndEvents[0].loadPhase();
+                            animationsAndEvents[0].loadPhase_();
+                            animationFinished = true;
+                            break;
+                        case AnimationConstants.TYPETRIGGER:
+                            animationsAndEvents[0].triggerEffect();
                             animationFinished = true;
                             break;
                     }
@@ -558,6 +563,12 @@ namespace DM___Client.GUIPages
 
         public void addLoadEvent(Animation animation)
         {
+            animationsAndEvents.Add(animation);
+        }
+
+        public void addTriggerEvent(SpecialEffect se, CardWithGameProperties card)
+        {
+            Animation animation = new Animation(triggerEffect, se, card);
             animationsAndEvents.Add(animation);
         }
 

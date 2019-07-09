@@ -23,10 +23,13 @@ namespace DM___Client.Animations
         public bool isRunning { get; private set; }
 
         private const int DEFAULTSPEED = 300;
+        private int angle;
 
-        public RotateAnimation(bool engage_)
+        public RotateAnimation(bool engage, int angle=90)
         {
-            engage = engage_;
+            this.engage = engage;
+            this.angle = angle;
+
             speed = DEFAULTSPEED;
             isFinished = false;
             isRunning = false;
@@ -50,11 +53,11 @@ namespace DM___Client.Animations
 
             if (engage)
             {
-                myanimation = new DoubleAnimation(0, 90, new Duration(TimeSpan.FromMilliseconds(speed)));
+                myanimation = new DoubleAnimation(0, angle, new Duration(TimeSpan.FromMilliseconds(speed)));
             }
             else
             {
-                myanimation = new DoubleAnimation(90, 0, new Duration(TimeSpan.FromMilliseconds(speed)));
+                myanimation = new DoubleAnimation(angle, 0, new Duration(TimeSpan.FromMilliseconds(speed)));
             }
 
             myanimation.Completed += Myanimation_Completed;
