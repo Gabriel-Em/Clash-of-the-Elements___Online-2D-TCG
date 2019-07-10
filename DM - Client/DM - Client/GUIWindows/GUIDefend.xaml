@@ -1,0 +1,114 @@
+﻿<Window x:Class="DM___Client.GUIWindows.GUIDefend"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DM___Client.GUIWindows"
+        mc:Ignorable="d"
+        Title="Defend" Height="450" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+    <Window.Resources>
+        <Style x:Key="buttonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+                            CornerRadius="3" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="DarkGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="cardButtonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1" 
+                            BorderBrush="Black" 
+                            CornerRadius="2" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="0,0,0,0">
+        <Border Background="LightBlue" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.ColumnSpan="2" />
+        <Grid Name="grdParent" Margin="20,30,20,0" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50" />
+                <RowDefinition Height="140" />
+                <RowDefinition Height="140" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" Text="..." TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
+            <Grid Grid.Row="2">
+                <StackPanel>
+                    <TextBlock x:Name="messageBlockOwn"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Defenders" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold"></TextBlock>
+                    <Grid Margin="0,5,0,0">
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110"/>
+                        <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                                <Grid x:Name="grdSelectOwn"/>
+                            </ScrollViewer>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
+                <DockPanel>
+                    <StackPanel HorizontalAlignment="Left" Margin="100,0,0,0">
+                        <TextBlock x:Name="txtAttacker"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Attacker" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold"></TextBlock>
+                        <Grid Margin="0,5,0,0">
+                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110" Width="80"/>
+                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110" Width="80">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                                    <Grid x:Name="grdAttacker"/>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right" Margin="0,0,100,0">
+                        <TextBlock x:Name="txtTarget"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Target" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold"></TextBlock>
+                        <Grid Margin="0,5,0,0">
+                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110" Width="80"/>
+                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110" Width="80">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
+                                    <Grid x:Name="grdTarget">
+                                        <TextBlock x:Name="txtYou"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="You!" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold" Visibility="Hidden"></TextBlock>
+                                    </Grid>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </DockPanel>
+            </Grid>
+            <Grid x:Name="grdButtons" VerticalAlignment="Bottom" Grid.Row="3" Margin="0,0,0,10">
+                <Button Grid.Row ="2" x:Name="btnSelect" Style="{StaticResource buttonStyle}" Content="Defend" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,160,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnDefend_Click"/>
+                <Button Grid.Row ="2" x:Name="btnDontDefend" Style="{StaticResource buttonStyle}" Content="Don't defend" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="160,0,0,0" Height="30" Width="150" HorizontalAlignment="Center" Click="btnDontDefend_Click"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

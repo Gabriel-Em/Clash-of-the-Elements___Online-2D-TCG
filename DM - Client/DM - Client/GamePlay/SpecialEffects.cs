@@ -37,12 +37,53 @@ namespace DM___Client.GUIPages
 
         private int getCreaturePowerWhileAttacking(Card card)
         {
+            int power = card.Power;
             foreach (SpecialEffect se in card.SpecialEffects)
             {
-                if (se.Effect == "BloodThirst")
-                    return (card.Power + se.Arguments[0]);
+                switch (se.Effect)
+                {
+                    case "BloodThirst":
+                        power += se.Arguments[0];
+                        break;
+                    case "BloodThirstRevenge":
+                        if (se.Condition == "OwnGraveyardCivilization")
+                        {
+                            int bonus;
+                            string civilization;
+
+                            bonus = se.Arguments[0];
+                            civilization = codeToCivilization(se.Arguments[1]);
+
+                            foreach(CardGUIModel graveyardCard in listOwnGraveyard)
+                            {
+                                if (graveyardCard.Card.Element == civilization)
+                                    power += bonus;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
-            return card.Power;
+            return power;
+        }
+
+        private string codeToCivilization(int code)
+        {
+            switch(code)
+            {
+                case 1:
+                    return "Fire";
+                case 2:
+                    return "Water";
+                case 3:
+                    return "Nature";
+                case 4:
+                    return "Darkness";
+                case 5:
+                    return "Light";
+            }
+            return "";
         }
 
         private bool hasTrigger(Card card, string trigger)

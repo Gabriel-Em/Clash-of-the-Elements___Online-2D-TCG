@@ -97,8 +97,14 @@
     <Compile Include="GUIWindows\GUICreateDeck.xaml.cs">
       <DependentUpon>GUICreateDeck.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUIWindows\GUIDefend.xaml.cs">
+      <DependentUpon>GUIDefend.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUIWindows\GUIDisconnected.xaml.cs">
       <DependentUpon>GUIDisconnected.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GUIWindows\GUISafeguardActive.xaml.cs">
+      <DependentUpon>GUISafeguardActive.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUIWindows\GUISelect.xaml.cs">
       <DependentUpon>GUISelect.xaml</DependentUpon>
@@ -215,11 +221,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="GUIWindows\GUIDefend.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GUIWindows\GUIDisconnected.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GUIWindows\GUIRegister.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUIWindows\GUISafeguardActive.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
