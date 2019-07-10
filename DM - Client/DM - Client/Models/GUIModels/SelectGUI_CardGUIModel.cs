@@ -14,23 +14,37 @@ namespace DM___Client.Models.GUIModels
 {
     public class SelectGUI_CardGUIModel
     {
-        private GUIWindows.GUISelect parent;
+        private Window parent;
         private Image Image;
         private Button Btn;
-        private bool isSelected { get { if (Border.BorderBrush == Brushes.Gold) return true; return false; } }
+        private bool isSelected { get { return Border.BorderBrush == Brushes.Gold ? true : false; } }
         private Log.Logger logger;
 
         private string cardBackPath = "/Images/GUI/CardBack.png";
         private string cardsPath = "/Images/Cards/";
 
+        private int type;
+
         public CardGUIModel cardGUI;
         public Border Border;
 
-        public SelectGUI_CardGUIModel(CardGUIModel cardGUI, GUIWindows.GUISelect parent_, Thickness margin)
+        public SelectGUI_CardGUIModel(CardGUIModel cardGUI, GUIWindows.GUISelect parent, Thickness margin)
+        {
+            type = 1;
+            init(cardGUI, parent, margin);
+        }
+
+        public SelectGUI_CardGUIModel(CardGUIModel cardGUI, GUIWindows.GUIDefend parent, Thickness margin)
+        {
+            type = 2;
+            init(cardGUI, parent, margin);
+        }
+
+        private void init(CardGUIModel cardGUI, Window parent, Thickness margin)
         {
             logger = new Log.Logger();
             this.cardGUI = cardGUI;
-            parent = parent_;
+            this.parent = parent;
 
             // Border
             Border = new Border();
@@ -97,15 +111,38 @@ namespace DM___Client.Models.GUIModels
         {
             int result;
 
-            result = parent.addToSelectedCards(this);
+            switch (type)
+            {
+                case 1:
+                    result = ((GUIWindows.GUISelect)parent).addToSelectedCards(this);
+                    break;
+                case 2:
+                    result = ((GUIWindows.GUIDefend)parent).addToSelectedCards(this);
+                    break;
+                default:
+                    result = -1;
+                    break;
+            }
 
             if (result == 0)
                 Border.BorderBrush = Brushes.Gold;
         }
+
         public void deselect()
         {
             Border.BorderBrush = Brushes.Transparent;
-            parent.removeFromSelectedCards(this);
+
+            switch(type)
+            {
+                case 1:
+                    ((GUIWindows.GUISelect)parent).removeFromSelectedCards(this);
+                    break;
+                case 2:
+                    ((GUIWindows.GUIDefend)parent).removeFromSelectedCards(this);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

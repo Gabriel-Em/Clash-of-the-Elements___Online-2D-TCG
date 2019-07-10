@@ -221,7 +221,7 @@ namespace DM___Client.GUIPages
         {
             bool youBlocked;
             List<CardGUIModel> defenders = null;
-            GUIWindows.GUISelect gUISelect = null;
+            GUIWindows.GUIDefend gUISelect = null;
 
             /*
              * intArguments[0] - the attacker
@@ -234,23 +234,31 @@ namespace DM___Client.GUIPages
             if (canBlock(intArguments[0]))
             {
                 string message;
+                string shields;
 
                 defenders = getOwnDefendersThatCanBlock();
-                message = "Select one defender to block the attack with, or don't block at all.";
+                shields = "";
 
-                gUISelect = new GUIWindows.GUISelect(
+                for (int i = 1; i < intArguments.Count; i++)
+                {
+                    if (i < intArguments.Count - 1)
+                        shields += string.Format("{0}, ", intArguments[i] + 1);
+                    else
+                        shields += string.Format("{0}", intArguments[i] + 1);
+                }
+                message = string.Format("Your opponent attacked the following shields ({0}). Select one defender to block the attack with, or don't block at all.", shields);
+
+                gUISelect = new GUIWindows.GUIDefend(
                     defenders,
-                    new List<CardGUIModel>(),
+                    listOppBattleGround[intArguments[0]].Card,
+                    null,
                     message,
-                    "defenders",
-                    1,
-                    0
+                    intArguments.Count - 1
                     );
-                gUISelect.replaceCancelButtonMessage("Don't defend");
                 gUISelect.ShowDialog();
 
                 // you blocked the attack
-                if (!gUISelect.wasCanceled)
+                if (gUISelect.SelectedDefender != -1)
                 {
                     youBlocked = true;
                 }
@@ -260,7 +268,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.SelectedDefender]);
 
                 engageBattleOWN(index);
 
@@ -281,7 +289,7 @@ namespace DM___Client.GUIPages
         {
             bool youBlocked;
             List<CardGUIModel> defenders = null;
-            GUIWindows.GUISelect gUISelect = null;
+            GUIWindows.GUIDefend gUISelect = null;
 
             /*
              * intArguments[0] - the attacker
@@ -295,21 +303,19 @@ namespace DM___Client.GUIPages
                 string message;
 
                 defenders = getOwnDefendersThatCanBlock();
-                message = "Select one defender to block the attack with, or don't block at all.";
+                message = "Your opponent attacked you directly! Select one defender to block the attack with, or don't block at all.";
 
-                gUISelect = new GUIWindows.GUISelect(
+                gUISelect = new GUIWindows.GUIDefend(
                     defenders,
-                    new List<CardGUIModel>(),
+                    listOppBattleGround[intArguments[0]].Card,
+                    null,
                     message,
-                    "defenders",
-                    1,
-                    0
+                    999
                     );
-                gUISelect.replaceCancelButtonMessage("Don't defend");
                 gUISelect.ShowDialog();
 
                 // you blocked the attack
-                if (!gUISelect.wasCanceled)
+                if (gUISelect.SelectedDefender != -1)
                 {
                     youBlocked = true;
                 }
@@ -319,7 +325,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.SelectedDefender]);
 
                 engageBattleOWN(index);
 
@@ -373,6 +379,7 @@ namespace DM___Client.GUIPages
         public void yourGuardsBroke(List<int> args)
         {
             int count;
+            CardWithGameProperties card;
 
             /*
              * args[0] - number of safeguards that broke
@@ -383,6 +390,10 @@ namespace DM___Client.GUIPages
             count = args[0];
             for (int i = 1; i <= count; i++)
             {
+                card = ctrl.getCardWithGamePropertiesByID(args[i + count]);
+
+                if (hasEffect(card,"SafeguardActive"))
+
                 animateSafeguardBrokeOWN(args[i], args[i + count]);
                 updateInfoBoard("hand", OWN, 1);
             }
@@ -408,7 +419,7 @@ namespace DM___Client.GUIPages
         {
             bool youBlocked;
             List<CardGUIModel> defenders = null;
-            GUIWindows.GUISelect gUISelect = null;
+            GUIWindows.GUIDefend gUISelect = null;
 
             /*
              * intArguments[0] - the attacker
@@ -425,21 +436,18 @@ namespace DM___Client.GUIPages
                 defenders = getOwnDefendersThatCanBlock();
                 if (defenders.Count != 0)
                 {
-                    message = "Select one defender to block the attack with, or don't block at all.";
+                    message = "Your opponent is attacking your creature. Select one defender to block the attack with, or don't block at all.";
 
-                    gUISelect = new GUIWindows.GUISelect(
-                        defenders,
-                    new List<CardGUIModel>(),
-                    message,
-                    "defenders",
-                    1,
-                    0
+                    gUISelect = new GUIWindows.GUIDefend(
+                    defenders,
+                    listOppBattleGround[intArguments[0]].Card,
+                    listOwnBattleGround[intArguments[1]].Card,
+                    message
                     );
-                    gUISelect.replaceCancelButtonMessage("Don't defend");
                     gUISelect.ShowDialog();
 
                     // you blocked the attack
-                    if (!gUISelect.wasCanceled)
+                    if (gUISelect.SelectedDefender != -1)
                     {
                         youBlocked = true;
                     }
@@ -450,7 +458,7 @@ namespace DM___Client.GUIPages
             {
                 int index;
 
-                index = listOwnBattleGround.IndexOf(defenders[gUISelect.ownSelected[0]]);
+                index = listOwnBattleGround.IndexOf(defenders[gUISelect.SelectedDefender]);
 
                 engageBattleOWN(index);
 
