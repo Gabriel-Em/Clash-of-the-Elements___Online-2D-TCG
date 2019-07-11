@@ -34,18 +34,18 @@ namespace DM___Client.Models
             GameID = gameID;
         }
 
-        public GameMessage(string command, int gameID, List<int> cardIDs)
+        public GameMessage(string command, int gameID, List<int> intArguments)
         {
             Command = command;
             stringArguments = null;
-            intArguments = cardIDs;
+            this.intArguments = intArguments;
             GameID = gameID;
         }
 
-        public GameMessage(string command, int gameID, List<string> arguments)
+        public GameMessage(string command, int gameID, List<string> stringAguments)
         {
             Command = command;
-            stringArguments = arguments;
+            this.stringArguments = stringAguments;
             intArguments = null;
             GameID = gameID;
         }

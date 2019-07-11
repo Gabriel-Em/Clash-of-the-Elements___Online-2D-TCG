@@ -99,7 +99,7 @@ namespace DM___Client.GUIWindows
                     }
                     margin.Left += 75;
                 }
-                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
+                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI.Card, this, margin);
 
                 if (own)
                 {
@@ -149,7 +149,7 @@ namespace DM___Client.GUIWindows
                 foundElement = false;
                 foreach (int index in ownSelected)
                 {
-                    if (ownCards[index].cardGUI.Card.Element == element)
+                    if (ownCards[index].Card.Element == element)
                     {
                         foundElement = true;
                         break;
@@ -160,7 +160,7 @@ namespace DM___Client.GUIWindows
                 {
                     foreach (int index in oppSelected)
                     {
-                        if (oppCards[index].cardGUI.Card.Element == element)
+                        if (oppCards[index].Card.Element == element)
                         {
                             foundElement = true;
                             break;

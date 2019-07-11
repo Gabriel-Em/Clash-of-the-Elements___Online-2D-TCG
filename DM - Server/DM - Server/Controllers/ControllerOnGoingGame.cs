@@ -251,13 +251,11 @@ namespace DM___Server.Controllers
             {
                 foreach (int index in message.intArguments)
                     cardIDs.Add(game.breakSafeguard(index, 1));
-                response.socketsToNotify.Add(game.Player2Socket);
             }
             else
             {
                 foreach (int index in message.intArguments)
                     cardIDs.Add(game.breakSafeguard(index, 2));
-                response.socketsToNotify.Add(game.Player1Socket);
             }
 
             response.responseCommandToSender = "YOURGUARDSBROKE";
@@ -267,8 +265,27 @@ namespace DM___Server.Controllers
             foreach (int cardID in cardIDs)
                 response.commandIntArgumentsToSender.Add(cardID);
 
-            response.responseCommandToSockets = "YOUBROKEGUARDS";
-            response.commandIntArgumentsToSockets = message.intArguments;
+            return response;
+        }
+
+        public Response processYouBrokeGuard(GameMessage message, Socket sender)
+        {
+            Response response = new Response(sender);
+            Models.Game game = onGoingGamesData.getGameByID(message.GameID);
+
+            message.intArguments.Reverse();
+
+            if (game.isPlayer1(sender))
+            {
+                response.socketsToNotify.Add(game.Player2Socket);
+            }
+            else
+            {
+                response.socketsToNotify.Add(game.Player1Socket);
+            }
+
+            response.responseCommandToSockets = "YOUBROKEGUARD";
+            response.commandIntArgumentsToSockets = message.intArguments.ToList<int>();
 
             return response;
         }

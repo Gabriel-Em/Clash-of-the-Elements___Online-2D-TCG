@@ -39,7 +39,7 @@ namespace DM___Client.GUIPages
         private List<Models.CardGUIModel> listOppManaZone;
         private List<Models.CardGUIModel> listOppBattleGround;
         private List<Models.CardGUIModel> listOppGraveyard;
-        private List<Models.CardGUIModel> listOppSafeguardZone;
+        private List<Models.CardGUIModel> listOppSafeGuardZone;
         private List<Models.CardGUIModel> selectedCards;
         private List<Models.CardGUIModel> ableToSelect;
         private List<Animation> animationsAndEvents;
@@ -110,7 +110,7 @@ namespace DM___Client.GUIPages
             listOppManaZone = new List<Models.CardGUIModel>();
             listOppBattleGround = new List<Models.CardGUIModel>();
             listOppGraveyard = new List<Models.CardGUIModel>();
-            listOppSafeguardZone = new List<Models.CardGUIModel>();
+            listOppSafeGuardZone = new List<Models.CardGUIModel>();
             selectedCards = new List<Models.CardGUIModel>();
             ableToSelect = new List<Models.CardGUIModel>();
             animationsAndEvents = new List<Animation>();
@@ -278,7 +278,7 @@ namespace DM___Client.GUIPages
                     grdOppSafeguards, 
                     grdParent, 
                     null,
-                    listOppSafeguardZone, 
+                    listOppSafeGuardZone, 
                     safeGuard,
                     AnimationConstants.DESTINATIONSAFEGUARD);
                 animation.setSpeed(10);

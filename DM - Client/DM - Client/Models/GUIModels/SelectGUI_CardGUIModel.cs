@@ -25,25 +25,25 @@ namespace DM___Client.Models.GUIModels
 
         private int type;
 
-        public CardGUIModel cardGUI;
+        public Card Card;
         public Border Border;
 
-        public SelectGUI_CardGUIModel(CardGUIModel cardGUI, GUIWindows.GUISelect parent, Thickness margin)
+        public SelectGUI_CardGUIModel(Card card, GUIWindows.GUISelect parent, Thickness margin, bool clickable=true)
         {
             type = 1;
-            init(cardGUI, parent, margin);
+            init(card, parent, margin, clickable);
         }
 
-        public SelectGUI_CardGUIModel(CardGUIModel cardGUI, GUIWindows.GUIDefend parent, Thickness margin)
+        public SelectGUI_CardGUIModel(Card card, GUIWindows.GUIDefend parent, Thickness margin, bool clickable=true)
         {
             type = 2;
-            init(cardGUI, parent, margin);
+            init(card, parent, margin, clickable);
         }
 
-        private void init(CardGUIModel cardGUI, Window parent, Thickness margin)
+        private void init(Card card, Window parent, Thickness margin, bool clickable)
         {
             logger = new Log.Logger();
-            this.cardGUI = cardGUI;
+            this.Card = card;
             this.parent = parent;
 
             // Border
@@ -63,7 +63,8 @@ namespace DM___Client.Models.GUIModels
             Btn.Style = parent.FindResource("cardButtonStyle") as Style;
             Btn.Cursor = System.Windows.Input.Cursors.Hand;
 
-            Btn.Click += Btn_Click;
+            if (clickable)
+                Btn.Click += Btn_Click;
 
             Border.Child = Btn;
 
@@ -71,7 +72,7 @@ namespace DM___Client.Models.GUIModels
             Image = new Image();
             try
             {
-                if (cardGUI.Card == null)
+                if (card == null)
                     Image.Source = new System.Windows.Media.Imaging.BitmapImage(
                         new Uri(
                             string.Format("{0}{1}",
@@ -84,8 +85,8 @@ namespace DM___Client.Models.GUIModels
                             string.Format("{0}{1}{2}/{3}.jpg",
                             AppDomain.CurrentDomain.BaseDirectory,
                             cardsPath,
-                            cardGUI.Card.Set,
-                            cardGUI.Card.Name),
+                            card.Set,
+                            card.Name),
                             UriKind.Absolute));
             }
             catch (Exception ex)

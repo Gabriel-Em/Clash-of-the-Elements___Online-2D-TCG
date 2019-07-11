@@ -86,6 +86,9 @@ namespace DM___Server
                 case "BROKENSAFEGUARDS":
                     response = ctrlOnGoingGame.processBrokenSafeguards(message, sender);
                     break;
+                case "YOUBROKEGUARD":
+                    response = ctrlOnGoingGame.processYouBrokeGuard(message, sender);
+                    break;
                 case "ATTACKCREATURE":
                     response = ctrlOnGoingGame.processAttackCreature(message, sender);
                     break;

@@ -59,6 +59,7 @@ namespace DM___Client.GUIWindows
         private void cardsToGUI(List<CardGUIModel> cardList, CardWithGameProperties attacker, CardWithGameProperties target)
         {
             Thickness margin;
+            SimpleCardGUIModel card;
 
             foreach (CardGUIModel cardGUI in cardList)
             {
@@ -69,17 +70,16 @@ namespace DM___Client.GUIWindows
                     margin = ownDefenders[ownDefenders.Count - 1].Border.Margin;
                     margin.Left += 75;
                 }
-                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
+                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI.Card, this, margin);
                 this.ownDefenders.Add(sCard);
                 grdSelectOwn.Children.Add(sCard.Border);
             }
-            SelectGUI_CardGUIModel card;
 
-            card = new SelectGUI_CardGUIModel(new CardGUIModel(attacker == null ? null : attacker, null, new Thickness(0), Visibility.Visible), this, new Thickness(10, 0, 0, 0));
+            card = new SimpleCardGUIModel(attacker);
             grdAttacker.Children.Add(card.Border);
             if (txtYou.Visibility != Visibility.Visible)
             {
-                card = new SelectGUI_CardGUIModel(new CardGUIModel(target == null ? null : target, null, new Thickness(0), Visibility.Visible), this, new Thickness(10, 0, 0, 0));
+                card = new SimpleCardGUIModel(target);
                 grdTarget.Children.Add(card.Border);
             }
         }

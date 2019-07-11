@@ -120,6 +120,7 @@
     <Compile Include="Models\GUIModels\DeckItemGUIModel.cs" />
     <Compile Include="Models\Collection\CardWithGameProperties.cs" />
     <Compile Include="Models\GUIModels\SelectGUI_CardGUIModel.cs" />
+    <Compile Include="Models\GUIModels\SimpleCardGUIModel.cs" />
     <Compile Include="Models\Messages\ClientMessage.cs" />
     <Compile Include="Communication\Communication.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
