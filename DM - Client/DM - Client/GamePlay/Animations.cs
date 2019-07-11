@@ -189,6 +189,52 @@ namespace DM___Client.GUIPages
             addAnimation(animation);
         }
 
+        private void animateSafeguardToGroundOwn(int index, int cardID)
+        {
+            Models.CardGUIModel safeGuard;
+            Animations.MoveAnimation animation;
+
+            // select origin and create destination
+
+            safeGuard = listOwnSafeGuardZone[index];
+
+            // reveal the safeguard
+            safeGuard.setCard(ctrl.getCardWithGamePropertiesByID(cardID));
+
+            animation = new Animations.MoveAnimation(
+                grdOwnSafeguards,
+                grdOwnBattle,
+                grdParent,
+                listOwnSafeGuardZone,
+                listOwnBattleGround,
+                safeGuard,
+                AnimationConstants.DESTINATIONBATTLE);
+            addAnimation(animation);
+        }
+
+        private void animateSafeguardToGroundOpp(int index, int cardID)
+        {
+            Models.CardGUIModel safeGuard;
+            Animations.MoveAnimation animation;
+
+            // select origin and create destination
+
+            safeGuard = listOppSafeGuardZone[index];
+
+            // reveal the safeguard
+            safeGuard.setCard(ctrl.getCardWithGamePropertiesByID(cardID));
+
+            animation = new Animations.MoveAnimation(
+                grdOppSafeguards,
+                grdOppBattle,
+                grdParent,
+                listOppSafeGuardZone,
+                listOppBattleGround,
+                safeGuard,
+                AnimationConstants.DESTINATIONBATTLE);
+            addAnimation(animation);
+        }
+
         private void animateSafeguardBrokeOPP(int index)
         {
             Models.CardGUIModel safeGuard;
@@ -196,13 +242,13 @@ namespace DM___Client.GUIPages
 
             // select origin and create destination
 
-            safeGuard = listOppSafeguardZone[index];
+            safeGuard = listOppSafeGuardZone[index];
 
             animation = new Animations.MoveAnimation(
                 grdOppSafeguards, 
                 grdParent, 
                 grdParent, 
-                listOppSafeguardZone, 
+                listOppSafeGuardZone, 
                 null, 
                 safeGuard,
                 AnimationConstants.DESTINATIONOPPHAND);

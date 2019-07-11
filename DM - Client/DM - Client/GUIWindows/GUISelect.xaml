@@ -54,8 +54,8 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Margin="0,0,0,0">
-        <Border Background="LightBlue" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" />
+    <Grid>
+        <Border Background="LightBlue" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <Grid Name="grdParent" Margin="20,30,20,0" Grid.RowSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
@@ -63,6 +63,10 @@
                 <RowDefinition Height="140" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
             <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" Text="..." TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
             <Grid Grid.Row="2">
                 <StackPanel>

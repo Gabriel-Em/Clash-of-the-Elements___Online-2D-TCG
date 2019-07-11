@@ -531,12 +531,23 @@ namespace DM___Client.GUIPages
                         }
                     }
                     break;
+                case "OppGuards":
+                    {
+                        switch(to)
+                        {
+                            case "OppGround":
+                                animateSafeguardToGroundOpp(arguments[0], arguments[1]);
+                                break;
+                        }
+                    }
+                    break;
             }
         }
 
         public void processOppDrew()
         {
             updateInfoBoard("hand", OPP, 1);
+            updateInfoBoard("deck", OPP, -1);
             animateDrawCardOPP();
         }
     }

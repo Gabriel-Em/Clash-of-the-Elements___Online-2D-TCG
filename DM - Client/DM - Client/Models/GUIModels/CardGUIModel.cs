@@ -36,7 +36,7 @@ namespace DM___Client.Models
             Border = new Border();
             Border.Width = 75;
             Border.Height = 100;
-            
+
             Border.VerticalAlignment = VerticalAlignment.Top;
             Border.HorizontalAlignment = HorizontalAlignment.Left;
             Border.Margin = margin;
@@ -80,6 +80,7 @@ namespace DM___Client.Models
             }
 
             Image.Stretch = Stretch.UniformToFill;
+
             Image.MouseRightButtonUp += parent.cardImage_MouseRightButtonUp;
             Image.MouseRightButtonDown += parent.cardImage_MouseRightButtonDown;
 

@@ -33,7 +33,7 @@ namespace DM___Client.GUIPages
                     selectableCards.Add(cardGUI);
             }
 
-            loadAttackPhaseButtons(listOppSafeguardZone.Count == 0);
+            loadAttackPhaseButtons(listOppSafeGuardZone.Count == 0);
             setAbleToSelect(1, selectableCards);
         }
 
@@ -74,13 +74,13 @@ namespace DM___Client.GUIPages
                     int index;
 
                     // cannot break more safeguards than our opponent has
-                    attackTargetCount = Math.Min(attackTargetCount, listOppSafeguardZone.Count());
+                    attackTargetCount = Math.Min(attackTargetCount, listOppSafeGuardZone.Count());
 
                     // create the gui that allows us to select the safeguards that we want to attack
                     message = string.Format("You must select a total of {0} safeguard(s).", attackTargetCount);
                     guiSelect = new GUIWindows.GUISelect(
                         new List<CardGUIModel>(),
-                        listOppSafeguardZone,
+                        listOppSafeGuardZone,
                         message,
                         "shield zone",
                         0,
@@ -231,7 +231,7 @@ namespace DM___Client.GUIPages
             engageBattleOPP(intArguments[0]);
 
             youBlocked = false;
-            if (canBlock(intArguments[0]))
+            if (canBeBlockedBlock(intArguments[0]))
             {
                 string message;
                 string shields;
@@ -298,7 +298,7 @@ namespace DM___Client.GUIPages
             engageBattleOPP(intArguments[0]);
 
             youBlocked = false;
-            if (canBlock(intArguments[0]))
+            if (canBeBlockedBlock(intArguments[0]))
             {
                 string message;
 
@@ -347,15 +347,12 @@ namespace DM___Client.GUIPages
             }
         }
 
-        private bool canBlock(int cardIndex)
+        private bool canBeBlockedBlock(int creatureIndex)
         {
-            Card card = listOppBattleGround[cardIndex].Card;
+            Card card = listOppBattleGround[creatureIndex].Card;
 
-            foreach(SpecialEffect se in card.SpecialEffects)
-            {
-                if (se.Effect == "Slippery")
-                    return false;
-            }
+            if (hasEffect(card, "Slippery"))
+                return false;
 
             if (getOwnDefendersThatCanBlock().Count == 0)
                 return false;
@@ -380,6 +377,8 @@ namespace DM___Client.GUIPages
         {
             int count;
             CardWithGameProperties card;
+            GUIWindows.GUISafeguardActive guiSafeguardActive;
+            bool activate;
 
             /*
              * args[0] - number of safeguards that broke
@@ -391,26 +390,50 @@ namespace DM___Client.GUIPages
             for (int i = 1; i <= count; i++)
             {
                 card = ctrl.getCardWithGamePropertiesByID(args[i + count]);
+                activate = false;
 
-                if (hasEffect(card,"SafeguardActive"))
+                if (hasTrigger(card,"SafeguardActive"))
+                {
+                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card);
+                    guiSafeguardActive.ShowDialog();
+                    activate = guiSafeguardActive.activate;
+                }
 
-                animateSafeguardBrokeOWN(args[i], args[i + count]);
-                updateInfoBoard("hand", OWN, 1);
+                if (activate)
+                {
+                    animateSafeguardToGroundOwn(args[i], args[i + count]);
+
+                    sendSendTo(new List<int>() { args[i], args[i + count] }, "OppGuards", "OppGround");
+
+                    //foreach (SpecialEffect se in card.SpecialEffects)
+                    //    addTriggerEvent(se, card);
+                }
+                else
+                {
+                    animateSafeguardBrokeOWN(args[i], args[i + count]);
+                    updateInfoBoard("hand", OWN, 1);
+
+                    // notify opponent that they broke this shield
+
+                    GameMessage gm = new GameMessage(
+                        "YOUBROKEGUARD",
+                        ctrl.GameRoomID,
+                        new List<int>() { args[i] });
+                    ctrl.send(gm);
+                }
             }
         }
 
         // whenever you break safeguards
 
-        public void youBrokeGuards(List<int> args)
+        public void youBrokeGuard(List<int> args)
         {
-            if (listOppSafeguardZone.Count - args.Count == 0)
+            // if you're breaking the last shield opponent has
+            if (listOppSafeGuardZone.Count == 1)
                 loadAttackPhaseButtons(true);
 
-            foreach (int index in args)
-            {
-                animateSafeguardBrokeOPP(index);
-                updateInfoBoard("hand", OPP, 1);
-            }
+            animateSafeguardBrokeOPP(args[0]);
+            updateInfoBoard("hand", OPP, 1);
         }
 
         // creature is under attack
@@ -429,7 +452,7 @@ namespace DM___Client.GUIPages
             engageBattleOPP(intArguments[0]);
 
             youBlocked = false;
-            if (canBlock(intArguments[0]))
+            if (canBeBlockedBlock(intArguments[0]))
             {
                 string message;
 

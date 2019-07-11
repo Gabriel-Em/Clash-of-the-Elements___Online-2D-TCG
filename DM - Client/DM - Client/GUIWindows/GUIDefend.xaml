@@ -79,28 +79,14 @@
             </Grid>
             <Grid Grid.Row="1">
                 <DockPanel>
-                    <StackPanel HorizontalAlignment="Left" Margin="100,0,0,0">
+                    <StackPanel HorizontalAlignment="Left" Margin="100,0,0,0" Width="100">
                         <TextBlock x:Name="txtAttacker"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Attacker" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold"></TextBlock>
-                        <Grid Margin="0,5,0,0">
-                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110" Width="80"/>
-                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110" Width="80">
-                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-                                    <Grid x:Name="grdAttacker"/>
-                                </ScrollViewer>
-                            </Border>
-                        </Grid>
+                        <Grid x:Name="grdAttacker"/>
                     </StackPanel>
-                    <StackPanel HorizontalAlignment="Right" Margin="0,0,100,0">
+                    <StackPanel HorizontalAlignment="Right" Margin="0,0,100,0" Width="100">
                         <TextBlock x:Name="txtTarget"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Target" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold"></TextBlock>
-                        <Grid Margin="0,5,0,0">
-                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="DarkBlue" Opacity="0.2" CornerRadius="5" Margin="0,0,0,0" Height="110" Width="80"/>
-                            <Border Grid.Row="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Height="110" Width="80">
-                                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
-                                    <Grid x:Name="grdTarget">
-                                        <TextBlock x:Name="txtYou"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="You!" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold" Visibility="Hidden"></TextBlock>
-                                    </Grid>
-                                </ScrollViewer>
-                            </Border>
+                        <Grid x:Name="grdTarget">
+                            <TextBlock x:Name="txtYou"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="You!" TextAlignment="Center" TextWrapping="Wrap" FontSize="18" FontWeight="Bold" Visibility="Hidden"></TextBlock>
                         </Grid>
                     </StackPanel>
                 </DockPanel>

@@ -65,8 +65,8 @@ namespace DM___Client.Controllers
                 case "YOURGUARDSBROKE":
                     parent.yourGuardsBroke(message.intArguments);
                     break;
-                case "YOUBROKEGUARDS":
-                    parent.youBrokeGuards(message.intArguments);
+                case "YOUBROKEGUARD":
+                    parent.youBrokeGuard(message.intArguments);
                     break;
                 case "ATTACKCREATURE":
                     processAttackCreature(message);

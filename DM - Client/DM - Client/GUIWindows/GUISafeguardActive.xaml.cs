@@ -23,8 +23,6 @@ namespace DM___Client.GUIWindows
     /// </summary>
     public partial class GUISafeguardActive : Window
     {
-        private List<SelectGUI_CardGUIModel> ownDefenders;
-
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
 
@@ -34,73 +32,89 @@ namespace DM___Client.GUIWindows
         [DllImport("user32.dll")]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
-        public int SelectedDefender { get; set; }
-        public GUISafeguardActive(List<CardGUIModel> ownDefenders, Card attacker, Card target, string message, int count = 1)
+        public bool activate { get; set; }
+        public GUISafeguardActive(Card card)
         {
-
             InitializeComponent();
 
-            //if (count == 999)
-            //{
-            //    txtYou.Visibility = Visibility.Visible;
-            //}
-            //else if (count != 1)
-            //{
-            //    txtTarget.Text = string.Format("Target (x{0})", count);
-            //}
-
-            //messageBlock.Text = message;
-
-            //this.ownDefenders = new List<SelectGUI_CardGUIModel>();
-
-            //cardsToGUI(ownDefenders, attacker, target);
+            loadCardInfo(card);
+            cardToGUI(card);
         }
 
-        private void cardsToGUI(List<CardGUIModel> cardList, Card attacker, Card target)
+        private void cardToGUI(Card card)
         {
-            //Thickness margin;
-
-            //foreach (CardGUIModel cardGUI in cardList)
-            //{
-            //    if (ownDefenders.Count == 0)
-            //        margin = new Thickness(10, 0, 0, 0);
-            //    else
-            //    {
-            //        margin = ownDefenders[ownDefenders.Count - 1].Border.Margin;
-            //        margin.Left += 75;
-            //    }
-            //    SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI, this, margin);
-            //    this.ownDefenders.Add(sCard);
-            //    grdSelectOwn.Children.Add(sCard.Border);
-            //}
+            SimpleCardGUIModel sCard = new SimpleCardGUIModel(card, 147, 200);
+            grdShield.Children.Add(sCard.Border);
         }
 
-        private void btnSelect_Click(object sender, RoutedEventArgs e)
+        private void btnActivate_Click(object sender, RoutedEventArgs e)
         {
-
+            activate = true;
             Close();
         }
 
-        private void btnCancel_Click(object sender, RoutedEventArgs e)
+        private void btnDontActivate_Click(object sender, RoutedEventArgs e)
         {
-            SelectedDefender = -1;
+            activate = false;
             Close();
         }
 
-        //public int addToSelectedCards(SelectGUI_CardGUIModel card)
-        //{
-        //    foreach (SelectGUI_CardGUIModel guiCard in ownDefenders)
-        //    {
-        //        if (guiCard != card)
-        //            guiCard.deselect();
-        //    }
-        //    SelectedDefender = ownDefenders.IndexOf(card);
-        //    return 0;
-        //}
-
-        public void removeFromSelectedCards(SelectGUI_CardGUIModel card)
+        private void loadCardInfo(Models.Card Card)
         {
-            SelectedDefender = -1;
+            rchCardInfo.Document.Blocks.Clear();
+
+            TextRange tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text += "Name: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text += Card.Name;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nType: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Type;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nElement: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Element;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nCost: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Cost.ToString();
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            if (Card.Race != null)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = "\nRace: ";
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Race;
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            if (Card.Power != -1)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = "\nPower: ";
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Power.ToString();
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nText: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            if (Card.Text != null)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Text;
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            rchCardInfo.ScrollToHome();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
