@@ -107,7 +107,7 @@ namespace DM___Client.GUIPages
                     card.hasCompletelyBeenSummoned = true;
                     break;
                 case "Draw":
-                    ctrl.send(new GameMessage("DRAWCARD", ctrl.GameRoomID));
+                    ctrl.send(new GameMessage("DRAWCARD", ctrl.GameRoomID, se.Arguments));
                     break;
             }
         }
@@ -544,11 +544,14 @@ namespace DM___Client.GUIPages
             }
         }
 
-        public void processOppDrew()
+        public void processOppDrew(GameMessage message)
         {
-            updateInfoBoard("hand", OPP, 1);
-            updateInfoBoard("deck", OPP, -1);
-            animateDrawCardOPP();
+            for (int i = 0; i < message.intArguments[0]; i++)
+            {
+                updateInfoBoard("hand", OPP, 1);
+                updateInfoBoard("deck", OPP, -1);
+                animateDrawCardOPP();
+            }
         }
     }
 }

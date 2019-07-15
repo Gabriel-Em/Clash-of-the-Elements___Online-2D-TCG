@@ -17,6 +17,8 @@ namespace DM___Client.Models.GUIModels
         private Window parent;
         private Image Image;
         private Button Btn;
+        private Grid Grd;
+        private TextBlock TxtBlock;
         private bool isSelected { get { return Border.BorderBrush == Brushes.Gold ? true : false; } }
         private Log.Logger logger;
 
@@ -24,14 +26,14 @@ namespace DM___Client.Models.GUIModels
         private string cardsPath = "/Images/Cards/";
 
         private int type;
-
+        
         public Card Card;
         public Border Border;
 
-        public SelectGUI_CardGUIModel(Card card, GUIWindows.GUISelect parent, Thickness margin, bool clickable=true)
+        public SelectGUI_CardGUIModel(Card card, GUIWindows.GUISelect parent, Thickness margin, bool clickable=true, int shieldNumber=-1)
         {
             type = 1;
-            init(card, parent, margin, clickable);
+            init(card, parent, margin, clickable, shieldNumber);
         }
 
         public SelectGUI_CardGUIModel(Card card, GUIWindows.GUIDefend parent, Thickness margin, bool clickable=true)
@@ -40,10 +42,10 @@ namespace DM___Client.Models.GUIModels
             init(card, parent, margin, clickable);
         }
 
-        private void init(Card card, Window parent, Thickness margin, bool clickable)
+        private void init(Card card, Window parent, Thickness margin, bool clickable, int shieldNumber=-1)
         {
             logger = new Log.Logger();
-            this.Card = card;
+            Card = card;
             this.parent = parent;
 
             // Border
@@ -58,6 +60,9 @@ namespace DM___Client.Models.GUIModels
             Border.RenderTransform = t;
             Border.Visibility = Visibility.Visible;
 
+            // Grid
+            Grd = new Grid();
+
             // Button
             Btn = new Button();
             Btn.Style = parent.FindResource("cardButtonStyle") as Style;
@@ -66,7 +71,7 @@ namespace DM___Client.Models.GUIModels
             if (clickable)
                 Btn.Click += Btn_Click;
 
-            Border.Child = Btn;
+            Border.Child = Grd;
 
             // Image
             Image = new Image();
@@ -96,6 +101,22 @@ namespace DM___Client.Models.GUIModels
 
             Image.Stretch = Stretch.UniformToFill;
             Btn.Content = Image;
+            Grd.Children.Add(Btn);
+
+            if (shieldNumber != -1)
+            {
+                // Textblock
+
+                TxtBlock = new TextBlock();
+                TxtBlock.Text = shieldNumber.ToString();
+                TxtBlock.FontSize = 15;
+                TxtBlock.Foreground = Brushes.White;
+                TxtBlock.FontWeight = FontWeights.Bold;
+                TxtBlock.HorizontalAlignment = HorizontalAlignment.Left;
+                TxtBlock.VerticalAlignment = VerticalAlignment.Top;
+                TxtBlock.Margin = new Thickness(10, 5, 0, 0);
+                Grd.Children.Add(TxtBlock);
+            }
         }
 
         private void Btn_Click(object sender, RoutedEventArgs e)

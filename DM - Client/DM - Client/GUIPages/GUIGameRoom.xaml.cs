@@ -240,12 +240,12 @@ namespace DM___Client.GUIPages
             Models.CardGUIModel safeGuard;
 
             Thickness margin = new Thickness(5, 0, 0, 0);
-            for (int i = 0; i < 5; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 Animations.MoveAnimation animation;
 
                 // add the actual card
-                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.ownDeckLocation, Visibility.Hidden);
+                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.ownDeckLocation, Visibility.Hidden, i);
                 grdParent.Children.Add(safeGuard.Border);
 
                 animation = new Animations.MoveAnimation(grdParent,
@@ -265,12 +265,12 @@ namespace DM___Client.GUIPages
         {
             Models.CardGUIModel safeGuard;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 1; i <= 5; i++)
             {
                 Animations.MoveAnimation animation;
 
                 // add the actual card
-                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.oppDeckLocation, Visibility.Hidden);
+                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.oppDeckLocation, Visibility.Hidden, i);
                 grdParent.Children.Add(safeGuard.Border);
 
                 animation = new Animations.MoveAnimation(

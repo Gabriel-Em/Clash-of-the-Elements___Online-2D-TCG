@@ -106,6 +106,9 @@
     <Compile Include="GUIWindows\GUISafeguardActive.xaml.cs">
       <DependentUpon>GUISafeguardActive.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUIWindows\GUISafeguardOrder.xaml.cs">
+      <DependentUpon>GUISafeguardOrder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUIWindows\GUISelect.xaml.cs">
       <DependentUpon>GUISelect.xaml</DependentUpon>
     </Compile>
@@ -235,6 +238,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GUIWindows\GUISafeguardActive.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUIWindows\GUISafeguardOrder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

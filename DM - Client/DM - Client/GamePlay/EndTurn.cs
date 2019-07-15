@@ -22,8 +22,18 @@ namespace DM___Client.GUIPages
             {
                 if (listOwnBattleGround[i].Card.Type == "Spell")
                 {
-                    animateBattleToGraveyard(i, true);
+                    animateBattleToGraveyard(i, OWN);
                     updateInfoBoard("grave", OWN, 1);
+                }
+            }
+
+            // remove any shield trigger spells our opponent used from the battle ground
+            for (int i = 0; i < listOppBattleGround.Count; i++)
+            {
+                if (listOppBattleGround[i].Card.Type == "Spell")
+                {
+                    animateBattleToGraveyard(i, OPP);
+                    updateInfoBoard("grave", OPP, 1);
                 }
             }
 

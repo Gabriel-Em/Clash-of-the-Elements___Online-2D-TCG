@@ -181,17 +181,20 @@ namespace DM___Server.Controllers
             
             if (game.isPlayer1(sender))
             {
-                response.commandIntArgumentsToSender.Add(game.drawCard(1));
+                for (int i = 0; i < message.intArguments[0]; i++)
+                    response.commandIntArgumentsToSender.Add(game.drawCard(1));
                 response.socketsToNotify.Add(game.Player2Socket);
             }
             else
             {
-                response.commandIntArgumentsToSender.Add(game.drawCard(2));
+                for (int i = 0; i < message.intArguments[0]; i++)
+                    response.commandIntArgumentsToSender.Add(game.drawCard(2));
                 response.socketsToNotify.Add(game.Player1Socket);
             }
 
             response.responseCommandToSender = "YOURECEIVEDCARD";
             response.responseCommandToSockets = "OPPRECEIVEDCARD";
+            response.commandIntArgumentsToSockets = message.intArguments;
             return response;
         }
 

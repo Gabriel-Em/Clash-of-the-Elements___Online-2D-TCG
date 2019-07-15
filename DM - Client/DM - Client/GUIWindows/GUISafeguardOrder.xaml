@@ -1,0 +1,47 @@
+﻿<Window x:Class="DM___Client.GUIWindows.GUISafeguardOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DM___Client.GUIWindows"
+        mc:Ignorable="d"
+        Title="" Height="170" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+    <Window.Resources>
+        <Style x:Key="buttonStyle" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" 
+                            BorderThickness="1"
+                            Padding="4,2" 
+                            BorderBrush="DarkGray" 
+                            CornerRadius="3" 
+                            Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="Red" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="DarkGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="55"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Border Background="LightBlue" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.ColumnSpan="2" Grid.RowSpan="3"/>
+        <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="15,10,15,0" TextAlignment="Center" TextWrapping="Wrap" FontSize="16">Your opponent broke the following shields ({0}). Select the order in which you want them revealed. [numbers and spaces only!]</TextBlock>
+        <TextBox x:Name="txtSelected" Grid.Row="1" Height="20" Width="180" VerticalAlignment="Bottom"></TextBox>
+        <Button Grid.Row ="2" x:Name="btnActivate" Style="{StaticResource buttonStyle}" Content="Select" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15"  Height="30" Width="180" HorizontalAlignment="Center" Click="btnSelect_Click"/>
+    </Grid>
+</Window>

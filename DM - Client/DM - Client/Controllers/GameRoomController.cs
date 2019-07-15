@@ -54,7 +54,7 @@ namespace DM___Client.Controllers
                     processReceivedCard(message);
                     break;
                 case "OPPRECEIVEDCARD":
-                    parent.processOppDrew();
+                    parent.processOppDrew(message);
                     break;
                 case "SUMMON":
                     processSummon(message);
@@ -156,7 +156,8 @@ namespace DM___Client.Controllers
 
         private void processReceivedCard(GameMessage message)
         {
-            parent.DrawCard(new CardWithGameProperties(CardCollection.getCardById(message.intArguments[0])));
+            for(int i =0;i<message.intArguments.Count;i++)
+                parent.DrawCard(new CardWithGameProperties(CardCollection.getCardById(message.intArguments[i])));
         }
 
         private void processSummon(GameMessage message)

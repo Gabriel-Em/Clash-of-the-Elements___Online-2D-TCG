@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DM___Client.GUIWindows"
         mc:Ignorable="d"
-        Title="Shield Trigger" Height="400" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+        Title="Broken shield" Height="400" Width="400" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
     <Window.Resources>
         <Style x:Key="buttonStyle" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -77,23 +77,31 @@
         </Style>
     </Window.Resources>
     <Grid Margin="0,0,0,0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="41*"/>
+            <ColumnDefinition Width="156*"/>
+        </Grid.ColumnDefinitions>
         <Border Background="LightBlue" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0" Grid.ColumnSpan="2" />
         <Grid Name="grdParent" Margin="20,30,20,0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="175"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50" />
                 <RowDefinition Height="227" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0" Text="Do you want to activate the Shield Trigger ability of this card?" TextAlignment="Center" TextWrapping="Wrap" FontSize="16"></TextBlock>
-            <Grid Grid.Row="1">
+            <TextBlock x:Name="messageBlock" Grid.Row="0" Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="30,0" Text="..." TextAlignment="Center" TextWrapping="Wrap" FontSize="16" Grid.ColumnSpan="2"></TextBlock>
+            <Grid Grid.Row="1" Grid.ColumnSpan="2">
                 <DockPanel Margin="0,5,0,0">
-                    <StackPanel HorizontalAlignment="Left" Margin="7,0,25,0" Width="145">
-                        <TextBlock x:Name="txtAttacker"  Width="Auto" Height="Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" Text="Shield" TextAlignment="Center" TextWrapping="Wrap" FontSize="18"></TextBlock>
-                        <Grid x:Name="grdShield"/>
+                    <StackPanel HorizontalAlignment="Left" Margin="0,0,0,0" Width="160">
+                        <Grid x:Name="grdShield" HorizontalAlignment="Left">
+                        </Grid>
                     </StackPanel>
-                    <Grid Width="150">
-                        <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#F6EEE3" Opacity="0.8" CornerRadius="2" Margin="0"/>
-                        <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0">
+                    <Grid Width="161" HorizontalAlignment="Right">
+                        <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#F6EEE3" Opacity="0.8" CornerRadius="2" Margin="0"/>
+                        <Border Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0">
                             <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
                                 <Label FontSize="15" Foreground="Black" Content="Card information:" HorizontalAlignment="Center"/>
                                 <RichTextBox x:Name="rchCardInfo" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="2,0,2,0" Height="180" VerticalScrollBarVisibility="Auto" FontSize="12" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
@@ -111,9 +119,9 @@
                     </Grid>
                 </DockPanel>
             </Grid>
-            <Grid x:Name="grdButtons" VerticalAlignment="Bottom" Grid.Row="2" Margin="0,0,10,15">
-                <Button Grid.Row ="2" x:Name="btnActivate" Style="{StaticResource buttonStyle}" Content="Activate" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,185,0" Height="30" Width="153" HorizontalAlignment="Center" Click="btnActivate_Click"/>
-                <Button Grid.Row ="2" x:Name="btnDontActivate" Style="{StaticResource buttonStyle}" Content="Don't activate" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="185,0,0,0" Height="30" Width="153" HorizontalAlignment="Center" Click="btnDontActivate_Click"/>
+            <Grid x:Name="grdButtons" VerticalAlignment="Bottom" Grid.Row="2" Margin="0,0,0,15" Grid.ColumnSpan="2">
+                <Button Grid.Row ="2" x:Name="btnActivate" Style="{StaticResource buttonStyle}" Content="Activate" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="-1,0,0,0" Height="30" Width="163" HorizontalAlignment="Left" Click="btnActivate_Click"/>
+                <Button Grid.Row ="2" x:Name="btnDontActivate" Style="{StaticResource buttonStyle}" Content="Send to hand" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Margin="0,0,-1,0" Height="30" Width="163" HorizontalAlignment="Right" Click="btnDontActivate_Click"/>
             </Grid>
         </Grid>
     </Grid>

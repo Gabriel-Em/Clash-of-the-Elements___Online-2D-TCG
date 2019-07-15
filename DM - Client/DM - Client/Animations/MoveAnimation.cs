@@ -33,6 +33,7 @@ namespace DM___Client.Animations
         private TranslateTransform trans;
         private double displacementX;
         private double displacementY;
+        private bool wasSafeguard;
 
         public bool removeOrigin { get; set; }
         public bool startsWithHiddenOrigin { get; set; }
@@ -44,7 +45,8 @@ namespace DM___Client.Animations
             Grid originGrid, Grid destinationGrid, Grid parentGrid, 
             List<Models.CardGUIModel> originList, List<Models.CardGUIModel> destinationList,
             Models.CardGUIModel origin, 
-            int type)
+            int type,
+            bool wasSafeguard=false)
         {
             this.originGrid = originGrid;
             this.destinationGrid = destinationGrid;
@@ -53,7 +55,7 @@ namespace DM___Client.Animations
             this.destinationList = destinationList;
             this.origin = origin;
             this.type = type;
-
+            this.wasSafeguard = wasSafeguard;
 
             destination = new Border();
             removeOrigin = false;
@@ -111,6 +113,9 @@ namespace DM___Client.Animations
                 else
                     destinationList.Insert(emptySpaceIndex, origin);
             }
+
+            if (wasSafeguard)
+                origin.removeTextBlock();
 
             isFinished = true;
             isRunning = false;
