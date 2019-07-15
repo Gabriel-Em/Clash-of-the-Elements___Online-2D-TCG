@@ -185,7 +185,8 @@ namespace DM___Client.GUIPages
                 listOwnSafeGuardZone,
                 listHand, 
                 safeGuard,
-                AnimationConstants.DESTINATIONOWNHAND);
+                AnimationConstants.DESTINATIONOWNHAND,
+                true);
             addAnimation(animation);
         }
 
@@ -208,7 +209,8 @@ namespace DM___Client.GUIPages
                 listOwnSafeGuardZone,
                 listOwnBattleGround,
                 safeGuard,
-                AnimationConstants.DESTINATIONBATTLE);
+                AnimationConstants.DESTINATIONBATTLE,
+                true);
             addAnimation(animation);
         }
 
@@ -231,7 +233,8 @@ namespace DM___Client.GUIPages
                 listOppSafeGuardZone,
                 listOppBattleGround,
                 safeGuard,
-                AnimationConstants.DESTINATIONBATTLE);
+                AnimationConstants.DESTINATIONBATTLE,
+                true);
             addAnimation(animation);
         }
 

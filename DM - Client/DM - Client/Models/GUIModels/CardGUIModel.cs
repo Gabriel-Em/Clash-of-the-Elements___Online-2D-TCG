@@ -17,6 +17,8 @@ namespace DM___Client.Models
         private GUIPages.GUIGameRoom parent;
         private Image Image;
         private Button Btn;
+        private Grid Grd;
+        private TextBlock TxtBlock;
         private bool isSelected { get { return Border.BorderBrush == Brushes.Gold; } }
         private Log.Logger logger;
 
@@ -25,12 +27,14 @@ namespace DM___Client.Models
 
         public Models.CardWithGameProperties Card;
         public Border Border;
+        public int ShieldNumber { get; set; }
 
-        public CardGUIModel(Models.CardWithGameProperties Card_, GUIPages.GUIGameRoom parent_, Thickness margin, Visibility visibility)
+        public CardGUIModel(Models.CardWithGameProperties Card_, GUIPages.GUIGameRoom parent_, Thickness margin, Visibility visibility, int shieldNumber=-1)
         {
             logger = new Log.Logger();
             Card = Card_;
             parent = parent_;
+            ShieldNumber = shieldNumber;
 
             // Border
             Border = new Border();
@@ -44,13 +48,17 @@ namespace DM___Client.Models
             Border.BorderBrush = Brushes.Transparent;
             Border.Visibility = visibility;
 
+            //Grid
+
+            Grd = new Grid();
+
             // Button
             Btn = new Button();
             Btn.Style = parent.FindResource("cardButtonStyle") as Style;
             Btn.Cursor = System.Windows.Input.Cursors.Hand;
             Btn.Click += cardButton_Click;
 
-            Border.Child = Btn;
+            Border.Child = Grd;
 
             // Image
             Image = new Image();
@@ -85,6 +93,22 @@ namespace DM___Client.Models
             Image.MouseRightButtonDown += parent.cardImage_MouseRightButtonDown;
 
             Btn.Content = Image;
+            Grd.Children.Add(Btn);
+
+            if (shieldNumber != -1)
+            {
+                // Textblock
+
+                TxtBlock = new TextBlock();
+                TxtBlock.Text = shieldNumber.ToString();
+                TxtBlock.FontSize = 15;
+                TxtBlock.Foreground = Brushes.White;
+                TxtBlock.FontWeight = FontWeights.Bold;
+                TxtBlock.HorizontalAlignment = HorizontalAlignment.Left;
+                TxtBlock.VerticalAlignment = VerticalAlignment.Top;
+                TxtBlock.Margin = new Thickness(10, 5, 0, 0);
+                Grd.Children.Add(TxtBlock);
+            }
         }
 
         private void cardButton_Click(object sender, RoutedEventArgs e)
@@ -168,6 +192,11 @@ namespace DM___Client.Models
         public void setMargin(Thickness margin)
         {
             Border.Margin = margin;
+        }
+
+        public void removeTextBlock()
+        {
+            Grd.Children.Remove(TxtBlock);
         }
     }
 }

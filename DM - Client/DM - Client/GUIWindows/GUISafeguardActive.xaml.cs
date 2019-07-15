@@ -33,9 +33,14 @@ namespace DM___Client.GUIWindows
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
         public bool activate { get; set; }
-        public GUISafeguardActive(Card card)
+        public GUISafeguardActive(Card card, int shieldNumber, bool canActivate=true)
         {
             InitializeComponent();
+
+            if (!canActivate)
+                hideActivateButton();
+
+            messageBlock.Text = string.Format("Shield [{0}] was revealed to be the following card:", shieldNumber);
 
             loadCardInfo(card);
             cardToGUI(card);
@@ -43,7 +48,7 @@ namespace DM___Client.GUIWindows
 
         private void cardToGUI(Card card)
         {
-            SimpleCardGUIModel sCard = new SimpleCardGUIModel(card, 147, 200);
+            SimpleCardGUIModel sCard = new SimpleCardGUIModel(card, 161, 222);
             grdShield.Children.Add(sCard.Border);
         }
 
@@ -121,6 +126,13 @@ namespace DM___Client.GUIWindows
         {
             var hwnd = new WindowInteropHelper(this).Handle;
             SetWindowLong(hwnd, GWL_STYLE, GetWindowLong(hwnd, GWL_STYLE) & ~WS_SYSMENU);
+        }
+
+        private void hideActivateButton()
+        {
+            btnActivate.Visibility = Visibility.Hidden;
+            btnDontActivate.Margin = new Thickness(0);
+            btnDontActivate.HorizontalAlignment = HorizontalAlignment.Center;
         }
     }
 }

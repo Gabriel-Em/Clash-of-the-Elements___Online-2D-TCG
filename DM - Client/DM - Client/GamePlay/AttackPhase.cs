@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using DM___Client.GUIWindows;
 using DM___Client.Models;
 
 namespace DM___Client.GUIPages
@@ -377,8 +378,13 @@ namespace DM___Client.GUIPages
         {
             int count;
             CardWithGameProperties card;
-            GUIWindows.GUISafeguardActive guiSafeguardActive;
+            GUISafeguardActive guiSafeguardActive;
+            GUISafeguardOrder guiSafeguardOrder;
             bool activate;
+            List<int> brokenGuardsNumbers;
+            List<int> selectedOrder;
+            Dictionary<int, int> guards;
+            int index;
 
             /*
              * args[0] - number of safeguards that broke
@@ -387,30 +393,59 @@ namespace DM___Client.GUIPages
              */
 
             count = args[0];
+            guards = new Dictionary<int, int>();
+            brokenGuardsNumbers = new List<int>();
+
             for (int i = 1; i <= count; i++)
             {
-                card = ctrl.getCardWithGamePropertiesByID(args[i + count]);
+                brokenGuardsNumbers.Add(listOwnSafeGuardZone[args[i]].ShieldNumber);
+                guards.Add(listOwnSafeGuardZone[args[i]].ShieldNumber, args[i + count]);
+            }
+
+            // choosing the order in which guards get broken
+            if (count > 1)
+            {
+                guiSafeguardOrder = new GUISafeguardOrder(brokenGuardsNumbers);
+                guiSafeguardOrder.ShowDialog();
+                selectedOrder = guiSafeguardOrder.selectedOrder;
+            }
+            else
+                selectedOrder = new List<int>() { brokenGuardsNumbers[0] };
+
+            // revealing shields
+            foreach(int shieldNumber in selectedOrder)
+            {
+                card = ctrl.getCardWithGamePropertiesByID(guards[shieldNumber]);
                 activate = false;
 
-                if (hasTrigger(card,"SafeguardActive"))
+                if (hasTrigger(card, "SafeguardActive"))
                 {
-                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card);
+                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber);
+                    guiSafeguardActive.ShowDialog();
+                    activate = guiSafeguardActive.activate;
+                }
+                else
+                {
+                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber, false);
                     guiSafeguardActive.ShowDialog();
                     activate = guiSafeguardActive.activate;
                 }
 
                 if (activate)
                 {
-                    animateSafeguardToGroundOwn(args[i], args[i + count]);
+                    index = getIndexOfOwnShieldWithNumber(shieldNumber);
 
-                    sendSendTo(new List<int>() { args[i], args[i + count] }, "OppGuards", "OppGround");
+                    animateSafeguardToGroundOwn(index, guards[shieldNumber]);
+                    sendSendTo(new List<int>() { index, guards[shieldNumber] }, "OppGuards", "OppGround");
 
                     //foreach (SpecialEffect se in card.SpecialEffects)
                     //    addTriggerEvent(se, card);
                 }
                 else
                 {
-                    animateSafeguardBrokeOWN(args[i], args[i + count]);
+                    index = getIndexOfOwnShieldWithNumber(shieldNumber);
+
+                    animateSafeguardBrokeOWN(index, guards[shieldNumber]);
                     updateInfoBoard("hand", OWN, 1);
 
                     // notify opponent that they broke this shield
@@ -418,10 +453,18 @@ namespace DM___Client.GUIPages
                     GameMessage gm = new GameMessage(
                         "YOUBROKEGUARD",
                         ctrl.GameRoomID,
-                        new List<int>() { args[i] });
+                        new List<int>() { index });
                     ctrl.send(gm);
                 }
             }
+        }
+
+        private int getIndexOfOwnShieldWithNumber(int number)
+        {
+            for (int i = 0; i < listOwnSafeGuardZone.Count; i++)
+                if (listOwnSafeGuardZone[i].ShieldNumber == number)
+                    return i;
+            return -1;
         }
 
         // whenever you break safeguards

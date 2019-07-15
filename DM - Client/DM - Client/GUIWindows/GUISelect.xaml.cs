@@ -99,7 +99,7 @@ namespace DM___Client.GUIWindows
                     }
                     margin.Left += 75;
                 }
-                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI.Card, this, margin);
+                SelectGUI_CardGUIModel sCard = new SelectGUI_CardGUIModel(cardGUI.Card, this, margin, true, cardGUI.ShieldNumber);
 
                 if (own)
                 {
@@ -191,6 +191,9 @@ namespace DM___Client.GUIWindows
 
         public int addToSelectedCards(SelectGUI_CardGUIModel card)
         {
+            if (card.Card!= null)
+                loadCardInfo(card.Card);
+
             if (ownCards.Contains(card))
             {
                 if (ownCount > 0)
@@ -222,8 +225,69 @@ namespace DM___Client.GUIWindows
             return 0;
         }
 
+        private void loadCardInfo(Models.Card Card)
+        {
+            rchCardInfo.Document.Blocks.Clear();
+
+            TextRange tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text += "Name: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text += Card.Name;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nType: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Type;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nElement: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Element;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nCost: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = Card.Cost.ToString();
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            if (Card.Race != null)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = "\nRace: ";
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Race;
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            if (Card.Power != -1)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = "\nPower: ";
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Power.ToString();
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+            tr.Text = "\nText: ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            if (Card.Text != null)
+            {
+                tr = new TextRange(rchCardInfo.Document.ContentEnd, rchCardInfo.Document.ContentEnd);
+                tr.Text = Card.Text;
+                tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            }
+            rchCardInfo.ScrollToHome();
+        }
+
         public void removeFromSelectedCards(SelectGUI_CardGUIModel card)
         {
+            if (card.Card != null)
+                loadCardInfo(card.Card);
+
             if (ownCards.Contains(card))
             {
                 ownSelected.Remove(ownCards.IndexOf(card));

@@ -20,7 +20,7 @@ namespace DM___Client.Models.GUIModels
         public Models.Card Card;
         public Border Border;
 
-        public SimpleCardGUIModel(Models.Card card, int width=75, int height=100)
+        public SimpleCardGUIModel(Models.Card card, int width=75, int height=104)
         {
             logger = new Log.Logger();
 

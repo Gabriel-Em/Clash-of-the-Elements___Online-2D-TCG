@@ -25,6 +25,16 @@ namespace DM___Client.GUIPages
                 }
             }
 
+            // remove any shield trigger spells we used from the battle ground
+            for (int i = 0; i < listOwnBattleGround.Count; i++)
+            {
+                if (listOwnBattleGround[i].Card.Type == "Spell")
+                {
+                    animateBattleToGraveyard(i, OWN);
+                    updateInfoBoard("grave", OWN, 1);
+                }
+            }
+
             disengageEverything();
 
             // set cards that have been summoned but were unable to be used to be able to be used
