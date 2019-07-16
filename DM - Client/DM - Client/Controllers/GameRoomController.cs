@@ -47,8 +47,8 @@ namespace DM___Client.Controllers
                     parent.startTurn();
                     break;
                 case "ROLLON":
-                    parent.DrawCard(getCardWithGamePropertiesByID(message.intArguments[0]));
-                    parent.addLoadEvent(new Animations.Animation(parent.loadManaPhase));
+                    parent.DrawCards(message.intArguments);
+                    parent.addRunMethodEvent(new Animations.Animation(parent.loadManaPhase));
                     break;
                 case "YOURECEIVEDCARD":
                     processReceivedCard(message);
@@ -156,8 +156,7 @@ namespace DM___Client.Controllers
 
         private void processReceivedCard(GameMessage message)
         {
-            for(int i =0;i<message.intArguments.Count;i++)
-                parent.DrawCard(new CardWithGameProperties(CardCollection.getCardById(message.intArguments[i])));
+            parent.DrawCards(message.intArguments);
         }
 
         private void processSummon(GameMessage message)

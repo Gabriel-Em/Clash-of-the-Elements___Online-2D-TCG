@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -63,13 +64,16 @@ namespace DM___Client.GUIPages
         private const bool OPP = false;
         private DispatcherTimer animationTimer;
         private DispatcherTimer checkInitialAnimationsFinished;
-        
+        private bool effectInProgress;
+        private object animationsAndEventsQueueLock = new object();
+
         public string Phase;
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
 
         public GUIGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_, int DeckID_, Models.CardCollection CardCollection_)
         {
             InitializeComponent();
+
             parent = parent_;
             ctrl = new Controllers.GameRoomController(this, com_, GameRoomID_, DeckID_, CardCollection_);
 
@@ -82,6 +86,7 @@ namespace DM___Client.GUIPages
             initTimers();
             initLists();
             initZoomedInImage();
+            effectInProgress = false;
 
             ctrl.loadPageData();
             beginListening();
@@ -453,7 +458,7 @@ namespace DM___Client.GUIPages
                     loadSummonPhase();
                     break;
                 case "Summon phase":
-                    addLoadEvent(new Animation(loadAttackPhase));
+                    addRunMethodEvent(new Animation(loadAttackPhase));
                     break;
             }
         }
@@ -497,71 +502,77 @@ namespace DM___Client.GUIPages
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
-            if (animationsAndEvents.Count > 0)
+            bool animationFinished;
+
+            if (animationsAndEvents.Count != 0)
             {
-                bool animationFinished;
+                animationFinished = false;
 
-                if (animationsAndEvents.Count != 0)
+                switch (animationsAndEvents[0].type)
                 {
-                    animationFinished = false;
-
-                    switch (animationsAndEvents[0].type)
-                    {
-                        case AnimationConstants.TYPEMOVE:
-                            if (animationsAndEvents[0].moveAnimation.isFinished)
-                                animationFinished = true;
-                            else
-                            if (!animationsAndEvents[0].moveAnimation.isRunning)
-                                animationsAndEvents[0].moveAnimation.startAnimation();
-                            break;
-                        case AnimationConstants.TYPEROTATE:
-                            if (animationsAndEvents[0].rotateAnimation.isFinished)
-                                animationFinished = true;
-                            else
-                            if (!animationsAndEvents[0].rotateAnimation.isRunning)
-                                animationsAndEvents[0].rotateAnimation.startAnimation();
-                            break;
-                        case AnimationConstants.TYPEALIGN:
-                            if (animationsAndEvents[0].alignAnimation.isFinished)
-                                animationFinished = true;
-                            else
-                            if (!animationsAndEvents[0].alignAnimation.isRunning)
-                                animationsAndEvents[0].alignAnimation.startAnimation();
-                            break;
-                        case AnimationConstants.TYPELOAD:
-                            animationsAndEvents[0].loadPhase_();
+                    case AnimationConstants.TYPEMOVE:
+                        if (animationsAndEvents[0].moveAnimation.isFinished)
                             animationFinished = true;
-                            break;
-                        case AnimationConstants.TYPETRIGGER:
-                            animationsAndEvents[0].triggerEffect();
+                        else
+                        if (!animationsAndEvents[0].moveAnimation.isRunning)
+                            animationsAndEvents[0].moveAnimation.startAnimation();
+                        break;
+                    case AnimationConstants.TYPEROTATE:
+                        if (animationsAndEvents[0].rotateAnimation.isFinished)
                             animationFinished = true;
-                            break;
-                    }
+                        else
+                        if (!animationsAndEvents[0].rotateAnimation.isRunning)
+                            animationsAndEvents[0].rotateAnimation.startAnimation();
+                        break;
+                    case AnimationConstants.TYPEALIGN:
+                        if (animationsAndEvents[0].alignAnimation.isFinished)
+                            animationFinished = true;
+                        else
+                        if (!animationsAndEvents[0].alignAnimation.isRunning)
+                            animationsAndEvents[0].alignAnimation.startAnimation();
+                        break;
+                    case AnimationConstants.TYPERUNMETHOD:
+                        animationsAndEvents[0].runMethod();
+                        animationFinished = true;
+                        break;
+                    case AnimationConstants.TYPETRIGGER:
+                        animationsAndEvents[0].triggerEffect();
+                        animationFinished = true;
+                        break;
+                }
 
-                    if (animationFinished && animationsAndEvents.Count != 0)
-                    {
-                        animationsAndEvents.RemoveAt(0);
-                    }
+                if (animationFinished && animationsAndEvents.Count != 0)
+                {
+                    animationsAndEvents.RemoveAt(0);
                 }
             }
         }
 
-        private void addAnimation(MoveAnimation moveAnimation)
+        private void addAnimation(MoveAnimation moveAnimation, bool toTopOfQueue = false)
         {
-            animationsAndEvents.Add(new Animation(moveAnimation));
+            if (toTopOfQueue)
+                animationsAndEvents.Insert(0, new Animation(moveAnimation));
+            else
+                animationsAndEvents.Add(new Animation(moveAnimation));
         }
 
-        private void addAnimation(RotateAnimation rotateAnimation)
+        private void addAnimation(RotateAnimation rotateAnimation, bool toTopOfQueue=false)
         {
-            animationsAndEvents.Add(new Animation(rotateAnimation));
+            if (toTopOfQueue)
+                animationsAndEvents.Insert(0, new Animation(rotateAnimation));
+            else
+                animationsAndEvents.Add(new Animation(rotateAnimation));
         }
 
-        private void addAnimation(AlignAnimation alignAnimation)
+        private void addAnimation(AlignAnimation alignAnimation, bool toTopOfQueue = false)
         {
-            animationsAndEvents.Add(new Animation(alignAnimation));
+            if (toTopOfQueue)
+                animationsAndEvents.Insert(0, new Animation(alignAnimation));
+            else
+                animationsAndEvents.Add(new Animation(alignAnimation));
         }
 
-        public void addLoadEvent(Animation animation)
+        public void addRunMethodEvent(Animation animation)
         {
             animationsAndEvents.Add(animation);
         }
@@ -569,7 +580,27 @@ namespace DM___Client.GUIPages
         public void addTriggerEvent(SpecialEffect se, CardWithGameProperties card)
         {
             Animation animation = new Animation(triggerEffect, se, card);
+
             animationsAndEvents.Add(animation);
+        }
+
+        private void wait()
+        {
+            effectInProgress = true;
+            while (effectInProgress)
+            {
+                DateTime desired = DateTime.Now.AddMilliseconds(1500);
+                while (DateTime.Now < desired)
+                {
+                    Thread.Sleep(1);
+                    System.Windows.Forms.Application.DoEvents();
+                }
+            }
+        }
+
+        private void endWait()
+        {
+            effectInProgress = false;
         }
 
         private void CheckInitialAnimationsFinished_Tick(object sender, EventArgs e)

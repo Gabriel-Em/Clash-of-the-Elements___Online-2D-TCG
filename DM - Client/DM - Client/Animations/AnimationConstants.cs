@@ -32,12 +32,11 @@ namespace DM___Client.Animations
         public const int DESTINATIONGRAVE = 5;
         public const int DESTINATIONSAFEGUARD = 6;
 
-
         // Animation
         public const int TYPEMOVE = 7;
         public const int TYPEROTATE = 8;
         public const int TYPEALIGN = 9;
-        public const int TYPELOAD = 10;
+        public const int TYPERUNMETHOD = 10;
         public const int TYPETRIGGER = 12;
     }
 }

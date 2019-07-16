@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DM___Client.GUIWindows"
         mc:Ignorable="d"
-        Title="Register" Height="600" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Register" Height="600" Width="500" ResizeMode="NoResize" WindowStartupLocation="CenterOwner">
     <Window.Resources>
         <Style x:Key="MyButtonStyle" TargetType="{x:Type Button}">
             <Setter Property="OverridesDefaultStyle" Value="True"/>

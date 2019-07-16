@@ -46,20 +46,6 @@ namespace DM___Client.GUIPages
             ctrl.send(new Models.GameMessage("STARTTURN", ctrl.GameRoomID));
         }
 
-        public void DrawCard(Models.CardWithGameProperties card)
-        {
-            animateDrawCardOWN(card);
-            addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
-
-            // if we drew a card during our own Summon phase we add it to the ableToSelect list
-            if (Phase == "Summon phase" && itIsOwnTurn)
-                ableToSelect.Add(listHand[listHand.Count - 1]);
-
-            // we update the info board
-            updateInfoBoard("hand", OWN, 1);
-            updateInfoBoard("deck", OWN, -1);
-        }
-
         private void disengageEverything()
         {
             disengageManaOWN();
