@@ -54,7 +54,7 @@ namespace DM___Client.GUIPages
 
                 // we want to load the summon phase AFTER all the animations have played out so that's why we insert an animation object which is actually a notification and not an animation
                 // which will trigger the loadSummonPhase method after all the animations have ended
-                addLoadEvent(new Animation(loadSummonPhase));
+                addRunMethodEvent(new Animation(loadSummonPhase));
             }
         }
 

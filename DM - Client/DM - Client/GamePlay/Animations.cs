@@ -110,7 +110,6 @@ namespace DM___Client.GUIPages
                 null, 
                 listOppManaZone,
                 card,
-   
                 AnimationConstants.DESTINATIONMANA);
             rotateAnimation = new RotateAnimation(true, 180);
             rotateAnimation.border = card.Border;

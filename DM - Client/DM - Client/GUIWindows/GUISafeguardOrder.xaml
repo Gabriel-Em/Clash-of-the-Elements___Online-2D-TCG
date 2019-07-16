@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DM___Client.GUIWindows"
         mc:Ignorable="d"
-        Title="" Height="170" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" Topmost="True">
+        Title="" Height="170" Width="600" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Loaded="Window_Loaded" Topmost="True">
     <Window.Resources>
         <Style x:Key="buttonStyle" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>

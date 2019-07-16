@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using DM___Client.Animations;
 using DM___Client.Models;
 
 namespace DM___Client.GUIPages
@@ -544,6 +545,29 @@ namespace DM___Client.GUIPages
             }
         }
 
+        public void DrawCards(List<int> arguments)
+        {
+            CardWithGameProperties card;
+            for (int i = 0; i < arguments.Count; i++)
+            {
+                card = new CardWithGameProperties(ctrl.getCardWithGamePropertiesByID(arguments[i]));
+
+                animateDrawCardOWN(card);
+                addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
+
+                // if we drew a card during our own Summon phase we add it to the ableToSelect list
+                if (Phase == "Summon phase" && itIsOwnTurn)
+                    ableToSelect.Add(listHand[listHand.Count - 1]);
+
+                // we update the info board
+                updateInfoBoard("hand", OWN, 1);
+                updateInfoBoard("deck", OWN, -1);
+            }
+
+            // you signify the end of the effect in case anything is waiting for this effect to happen
+            addRunMethodEvent(new Animations.Animation(endWait));
+        }
+
         public void processOppDrew(GameMessage message)
         {
             for (int i = 0; i < message.intArguments[0]; i++)
@@ -552,6 +576,8 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("deck", OPP, -1);
                 animateDrawCardOPP();
             }
+
+            addRunMethodEvent(new Animations.Animation(endWait));
         }
     }
 }

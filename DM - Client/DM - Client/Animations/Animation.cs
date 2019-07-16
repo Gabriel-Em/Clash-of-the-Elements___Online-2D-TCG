@@ -16,34 +16,24 @@ namespace DM___Client.Animations
 
         public int type;
 
-        public delegate void loadPhaseMethod();
+        public delegate void runMethodEvent();
         public delegate void triggerEffectMethod(SpecialEffect se, CardWithGameProperties card);
 
-        public loadPhaseMethod loadPhase_;
-        public triggerEffectMethod triggerEffect_;
+        public runMethodEvent runMethod;
+        private triggerEffectMethod triggerEffect_;
 
         private SpecialEffect se;
         private CardWithGameProperties card;
 
-        public Animation(loadPhaseMethod loadPhase)
+        public Animation(runMethodEvent runMethod)
         {
-            this.loadPhase_ = loadPhase;
-            moveAnimation = null;
-            rotateAnimation = null;
-            alignAnimation = null;
-            triggerEffect_ = null;
-
-            type = AnimationConstants.TYPELOAD;
+            this.runMethod = runMethod;
+            type = AnimationConstants.TYPERUNMETHOD;
         }
 
         public Animation(triggerEffectMethod triggerEffect, SpecialEffect se, CardWithGameProperties card)
         {
             this.triggerEffect_ = triggerEffect;
-            moveAnimation = null;
-            rotateAnimation = null;
-            alignAnimation = null;
-            loadPhase_ = null;
-
             this.se = se;
             this.card = card;
 
@@ -58,33 +48,18 @@ namespace DM___Client.Animations
         public Animation(AlignAnimation alignAnimation)
         {
             this.alignAnimation = alignAnimation;
-            moveAnimation = null;
-            rotateAnimation = null;
-            loadPhase_ = null;
-            triggerEffect_ = null;
-
             type = AnimationConstants.TYPEALIGN;
         }
 
         public Animation(MoveAnimation moveAnimation)
         {
             this.moveAnimation = moveAnimation;
-            rotateAnimation = null;
-            alignAnimation = null;
-            loadPhase_ = null;
-            triggerEffect_ = null;
-
             type = AnimationConstants.TYPEMOVE;
         }
 
         public Animation(RotateAnimation rotateAnimation)
         {
             this.rotateAnimation = rotateAnimation;
-            moveAnimation = null;
-            alignAnimation = null;
-            loadPhase_ = null;
-            triggerEffect_ = null;
-
             type = AnimationConstants.TYPEROTATE;
         }
     }

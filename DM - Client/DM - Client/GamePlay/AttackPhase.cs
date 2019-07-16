@@ -435,11 +435,17 @@ namespace DM___Client.GUIPages
                 {
                     index = getIndexOfOwnShieldWithNumber(shieldNumber);
 
+                    // animate shield to battle zone
                     animateSafeguardToGroundOwn(index, guards[shieldNumber]);
                     sendSendTo(new List<int>() { index, guards[shieldNumber] }, "OppGuards", "OppGround");
 
-                    //foreach (SpecialEffect se in card.SpecialEffects)
-                    //    addTriggerEvent(se, card);
+                    // add all special effects to event queue
+                    foreach (SpecialEffect se in card.SpecialEffects)
+                    {
+                        if (se.Trigger == "SafeguardActive")
+                            addTriggerEvent(se, card);
+                        wait();
+                    }
                 }
                 else
                 {
@@ -458,6 +464,8 @@ namespace DM___Client.GUIPages
                 }
             }
         }
+
+
 
         private int getIndexOfOwnShieldWithNumber(int number)
         {

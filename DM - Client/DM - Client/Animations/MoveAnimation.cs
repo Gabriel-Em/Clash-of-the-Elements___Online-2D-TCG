@@ -90,19 +90,15 @@ namespace DM___Client.Animations
         {
             if (destinationGrid != parentGrid)
             {
-                Point p = origin.Border.TranslatePoint(new Point(0, 0), destinationGrid);
-
-                origin.Border.Margin = new Thickness(p.X, p.Y, 0, 0);
-                origin.Border.RenderTransform = new TranslateTransform();
                 parentGrid.Children.Remove(origin.Border);
-                destinationGrid.Children.Add(origin.Border);
                 origin.Border.Margin = cloneThickness(destination.Margin);
-                origin.Border.RenderTransform = new TranslateTransform();
+                destinationGrid.Children.Add(origin.Border);
             }
 
+            origin.Border.RenderTransform = new TranslateTransform();
             destinationGrid.Children.Remove(destination);
             if (removeOrigin)
-                parentGrid.Children.Remove(origin.Border);
+                destinationGrid.Children.Remove(origin.Border);
 
             if (originList != null)
                 originList.Remove(origin);
@@ -133,8 +129,8 @@ namespace DM___Client.Animations
             {
                 Point p = origin.Border.TranslatePoint(new Point(0, 0), parentGrid);
 
-                origin.Border.Margin = new Thickness(p.X, p.Y, 0, 0);
                 originGrid.Children.Remove(origin.Border);
+                origin.Border.Margin = new Thickness(p.X, p.Y, 0, 0);
                 parentGrid.Children.Add(origin.Border);
             }
 
