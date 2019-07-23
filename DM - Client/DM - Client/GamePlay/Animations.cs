@@ -18,7 +18,7 @@ namespace DM___Client.GUIPages
             Models.CardGUIModel drawnCard;
             Animations.MoveAnimation animation;
 
-            drawnCard = new Models.CardGUIModel(card, this, AnimationConstants.ownDeckLocation, Visibility.Hidden);
+            drawnCard = new Models.CardGUIModel(card, this, AnimationAndEventsConstants.ownDeckLocation, Visibility.Hidden);
             
             // add cards to grids
             grdParent.Children.Add(drawnCard.Border);
@@ -33,7 +33,7 @@ namespace DM___Client.GUIPages
                 null, 
                 listHand, 
                 drawnCard, 
-                AnimationConstants.DESTINATIONOWNHAND);
+                AnimationAndEventsConstants.DESTINATIONOWNHAND);
 
             animation.startsWithHiddenOrigin = true;
             addAnimation(animation);
@@ -45,7 +45,7 @@ namespace DM___Client.GUIPages
             Animations.MoveAnimation animation;
 
             // set origin and destination
-            drawnCard = new Models.CardGUIModel(null, this, AnimationConstants.oppDeckLocation, Visibility.Hidden);
+            drawnCard = new Models.CardGUIModel(null, this, AnimationAndEventsConstants.oppDeckLocation, Visibility.Hidden);
 
             // add cards to grids
             grdParent.Children.Add(drawnCard.Border);
@@ -57,7 +57,7 @@ namespace DM___Client.GUIPages
                 null, 
                 null, 
                 drawnCard,
-                AnimationConstants.DESTINATIONOPPHAND);
+                AnimationAndEventsConstants.DESTINATIONOPPHAND);
 
             animation.removeOrigin = true;
             animation.startsWithHiddenOrigin = true;
@@ -82,7 +82,7 @@ namespace DM___Client.GUIPages
                 listHand, 
                 listOwnManaZone, 
                 card,
-                AnimationConstants.DESTINATIONMANA);
+                AnimationAndEventsConstants.DESTINATIONMANA);
             rotateAnimation = new RotateAnimation(true, 180);
             rotateAnimation.border = card.Border;
 
@@ -98,7 +98,7 @@ namespace DM___Client.GUIPages
 
             // create the origin and destination cards
 
-            card = new Models.CardGUIModel(ctrl.getCardWithGamePropertiesByID(cardID), this, AnimationConstants.oppHandLocation, Visibility.Visible);
+            card = new Models.CardGUIModel(ctrl.getCardWithGamePropertiesByID(cardID), this, AnimationAndEventsConstants.oppHandLocation, Visibility.Visible);
 
             // add cards to grids
             grdParent.Children.Add(card.Border);
@@ -110,7 +110,7 @@ namespace DM___Client.GUIPages
                 null, 
                 listOppManaZone,
                 card,
-                AnimationConstants.DESTINATIONMANA);
+                AnimationAndEventsConstants.DESTINATIONMANA);
             rotateAnimation = new RotateAnimation(true, 180);
             rotateAnimation.border = card.Border;
             addAnimation(moveAnimation);
@@ -134,7 +134,7 @@ namespace DM___Client.GUIPages
                 listHand, 
                 listOwnBattleGround, 
                 card,
-                AnimationConstants.DESTINATIONBATTLE);
+                AnimationAndEventsConstants.DESTINATIONBATTLE);
             addAnimation(animation);
         }
 
@@ -145,7 +145,7 @@ namespace DM___Client.GUIPages
 
             // create origin and destination
 
-            card = new Models.CardGUIModel(ctrl.getCardWithGamePropertiesByID(cardID), this, AnimationConstants.oppHandLocation, Visibility.Visible);
+            card = new Models.CardGUIModel(ctrl.getCardWithGamePropertiesByID(cardID), this, AnimationAndEventsConstants.oppHandLocation, Visibility.Visible);
 
             // add cards to grids
             grdParent.Children.Add(card.Border);
@@ -157,7 +157,7 @@ namespace DM___Client.GUIPages
                 null,
                 listOppBattleGround, 
                 card,
-                AnimationConstants.DESTINATIONBATTLE);
+                AnimationAndEventsConstants.DESTINATIONBATTLE);
             addAnimation(animation);
 
             return card;
@@ -184,7 +184,7 @@ namespace DM___Client.GUIPages
                 listOwnSafeGuardZone,
                 listHand, 
                 safeGuard,
-                AnimationConstants.DESTINATIONOWNHAND,
+                AnimationAndEventsConstants.DESTINATIONOWNHAND,
                 true);
             addAnimation(animation);
         }
@@ -208,7 +208,7 @@ namespace DM___Client.GUIPages
                 listOwnSafeGuardZone,
                 listOwnBattleGround,
                 safeGuard,
-                AnimationConstants.DESTINATIONBATTLE,
+                AnimationAndEventsConstants.DESTINATIONBATTLE,
                 true);
             addAnimation(animation);
         }
@@ -232,7 +232,7 @@ namespace DM___Client.GUIPages
                 listOppSafeGuardZone,
                 listOppBattleGround,
                 safeGuard,
-                AnimationConstants.DESTINATIONBATTLE,
+                AnimationAndEventsConstants.DESTINATIONBATTLE,
                 true);
             addAnimation(animation);
         }
@@ -253,7 +253,7 @@ namespace DM___Client.GUIPages
                 listOppSafeGuardZone, 
                 null, 
                 safeGuard,
-                AnimationConstants.DESTINATIONOPPHAND);
+                AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
             addAnimation(animation);
         }
@@ -276,7 +276,7 @@ namespace DM___Client.GUIPages
                     listOwnBattleGround,
                     listOwnGraveyard,
                     card,
-                    AnimationConstants.DESTINATIONGRAVE);
+                    AnimationAndEventsConstants.DESTINATIONGRAVE);
             }
             else
             {
@@ -288,7 +288,7 @@ namespace DM___Client.GUIPages
                     listOppBattleGround,
                     listOppGraveyard,
                     card,
-                    AnimationConstants.DESTINATIONGRAVE);
+                    AnimationAndEventsConstants.DESTINATIONGRAVE);
             }
 
             if (card.Card.isEngaged)
@@ -452,7 +452,7 @@ namespace DM___Client.GUIPages
                 listOppManaZone, 
                 null, 
                 card,
-                AnimationConstants.DESTINATIONOPPHAND);
+                AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
             addAnimation(animation);
         }
@@ -480,7 +480,7 @@ namespace DM___Client.GUIPages
                 listOppManaZone,
                 listOppGraveyard,
                 card,
-                AnimationConstants.DESTINATIONGRAVE);
+                AnimationAndEventsConstants.DESTINATIONGRAVE);
             addAnimation(animation);
         }
 
@@ -507,7 +507,7 @@ namespace DM___Client.GUIPages
                 listOwnManaZone,
                 listOwnGraveyard,
                 card,
-                AnimationConstants.DESTINATIONGRAVE);
+                AnimationAndEventsConstants.DESTINATIONGRAVE);
             addAnimation(animation);
         }
 
@@ -539,7 +539,7 @@ namespace DM___Client.GUIPages
                 listOwnManaZone,
                 listHand,
                 card,
-                AnimationConstants.DESTINATIONOWNHAND);
+                AnimationAndEventsConstants.DESTINATIONOWNHAND);
             addAnimation(animation);
         }
 
@@ -560,7 +560,7 @@ namespace DM___Client.GUIPages
                     listOwnGraveyard,
                     listOwnBattleGround,
                     card,
-                    AnimationConstants.DESTINATIONBATTLE);
+                    AnimationAndEventsConstants.DESTINATIONBATTLE);
             }
             else
             {
@@ -572,7 +572,7 @@ namespace DM___Client.GUIPages
                     listOppGraveyard,
                     listOppBattleGround,
                     card,
-                    AnimationConstants.DESTINATIONBATTLE);
+                    AnimationAndEventsConstants.DESTINATIONBATTLE);
             }
 
             addAnimation(moveAnimation);
@@ -596,7 +596,7 @@ namespace DM___Client.GUIPages
                 listOwnGraveyard, 
                 listHand,
                 card,
-                AnimationConstants.DESTINATIONOWNHAND);
+                AnimationAndEventsConstants.DESTINATIONOWNHAND);
             addAnimation(animation);
         }
 
@@ -616,7 +616,7 @@ namespace DM___Client.GUIPages
                 listOppGraveyard,
                 null,
                 card,
-                AnimationConstants.DESTINATIONOPPHAND);
+                AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
 
             addAnimation(animation);
@@ -649,7 +649,7 @@ namespace DM___Client.GUIPages
                 listOwnBattleGround, 
                 listHand, 
                 card,
-                AnimationConstants.DESTINATIONOWNHAND);
+                AnimationAndEventsConstants.DESTINATIONOWNHAND);
             addAnimation(animation);
         }
 
@@ -675,7 +675,7 @@ namespace DM___Client.GUIPages
                 listOppBattleGround, 
                 null, 
                 card,
-                AnimationConstants.DESTINATIONOPPHAND);
+                AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
             addAnimation(animation);
         }

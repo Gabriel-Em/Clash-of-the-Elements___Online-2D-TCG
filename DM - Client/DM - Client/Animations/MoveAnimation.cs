@@ -145,49 +145,49 @@ namespace DM___Client.Animations
 
             switch (type)
             {
-                case AnimationConstants.DESTINATIONOWNHAND:
-                    margin = cloneThickness(AnimationConstants.handInitialPosition);
+                case AnimationAndEventsConstants.DESTINATIONOWNHAND:
+                    margin = cloneThickness(AnimationAndEventsConstants.handInitialPosition);
                     foreach (Models.CardGUIModel cardGUI in destinationList)
                     {
                         if (cardGUI.Border.Margin != margin)
                             break;
-                        margin.Left += AnimationConstants.handAlignPace;
+                        margin.Left += AnimationAndEventsConstants.handAlignPace;
                         emptySpaceIndex++;
                     }
                     break;
-                case AnimationConstants.DESTINATIONOPPHAND:
-                    margin = cloneThickness(AnimationConstants.oppHandLocation);
+                case AnimationAndEventsConstants.DESTINATIONOPPHAND:
+                    margin = cloneThickness(AnimationAndEventsConstants.oppHandLocation);
                     break;
-                case AnimationConstants.DESTINATIONMANA:
-                    margin = cloneThickness(AnimationConstants.manaInitialPosition);
+                case AnimationAndEventsConstants.DESTINATIONMANA:
+                    margin = cloneThickness(AnimationAndEventsConstants.manaInitialPosition);
                     foreach (Models.CardGUIModel cardGUI in destinationList)
                     {
                         if (cardGUI.Border.Margin != margin)
                             break;
-                        margin.Left += AnimationConstants.manaAlignPace;
+                        margin.Left += AnimationAndEventsConstants.manaAlignPace;
                         emptySpaceIndex++;
                     }
                     break;
-                case AnimationConstants.DESTINATIONBATTLE:
-                    margin = cloneThickness(AnimationConstants.battleGroundInitialPosition);
+                case AnimationAndEventsConstants.DESTINATIONBATTLE:
+                    margin = cloneThickness(AnimationAndEventsConstants.battleGroundInitialPosition);
                     foreach (Models.CardGUIModel cardGUI in destinationList)
                     {
                         if (cardGUI.Border.Margin != margin)
                             break;
-                        margin.Left += AnimationConstants.battleGroundAlignPace;
+                        margin.Left += AnimationAndEventsConstants.battleGroundAlignPace;
                         emptySpaceIndex++;
                     }
                     break;
-                case AnimationConstants.DESTINATIONGRAVE:
-                    margin = cloneThickness(AnimationConstants.graveInitialPosition);
+                case AnimationAndEventsConstants.DESTINATIONGRAVE:
+                    margin = cloneThickness(AnimationAndEventsConstants.graveInitialPosition);
                     break;
-                case AnimationConstants.DESTINATIONSAFEGUARD:
-                    margin = cloneThickness(AnimationConstants.safeguardInitialPosition);
+                case AnimationAndEventsConstants.DESTINATIONSAFEGUARD:
+                    margin = cloneThickness(AnimationAndEventsConstants.safeguardInitialPosition);
                     foreach (Models.CardGUIModel cardGUI in destinationList)
                     {
                         if (cardGUI.Border.Margin != margin)
                             break;
-                        margin.Left += AnimationConstants.safeguardAlignPace;
+                        margin.Left += AnimationAndEventsConstants.safeguardAlignPace;
                         emptySpaceIndex++;
                     }
                     break;
