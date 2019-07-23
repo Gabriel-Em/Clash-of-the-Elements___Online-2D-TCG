@@ -553,7 +553,7 @@ namespace DM___Client.GUIPages
                 card = new CardWithGameProperties(ctrl.getCardWithGamePropertiesByID(arguments[i]));
 
                 animateDrawCardOWN(card);
-                addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
+                addAnimation(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace));
 
                 // if we drew a card during our own Summon phase we add it to the ableToSelect list
                 if (Phase == "Summon phase" && itIsOwnTurn)
@@ -564,8 +564,6 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("deck", OWN, -1);
             }
 
-            // you signify the end of the effect in case anything is waiting for this effect to happen
-            addRunMethodEvent(new Animations.Animation(endWait));
         }
 
         public void processOppDrew(GameMessage message)
@@ -576,8 +574,6 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("deck", OPP, -1);
                 animateDrawCardOPP();
             }
-
-            addRunMethodEvent(new Animations.Animation(endWait));
         }
     }
 }

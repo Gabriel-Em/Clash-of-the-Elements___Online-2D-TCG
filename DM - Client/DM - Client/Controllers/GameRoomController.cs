@@ -48,7 +48,7 @@ namespace DM___Client.Controllers
                     break;
                 case "ROLLON":
                     parent.DrawCards(message.intArguments);
-                    parent.addRunMethodEvent(new Animations.Animation(parent.loadManaPhase));
+                    parent.addRunMethodEvent(new Animations.Event(parent.loadManaPhase));
                     break;
                 case "YOURECEIVEDCARD":
                     processReceivedCard(message);

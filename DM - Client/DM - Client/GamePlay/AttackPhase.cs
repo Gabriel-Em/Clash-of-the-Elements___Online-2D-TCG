@@ -377,14 +377,10 @@ namespace DM___Client.GUIPages
         public void yourGuardsBroke(List<int> args)
         {
             int count;
-            CardWithGameProperties card;
-            GUISafeguardActive guiSafeguardActive;
             GUISafeguardOrder guiSafeguardOrder;
-            bool activate;
             List<int> brokenGuardsNumbers;
             List<int> selectedOrder;
             Dictionary<int, int> guards;
-            int index;
 
             /*
              * args[0] - number of safeguards that broke
@@ -412,56 +408,67 @@ namespace DM___Client.GUIPages
             else
                 selectedOrder = new List<int>() { brokenGuardsNumbers[0] };
 
-            // revealing shields
+            // adding the shield revealing event to the event queue
             foreach(int shieldNumber in selectedOrder)
             {
-                card = ctrl.getCardWithGamePropertiesByID(guards[shieldNumber]);
-                activate = false;
+                addProcessShieldEvent(guards[shieldNumber], shieldNumber);
+            }
+        }
 
-                if (hasTrigger(card, "SafeguardActive"))
+        private void processShield(int cardID, int shieldNumber)
+        {
+            int index;
+            CardWithGameProperties card;
+            GUISafeguardActive guiSafeguardActive;
+            bool activate;
+
+            card = ctrl.getCardWithGamePropertiesByID(cardID);
+            activate = false;
+
+            if (hasTrigger(card, "SafeguardActive"))
+            {
+                guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber);
+                guiSafeguardActive.ShowDialog();
+                activate = guiSafeguardActive.activate;
+            }
+            else
+            {
+                guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber, false);
+                guiSafeguardActive.ShowDialog();
+                activate = guiSafeguardActive.activate;
+            }
+
+            if (activate)
+            {
+                index = getIndexOfOwnShieldWithNumber(shieldNumber);
+
+                // animate shield to battle zone
+                animateSafeguardToGroundOwn(index, cardID);
+                sendSendTo(new List<int>() { index, cardID }, "OppGuards", "OppGround");
+
+                // add all special effects to event queue
+                foreach (SpecialEffect se in card.SpecialEffects)
                 {
-                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber);
-                    guiSafeguardActive.ShowDialog();
-                    activate = guiSafeguardActive.activate;
-                }
-                else
-                {
-                    guiSafeguardActive = new GUIWindows.GUISafeguardActive(card, shieldNumber, false);
-                    guiSafeguardActive.ShowDialog();
-                    activate = guiSafeguardActive.activate;
-                }
-
-                if (activate)
-                {
-                    index = getIndexOfOwnShieldWithNumber(shieldNumber);
-
-                    // animate shield to battle zone
-                    animateSafeguardToGroundOwn(index, guards[shieldNumber]);
-                    sendSendTo(new List<int>() { index, guards[shieldNumber] }, "OppGuards", "OppGround");
-
-                    // add all special effects to event queue
-                    foreach (SpecialEffect se in card.SpecialEffects)
+                    if (se.Trigger == "SafeguardActive")
                     {
-                        if (se.Trigger == "SafeguardActive")
-                            addTriggerEvent(se, card);
-                        wait();
+                        addTriggerEvent(se, card);
                     }
                 }
-                else
-                {
-                    index = getIndexOfOwnShieldWithNumber(shieldNumber);
+            }
+            else
+            {
+                index = getIndexOfOwnShieldWithNumber(shieldNumber);
 
-                    animateSafeguardBrokeOWN(index, guards[shieldNumber]);
-                    updateInfoBoard("hand", OWN, 1);
+                animateSafeguardBrokeOWN(index, cardID);
+                updateInfoBoard("hand", OWN, 1);
 
-                    // notify opponent that they broke this shield
+                // notify opponent that they broke this shield
 
-                    GameMessage gm = new GameMessage(
-                        "YOUBROKEGUARD",
-                        ctrl.GameRoomID,
-                        new List<int>() { index });
-                    ctrl.send(gm);
-                }
+                GameMessage gm = new GameMessage(
+                    "YOUBROKEGUARD",
+                    ctrl.GameRoomID,
+                    new List<int>() { index });
+                ctrl.send(gm);
             }
         }
 

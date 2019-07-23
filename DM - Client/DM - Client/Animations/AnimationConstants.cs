@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace DM___Client.Animations
 {
-    public static class AnimationConstants
+    public static class AnimationAndEventsConstants
     {
         public static Thickness safeguardInitialPosition { get { return new Thickness(25, 0, 0, 0); } }
         public static Thickness handInitialPosition { get { return new Thickness(5, 0, 0, 0); } }
@@ -37,6 +37,8 @@ namespace DM___Client.Animations
         public const int TYPEROTATE = 8;
         public const int TYPEALIGN = 9;
         public const int TYPERUNMETHOD = 10;
-        public const int TYPETRIGGER = 12;
+        public const int TYPETRIGGER = 11;
+        public const int TYPEWAIT = 12;
+        public const int TYPEPROCESSSHIELD = 13;
     }
 }

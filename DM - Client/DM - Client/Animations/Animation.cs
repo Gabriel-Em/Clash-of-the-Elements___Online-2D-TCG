@@ -8,7 +8,7 @@ using DM___Client.Models;
 
 namespace DM___Client.Animations
 {
-    public class Animation
+    public class Event
     {
         public MoveAnimation moveAnimation { get; set; }
         public RotateAnimation rotateAnimation { get; set; }
@@ -18,26 +18,39 @@ namespace DM___Client.Animations
 
         public delegate void runMethodEvent();
         public delegate void triggerEffectMethod(SpecialEffect se, CardWithGameProperties card);
+        public delegate void processShieldMethod(int cardID, int shieldNumber);
 
         public runMethodEvent runMethod;
         private triggerEffectMethod triggerEffect_;
+        private processShieldMethod processShield_;
 
         private SpecialEffect se;
         private CardWithGameProperties card;
+        private int cardID;
+        private int shieldNumber;
 
-        public Animation(runMethodEvent runMethod)
+        public Event(runMethodEvent runMethod)
         {
             this.runMethod = runMethod;
-            type = AnimationConstants.TYPERUNMETHOD;
+            type = AnimationAndEventsConstants.TYPERUNMETHOD;
         }
 
-        public Animation(triggerEffectMethod triggerEffect, SpecialEffect se, CardWithGameProperties card)
+        public Event(triggerEffectMethod triggerEffect, SpecialEffect se, CardWithGameProperties card)
         {
-            this.triggerEffect_ = triggerEffect;
+            triggerEffect_ = triggerEffect;
             this.se = se;
             this.card = card;
 
-            type = AnimationConstants.TYPETRIGGER;
+            type = AnimationAndEventsConstants.TYPETRIGGER;
+        }
+
+        public Event(processShieldMethod processShield, int cardID, int shieldNumber)
+        {
+            processShield_ = processShield;
+            this.cardID = cardID;
+            this.shieldNumber = shieldNumber;
+
+            type = AnimationAndEventsConstants.TYPEPROCESSSHIELD;
         }
 
         public void triggerEffect()
@@ -45,22 +58,32 @@ namespace DM___Client.Animations
             triggerEffect_(se, card);
         }
 
-        public Animation(AlignAnimation alignAnimation)
+        public void triggerProcessShield()
+        {
+            processShield_(cardID, shieldNumber);
+        }
+
+        public Event(AlignAnimation alignAnimation)
         {
             this.alignAnimation = alignAnimation;
-            type = AnimationConstants.TYPEALIGN;
+            type = AnimationAndEventsConstants.TYPEALIGN;
         }
 
-        public Animation(MoveAnimation moveAnimation)
+        public Event(MoveAnimation moveAnimation)
         {
             this.moveAnimation = moveAnimation;
-            type = AnimationConstants.TYPEMOVE;
+            type = AnimationAndEventsConstants.TYPEMOVE;
         }
 
-        public Animation(RotateAnimation rotateAnimation)
+        public Event(RotateAnimation rotateAnimation)
         {
             this.rotateAnimation = rotateAnimation;
-            type = AnimationConstants.TYPEROTATE;
+            type = AnimationAndEventsConstants.TYPEROTATE;
+        }
+
+        public Event(int type)
+        {
+            this.type = type;
         }
     }
 }

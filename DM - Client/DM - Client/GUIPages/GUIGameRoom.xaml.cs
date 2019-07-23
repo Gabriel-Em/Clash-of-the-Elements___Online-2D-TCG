@@ -43,7 +43,7 @@ namespace DM___Client.GUIPages
         private List<Models.CardGUIModel> listOppSafeGuardZone;
         private List<Models.CardGUIModel> selectedCards;
         private List<Models.CardGUIModel> ableToSelect;
-        private List<Animation> animationsAndEvents;
+        private List<Event> animationsAndEvents;
         #endregion
 
         #region BUTTONS
@@ -64,7 +64,6 @@ namespace DM___Client.GUIPages
         private const bool OPP = false;
         private DispatcherTimer animationTimer;
         private DispatcherTimer checkInitialAnimationsFinished;
-        private bool effectInProgress;
         private object animationsAndEventsQueueLock = new object();
 
         public string Phase;
@@ -79,14 +78,13 @@ namespace DM___Client.GUIPages
 
             logger = new Log.Logger();
 
-            grdOwnGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationConstants.graveInitialPosition, Visibility.Hidden).Border);
-            grdOppGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationConstants.graveInitialPosition, Visibility.Hidden).Border);
+            grdOwnGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationAndEventsConstants.graveInitialPosition, Visibility.Hidden).Border);
+            grdOppGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationAndEventsConstants.graveInitialPosition, Visibility.Hidden).Border);
 
             initButtons();
             initTimers();
             initLists();
             initZoomedInImage();
-            effectInProgress = false;
 
             ctrl.loadPageData();
             beginListening();
@@ -118,7 +116,7 @@ namespace DM___Client.GUIPages
             listOppSafeGuardZone = new List<Models.CardGUIModel>();
             selectedCards = new List<Models.CardGUIModel>();
             ableToSelect = new List<Models.CardGUIModel>();
-            animationsAndEvents = new List<Animation>();
+            animationsAndEvents = new List<Event>();
         }
 
         private void initButtons()
@@ -250,7 +248,7 @@ namespace DM___Client.GUIPages
                 Animations.MoveAnimation animation;
 
                 // add the actual card
-                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.ownDeckLocation, Visibility.Hidden, i);
+                safeGuard = new Models.CardGUIModel(null, this, AnimationAndEventsConstants.ownDeckLocation, Visibility.Hidden, i);
                 grdParent.Children.Add(safeGuard.Border);
 
                 animation = new Animations.MoveAnimation(grdParent,
@@ -259,7 +257,7 @@ namespace DM___Client.GUIPages
                     null,
                     listOwnSafeGuardZone,
                     safeGuard,
-                    AnimationConstants.DESTINATIONSAFEGUARD);
+                    AnimationAndEventsConstants.DESTINATIONSAFEGUARD);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
@@ -275,7 +273,7 @@ namespace DM___Client.GUIPages
                 Animations.MoveAnimation animation;
 
                 // add the actual card
-                safeGuard = new Models.CardGUIModel(null, this, AnimationConstants.oppDeckLocation, Visibility.Hidden, i);
+                safeGuard = new Models.CardGUIModel(null, this, AnimationAndEventsConstants.oppDeckLocation, Visibility.Hidden, i);
                 grdParent.Children.Add(safeGuard.Border);
 
                 animation = new Animations.MoveAnimation(
@@ -285,7 +283,7 @@ namespace DM___Client.GUIPages
                     null,
                     listOppSafeGuardZone, 
                     safeGuard,
-                    AnimationConstants.DESTINATIONSAFEGUARD);
+                    AnimationAndEventsConstants.DESTINATIONSAFEGUARD);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
@@ -300,7 +298,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.MoveAnimation animation;
 
-                card = new Models.CardGUIModel(ctrl.getCardFromInitialHand(), this, AnimationConstants.ownDeckLocation, Visibility.Hidden);
+                card = new Models.CardGUIModel(ctrl.getCardFromInitialHand(), this, AnimationAndEventsConstants.ownDeckLocation, Visibility.Hidden);
                 grdParent.Children.Add(card.Border);
 
                 animation = new Animations.MoveAnimation(
@@ -310,7 +308,7 @@ namespace DM___Client.GUIPages
                     null,
                     listHand,
                     card,
-                    AnimationConstants.DESTINATIONOWNHAND);
+                    AnimationAndEventsConstants.DESTINATIONOWNHAND);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
                 addAnimation(animation);
@@ -458,7 +456,7 @@ namespace DM___Client.GUIPages
                     loadSummonPhase();
                     break;
                 case "Summon phase":
-                    addRunMethodEvent(new Animation(loadAttackPhase));
+                    addRunMethodEvent(new Event(loadAttackPhase));
                     break;
             }
         }
@@ -502,105 +500,151 @@ namespace DM___Client.GUIPages
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
-            bool animationFinished;
+            bool eventFinished;
 
-            if (animationsAndEvents.Count != 0)
+            lock(animationsAndEventsQueueLock)
             {
-                animationFinished = false;
-
-                switch (animationsAndEvents[0].type)
+                if (animationsAndEvents.Count != 0)
                 {
-                    case AnimationConstants.TYPEMOVE:
-                        if (animationsAndEvents[0].moveAnimation.isFinished)
-                            animationFinished = true;
-                        else
-                        if (!animationsAndEvents[0].moveAnimation.isRunning)
-                            animationsAndEvents[0].moveAnimation.startAnimation();
-                        break;
-                    case AnimationConstants.TYPEROTATE:
-                        if (animationsAndEvents[0].rotateAnimation.isFinished)
-                            animationFinished = true;
-                        else
-                        if (!animationsAndEvents[0].rotateAnimation.isRunning)
-                            animationsAndEvents[0].rotateAnimation.startAnimation();
-                        break;
-                    case AnimationConstants.TYPEALIGN:
-                        if (animationsAndEvents[0].alignAnimation.isFinished)
-                            animationFinished = true;
-                        else
-                        if (!animationsAndEvents[0].alignAnimation.isRunning)
-                            animationsAndEvents[0].alignAnimation.startAnimation();
-                        break;
-                    case AnimationConstants.TYPERUNMETHOD:
-                        animationsAndEvents[0].runMethod();
-                        animationFinished = true;
-                        break;
-                    case AnimationConstants.TYPETRIGGER:
-                        animationsAndEvents[0].triggerEffect();
-                        animationFinished = true;
-                        break;
-                }
+                    eventFinished = false;
 
-                if (animationFinished && animationsAndEvents.Count != 0)
-                {
-                    animationsAndEvents.RemoveAt(0);
+                    switch (animationsAndEvents[0].type)
+                    {
+                        case AnimationAndEventsConstants.TYPEMOVE:
+                            if (animationsAndEvents[0].moveAnimation.isFinished)
+                                eventFinished = true;
+                            else
+                            if (!animationsAndEvents[0].moveAnimation.isRunning)
+                                animationsAndEvents[0].moveAnimation.startAnimation();
+                            break;
+                        case AnimationAndEventsConstants.TYPEROTATE:
+                            if (animationsAndEvents[0].rotateAnimation.isFinished)
+                                eventFinished = true;
+                            else
+                            if (!animationsAndEvents[0].rotateAnimation.isRunning)
+                                animationsAndEvents[0].rotateAnimation.startAnimation();
+                            break;
+                        case AnimationAndEventsConstants.TYPEALIGN:
+                            if (animationsAndEvents[0].alignAnimation.isFinished)
+                                eventFinished = true;
+                            else
+                            if (!animationsAndEvents[0].alignAnimation.isRunning)
+                                animationsAndEvents[0].alignAnimation.startAnimation();
+                            break;
+                        case AnimationAndEventsConstants.TYPERUNMETHOD:
+                            animationsAndEvents[0].runMethod();
+                            eventFinished = true;
+                            break;
+                        case AnimationAndEventsConstants.TYPETRIGGER:
+                            animationsAndEvents[0].triggerEffect();
+                            eventFinished = true;
+                            break;
+                        case AnimationAndEventsConstants.TYPEPROCESSSHIELD:
+                            animationsAndEvents[0].triggerProcessShield();
+                            eventFinished = true;
+                            break;
+                        case AnimationAndEventsConstants.TYPEWAIT:
+                            break;
+                    }
+
+                    if (eventFinished && animationsAndEvents.Count != 0)
+                    {
+                        animationsAndEvents.RemoveAt(0);
+                    }
                 }
             }
         }
 
         private void addAnimation(MoveAnimation moveAnimation, bool toTopOfQueue = false)
         {
-            if (toTopOfQueue)
-                animationsAndEvents.Insert(0, new Animation(moveAnimation));
-            else
-                animationsAndEvents.Add(new Animation(moveAnimation));
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    animationsAndEvents.RemoveAt(0);
+                    animationsAndEvents.Insert(0, new Event(moveAnimation));
+                }
+                else
+                    animationsAndEvents.Add(new Event(moveAnimation));
+            }
         }
 
         private void addAnimation(RotateAnimation rotateAnimation, bool toTopOfQueue=false)
         {
-            if (toTopOfQueue)
-                animationsAndEvents.Insert(0, new Animation(rotateAnimation));
-            else
-                animationsAndEvents.Add(new Animation(rotateAnimation));
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    animationsAndEvents.RemoveAt(0);
+                    animationsAndEvents.Insert(0, new Event(rotateAnimation));
+                }
+                else
+                    animationsAndEvents.Add(new Event(rotateAnimation));
+            }
         }
 
         private void addAnimation(AlignAnimation alignAnimation, bool toTopOfQueue = false)
         {
-            if (toTopOfQueue)
-                animationsAndEvents.Insert(0, new Animation(alignAnimation));
-            else
-                animationsAndEvents.Add(new Animation(alignAnimation));
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    animationsAndEvents.RemoveAt(0);
+                    animationsAndEvents.Insert(0, new Event(alignAnimation));
+                }
+                else
+                    animationsAndEvents.Add(new Event(alignAnimation));
+            }
         }
 
-        public void addRunMethodEvent(Animation animation)
+        public void addRunMethodEvent(Event e)
         {
-            animationsAndEvents.Add(animation);
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    animationsAndEvents.RemoveAt(0);
+                    animationsAndEvents.Insert(0, e);
+                }
+                else
+                    animationsAndEvents.Add(e);
+            }
         }
 
         public void addTriggerEvent(SpecialEffect se, CardWithGameProperties card)
         {
-            Animation animation = new Animation(triggerEffect, se, card);
+            Event e = new Event(triggerEffect, se, card);
 
-            animationsAndEvents.Add(animation);
-        }
-
-        private void wait()
-        {
-            effectInProgress = true;
-            while (effectInProgress)
+            lock (animationsAndEventsQueueLock)
             {
-                DateTime desired = DateTime.Now.AddMilliseconds(1500);
-                while (DateTime.Now < desired)
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
                 {
-                    Thread.Sleep(1);
-                    System.Windows.Forms.Application.DoEvents();
+                    animationsAndEvents.Insert(0, e);
+                }
+                else
+                {
+                    animationsAndEvents.Add(e);
+                    addWaitEvent();
                 }
             }
         }
 
-        private void endWait()
+        public void addProcessShieldEvent(int cardID, int shieldNumber)
         {
-            effectInProgress = false;
+            Event e = new Event(processShield, cardID, shieldNumber);
+
+            lock (animationsAndEventsQueueLock)
+            {
+                animationsAndEvents.Add(e);
+                addWaitEvent();
+            }
+        }
+
+        private void addWaitEvent()
+        {
+            Event e = new Event(AnimationAndEventsConstants.TYPEWAIT);
+
+            animationsAndEvents.Add(e);
         }
 
         private void CheckInitialAnimationsFinished_Tick(object sender, EventArgs e)

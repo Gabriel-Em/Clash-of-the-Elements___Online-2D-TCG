@@ -129,7 +129,7 @@ namespace DM___Client.GUIPages
             // animate the engaging of the selected mana and the summoning of the card and then we align the remaining cards in our hand
             engageManaOWN(selectedMana);
             animateSummonOWN(selectedCardIndex);
-            addAnimation(new Animations.AlignAnimation(listHand, AnimationConstants.handInitialPosition, AnimationConstants.handAlignPace));
+            addAnimation(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace));
 
             // update the info board
             updateInfoBoard("hand", true, -1);
