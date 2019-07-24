@@ -65,7 +65,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Animations\AlignAnimation.cs" />
-    <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Event.cs" />
     <Compile Include="Animations\AnimationConstants.cs" />
     <Compile Include="Animations\RotateAnimation.cs" />
     <Compile Include="App.xaml.cs">

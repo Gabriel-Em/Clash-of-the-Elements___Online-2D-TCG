@@ -36,7 +36,7 @@ namespace DM___Client.GUIPages
                 AnimationAndEventsConstants.DESTINATIONOWNHAND);
 
             animation.startsWithHiddenOrigin = true;
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateDrawCardOPP()
@@ -61,7 +61,7 @@ namespace DM___Client.GUIPages
 
             animation.removeOrigin = true;
             animation.startsWithHiddenOrigin = true;
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         // Mana Phase
@@ -86,7 +86,7 @@ namespace DM___Client.GUIPages
             rotateAnimation = new RotateAnimation(true, 180);
             rotateAnimation.border = card.Border;
 
-            addAnimation(moveAnimation);
+            addEvent(new Event(moveAnimation));
             //addAnimation(rotateAnimation);
         }
 
@@ -113,7 +113,7 @@ namespace DM___Client.GUIPages
                 AnimationAndEventsConstants.DESTINATIONMANA);
             rotateAnimation = new RotateAnimation(true, 180);
             rotateAnimation.border = card.Border;
-            addAnimation(moveAnimation);
+            addEvent(new Event(moveAnimation));
             //addAnimation(rotateAnimation);
         }
 
@@ -135,7 +135,7 @@ namespace DM___Client.GUIPages
                 listOwnBattleGround, 
                 card,
                 AnimationAndEventsConstants.DESTINATIONBATTLE);
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private Models.CardGUIModel animateSummonOPP(int cardID)
@@ -158,7 +158,7 @@ namespace DM___Client.GUIPages
                 listOppBattleGround, 
                 card,
                 AnimationAndEventsConstants.DESTINATIONBATTLE);
-            addAnimation(animation);
+            addEvent(new Event(animation));
 
             return card;
         }
@@ -186,10 +186,10 @@ namespace DM___Client.GUIPages
                 safeGuard,
                 AnimationAndEventsConstants.DESTINATIONOWNHAND,
                 true);
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
-        private void animateSafeguardToGroundOwn(int index, int cardID)
+        private void animateSafeguardToGroundOwn(int index, int cardID, bool withWait=false)
         {
             Models.CardGUIModel safeGuard;
             Animations.MoveAnimation animation;
@@ -210,7 +210,7 @@ namespace DM___Client.GUIPages
                 safeGuard,
                 AnimationAndEventsConstants.DESTINATIONBATTLE,
                 true);
-            addAnimation(animation);
+            addEvent(new Event(animation), withWait);
         }
 
         private void animateSafeguardToGroundOpp(int index, int cardID)
@@ -234,7 +234,7 @@ namespace DM___Client.GUIPages
                 safeGuard,
                 AnimationAndEventsConstants.DESTINATIONBATTLE,
                 true);
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateSafeguardBrokeOPP(int index)
@@ -255,7 +255,7 @@ namespace DM___Client.GUIPages
                 safeGuard,
                 AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateBattleToGraveyard(int cardIndex, bool own)
@@ -263,6 +263,9 @@ namespace DM___Client.GUIPages
             Models.CardGUIModel card;
             Animations.MoveAnimation moveAnimation;
             Animations.RotateAnimation rotateAnimation;
+            List<Event> events;
+
+            events = new List<Event>();
 
             // select origin and create destination
 
@@ -295,12 +298,13 @@ namespace DM___Client.GUIPages
             {
                 rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                events.Add(new Event(rotateAnimation));
             }
 
             card.Card.resetProperties();
 
-            addAnimation(moveAnimation);
+            events.Add(new Event(moveAnimation));
+            addEvents(events);
         }
 
         // Engage
@@ -313,7 +317,7 @@ namespace DM___Client.GUIPages
             {
                 rotateAnimation = new Animations.RotateAnimation(true);
                 rotateAnimation.border = listOwnManaZone[index].Border;
-                addAnimation(rotateAnimation);
+                addEvent(new Event(rotateAnimation));
             }
         }
 
@@ -325,7 +329,7 @@ namespace DM___Client.GUIPages
             {
                 rotateAnimation = new Animations.RotateAnimation(true);
                 rotateAnimation.border = listOppManaZone[index].Border;
-                addAnimation(rotateAnimation);
+                addEvent(new Event(rotateAnimation));
             }
         }
 
@@ -334,7 +338,7 @@ namespace DM___Client.GUIPages
             Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(true);
 
             rotateAnimation.border = listOwnBattleGround[cardIndex].Border;
-            addAnimation(rotateAnimation);
+            addEvent(new Event(rotateAnimation));
         }
 
         private void animateEngageBattleOPP(Models.CardGUIModel cardGUI)
@@ -342,7 +346,7 @@ namespace DM___Client.GUIPages
             Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(true);
 
             rotateAnimation.border = cardGUI.Border;
-            addAnimation(rotateAnimation);
+            addEvent(new Event(rotateAnimation));
         }
 
         // Disengage
@@ -361,7 +365,7 @@ namespace DM___Client.GUIPages
                 {
                     rotateAnimation.border = cardGUI.Border;
                     rotateAnimation.setSpeed(100);
-                    addAnimation(rotateAnimation);
+                    addEvent(new Event(rotateAnimation));
                     count++;
                 }
             }
@@ -381,7 +385,7 @@ namespace DM___Client.GUIPages
                     rotateAnimation = new Animations.RotateAnimation(false);
                     rotateAnimation.border = cardGUI.Border;
                     rotateAnimation.setSpeed(100);
-                    addAnimation(rotateAnimation);
+                    addEvent(new Event(rotateAnimation));
                     count++;
                 }
             }
@@ -401,7 +405,7 @@ namespace DM___Client.GUIPages
                     rotateAnimation = new Animations.RotateAnimation(false);
                     rotateAnimation.border = cardGUI.Border;
                     rotateAnimation.setSpeed(100);
-                    addAnimation(rotateAnimation);
+                    addEvent(new Event(rotateAnimation));
                     count++;
                 }
             }
@@ -421,7 +425,7 @@ namespace DM___Client.GUIPages
                     rotateAnimation = new Animations.RotateAnimation(false);
                     rotateAnimation.border = cardGUI.Border;
                     rotateAnimation.setSpeed(100);
-                    addAnimation(rotateAnimation);
+                    addEvent(new Event(rotateAnimation));
                     count++;
                 }
             }
@@ -433,6 +437,9 @@ namespace DM___Client.GUIPages
         {
             Models.CardGUIModel card;
             Animations.MoveAnimation animation;
+            List<Event> events;
+
+            events = new List<Event>();
 
             // select origin
 
@@ -442,7 +449,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                events.Add(new Event(rotateAnimation));
             }
 
             animation = new Animations.MoveAnimation(
@@ -454,13 +461,18 @@ namespace DM___Client.GUIPages
                 card,
                 AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
-            addAnimation(animation);
+            events.Add(new Event(animation));
+
+            addEvents(events);
         }
 
         private void animateManaToGraveOpp(int cardIndex)
         {
             Models.CardGUIModel card;
             Animations.MoveAnimation animation;
+            List<Event> events;
+
+            events = new List<Event>();
 
             // select origin
 
@@ -470,7 +482,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                events.Add(new Event(rotateAnimation));
             }
 
             animation = new Animations.MoveAnimation(
@@ -481,13 +493,18 @@ namespace DM___Client.GUIPages
                 listOppGraveyard,
                 card,
                 AnimationAndEventsConstants.DESTINATIONGRAVE);
-            addAnimation(animation);
+            events.Add(new Event(animation));
+
+            addEvents(events);
         }
 
         private void animateManaToGraveOwn(int cardIndex)
         {
             Models.CardGUIModel card;
             Animations.MoveAnimation animation;
+            List<Event> events;
+
+            events = new List<Event>();
 
             // select origin
 
@@ -497,7 +514,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                events.Add(new Event(rotateAnimation));
             }
 
             animation = new Animations.MoveAnimation(
@@ -508,13 +525,18 @@ namespace DM___Client.GUIPages
                 listOwnGraveyard,
                 card,
                 AnimationAndEventsConstants.DESTINATIONGRAVE);
-            addAnimation(animation);
+            events.Add(new Event(animation));
+
+            addEvents(events);
         }
 
         private void animateManaToHandOwn(int cardIndex)
         {
             Models.CardGUIModel card;
             Animations.MoveAnimation animation;
+            List<Event> events;
+
+            events = new List<Event>();
 
             // select origin and create destination
 
@@ -524,7 +546,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                events.Add(new Event(rotateAnimation));
             }
 
             card.Card.resetProperties();
@@ -540,7 +562,9 @@ namespace DM___Client.GUIPages
                 listHand,
                 card,
                 AnimationAndEventsConstants.DESTINATIONOWNHAND);
-            addAnimation(animation);
+            events.Add(new Event(animation));
+
+            addEvents(events);
         }
 
         private void animateGraveyardToBattle(int cardIndex, bool own)
@@ -575,7 +599,7 @@ namespace DM___Client.GUIPages
                     AnimationAndEventsConstants.DESTINATIONBATTLE);
             }
 
-            addAnimation(moveAnimation);
+            addEvent(new Event(moveAnimation));
         }
 
         private void animateGraveyardToHandOwn(int cardIndex)
@@ -597,7 +621,7 @@ namespace DM___Client.GUIPages
                 listHand,
                 card,
                 AnimationAndEventsConstants.DESTINATIONOWNHAND);
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateGraveyardToHandOpp(int cardIndex)
@@ -619,7 +643,7 @@ namespace DM___Client.GUIPages
                 AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
 
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateBattleToHandOwn(int cardIndex)
@@ -638,7 +662,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                addEvent(new Event(rotateAnimation));
             }
 
             card.Card.resetProperties();
@@ -650,7 +674,7 @@ namespace DM___Client.GUIPages
                 listHand, 
                 card,
                 AnimationAndEventsConstants.DESTINATIONOWNHAND);
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
 
         private void animateBattleToHandOpp(int cardIndex)
@@ -666,7 +690,7 @@ namespace DM___Client.GUIPages
             {
                 Animations.RotateAnimation rotateAnimation = new Animations.RotateAnimation(false);
                 rotateAnimation.border = card.Border;
-                addAnimation(rotateAnimation);
+                addEvent(new Event(rotateAnimation));
             }
 
             animation = new Animations.MoveAnimation(grdOppBattle,
@@ -677,7 +701,7 @@ namespace DM___Client.GUIPages
                 card,
                 AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
-            addAnimation(animation);
+            addEvent(new Event(animation));
         }
     }
 }

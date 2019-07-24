@@ -46,7 +46,7 @@ namespace DM___Client.GUIPages
 
                 // we animate the action and we realign the cards in our hand
                 animatePlayAsManaOWN(index);
-                addAnimation(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace));
+                addEvent(new Event(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace)));
 
                 // we update the info board
                 updateInfoBoard("hand", OWN, -1);

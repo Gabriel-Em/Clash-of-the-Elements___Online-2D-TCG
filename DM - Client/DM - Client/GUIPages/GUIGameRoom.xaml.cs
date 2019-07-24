@@ -260,7 +260,7 @@ namespace DM___Client.GUIPages
                     AnimationAndEventsConstants.DESTINATIONSAFEGUARD);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
-                addAnimation(animation);
+                addEvent(new Event(animation));
             }
         }
 
@@ -286,7 +286,7 @@ namespace DM___Client.GUIPages
                     AnimationAndEventsConstants.DESTINATIONSAFEGUARD);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
-                addAnimation(animation);
+                addEvent(new Event(animation));
             }
         }
 
@@ -311,7 +311,7 @@ namespace DM___Client.GUIPages
                     AnimationAndEventsConstants.DESTINATIONOWNHAND);
                 animation.setSpeed(10);
                 animation.startsWithHiddenOrigin = true;
-                addAnimation(animation);
+                addEvent(new Event(animation));
             }
         }
 
@@ -500,100 +500,93 @@ namespace DM___Client.GUIPages
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
-            bool eventFinished;
-
             lock(animationsAndEventsQueueLock)
             {
                 if (animationsAndEvents.Count != 0)
                 {
-                    eventFinished = false;
-
                     switch (animationsAndEvents[0].type)
                     {
                         case AnimationAndEventsConstants.TYPEMOVE:
                             if (animationsAndEvents[0].moveAnimation.isFinished)
-                                eventFinished = true;
+                                animationsAndEvents.RemoveAt(0);
                             else
                             if (!animationsAndEvents[0].moveAnimation.isRunning)
                                 animationsAndEvents[0].moveAnimation.startAnimation();
                             break;
                         case AnimationAndEventsConstants.TYPEROTATE:
                             if (animationsAndEvents[0].rotateAnimation.isFinished)
-                                eventFinished = true;
+                                animationsAndEvents.RemoveAt(0);
                             else
                             if (!animationsAndEvents[0].rotateAnimation.isRunning)
                                 animationsAndEvents[0].rotateAnimation.startAnimation();
                             break;
                         case AnimationAndEventsConstants.TYPEALIGN:
                             if (animationsAndEvents[0].alignAnimation.isFinished)
-                                eventFinished = true;
+                                animationsAndEvents.RemoveAt(0);
                             else
                             if (!animationsAndEvents[0].alignAnimation.isRunning)
                                 animationsAndEvents[0].alignAnimation.startAnimation();
                             break;
                         case AnimationAndEventsConstants.TYPERUNMETHOD:
+                            animationsAndEvents.RemoveAt(0);
                             animationsAndEvents[0].runMethod();
-                            eventFinished = true;
                             break;
                         case AnimationAndEventsConstants.TYPETRIGGER:
+                            animationsAndEvents.RemoveAt(0);
                             animationsAndEvents[0].triggerEffect();
-                            eventFinished = true;
                             break;
                         case AnimationAndEventsConstants.TYPEPROCESSSHIELD:
+                            animationsAndEvents.RemoveAt(0);
                             animationsAndEvents[0].triggerProcessShield();
-                            eventFinished = true;
                             break;
                         case AnimationAndEventsConstants.TYPEWAIT:
                             break;
                     }
+                }
+            }
+        }
 
-                    if (eventFinished && animationsAndEvents.Count != 0)
-                    {
+        private void addEvent(Event e, bool withWait = false)
+        {
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    if (!withWait)
                         animationsAndEvents.RemoveAt(0);
+                    animationsAndEvents.Insert(0, e);
+                }
+                else
+                {
+                    animationsAndEvents.Add(e);
+                    if (withWait)
+                        addWaitEvent();
+                }
+            }
+        }
+
+        private void addEvents(List<Event> events, bool withWait=false)
+        {
+            lock (animationsAndEventsQueueLock)
+            {
+                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                {
+                    if (!withWait)
+                        animationsAndEvents.RemoveAt(0);
+                    for (int i = 0; i < events.Count; i++)
+                    {
+                        animationsAndEvents.Insert(i, events[i]);
                     }
                 }
-            }
-        }
-
-        private void addAnimation(MoveAnimation moveAnimation, bool toTopOfQueue = false)
-        {
-            lock (animationsAndEventsQueueLock)
-            {
-                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
-                {
-                    animationsAndEvents.RemoveAt(0);
-                    animationsAndEvents.Insert(0, new Event(moveAnimation));
-                }
                 else
-                    animationsAndEvents.Add(new Event(moveAnimation));
-            }
-        }
-
-        private void addAnimation(RotateAnimation rotateAnimation, bool toTopOfQueue=false)
-        {
-            lock (animationsAndEventsQueueLock)
-            {
-                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
                 {
-                    animationsAndEvents.RemoveAt(0);
-                    animationsAndEvents.Insert(0, new Event(rotateAnimation));
+                    foreach (Event e in events)
+                    {
+                        animationsAndEvents.Add(e);
+                    }
+                    if (withWait)
+                        addWaitEvent();
                 }
-                else
-                    animationsAndEvents.Add(new Event(rotateAnimation));
-            }
-        }
-
-        private void addAnimation(AlignAnimation alignAnimation, bool toTopOfQueue = false)
-        {
-            lock (animationsAndEventsQueueLock)
-            {
-                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
-                {
-                    animationsAndEvents.RemoveAt(0);
-                    animationsAndEvents.Insert(0, new Event(alignAnimation));
-                }
-                else
-                    animationsAndEvents.Add(new Event(alignAnimation));
             }
         }
 
@@ -640,11 +633,17 @@ namespace DM___Client.GUIPages
             }
         }
 
-        private void addWaitEvent()
+        private void addWaitEvent(bool inFront=false)
         {
             Event e = new Event(AnimationAndEventsConstants.TYPEWAIT);
 
-            animationsAndEvents.Add(e);
+            lock (animationsAndEventsQueueLock)
+            {
+                if (inFront)
+                    animationsAndEvents.Insert(0, e);
+                else
+                    animationsAndEvents.Add(e);
+            }
         }
 
         private void CheckInitialAnimationsFinished_Tick(object sender, EventArgs e)
