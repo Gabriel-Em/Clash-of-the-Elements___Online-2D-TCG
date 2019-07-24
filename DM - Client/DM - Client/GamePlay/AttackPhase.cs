@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using DM___Client.Animations;
 using DM___Client.GUIWindows;
 using DM___Client.Models;
 

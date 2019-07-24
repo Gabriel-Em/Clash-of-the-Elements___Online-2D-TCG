@@ -13,6 +13,7 @@ namespace DM___Client.Animations
         public MoveAnimation moveAnimation { get; set; }
         public RotateAnimation rotateAnimation { get; set; }
         public AlignAnimation alignAnimation { get; set; }
+        public int WaitCount { get; set; }
 
         public int type;
 
@@ -29,10 +30,13 @@ namespace DM___Client.Animations
         private int cardID;
         private int shieldNumber;
 
-        public Event(runMethodEvent runMethod)
+        public Event(runMethodEvent runMethod, int count=-1)
         {
             this.runMethod = runMethod;
             type = AnimationAndEventsConstants.TYPERUNMETHOD;
+
+            if (count != -1)
+                WaitCount = count;
         }
 
         public Event(triggerEffectMethod triggerEffect, SpecialEffect se, CardWithGameProperties card)
