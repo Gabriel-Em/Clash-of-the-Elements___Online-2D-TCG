@@ -419,6 +419,8 @@ namespace DM___Client.GUIPages
         private void processShield(int cardID, int shieldNumber)
         {
             int index;
+            int position;
+            int waitCount;
             CardWithGameProperties card;
             GUISafeguardActive guiSafeguardActive;
             bool activate;
@@ -448,11 +450,15 @@ namespace DM___Client.GUIPages
                 sendSendTo(new List<int>() { index, cardID }, "OppGuards", "OppGround");
 
                 // add all special effects to event queue
+
+                position = 1;
                 foreach (SpecialEffect se in card.SpecialEffects)
                 {
                     if (se.Trigger == "SafeguardActive")
                     {
-                        addTriggerEvent(se, card);
+                        waitCount = getWaitCountForEffect(se);
+                        addTriggerEvent(se, card, position, waitCount);
+                        position += 1 + waitCount;
                     }
                 }
             }
@@ -473,6 +479,23 @@ namespace DM___Client.GUIPages
             }
         }
 
+        private int getWaitCountForEffect(SpecialEffect se)
+        {
+            int waitCount;
+
+            waitCount = 0;
+
+            switch(se.Effect)
+            {
+                case "Draw":
+                    waitCount += se.Arguments[0];
+                    break;
+                default:
+                    break;
+            }
+
+            return waitCount;
+        }
 
 
         private int getIndexOfOwnShieldWithNumber(int number)

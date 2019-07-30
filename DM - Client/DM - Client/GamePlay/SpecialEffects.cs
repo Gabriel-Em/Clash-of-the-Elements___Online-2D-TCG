@@ -548,16 +548,16 @@ namespace DM___Client.GUIPages
         public void DrawCards(List<int> arguments)
         {
             CardWithGameProperties card;
-            List<Event> events;
+            //List<Event> events;
 
-            events = new List<Event>();
+            //events = new List<Event>();
 
             for (int i = 0; i < arguments.Count; i++)
             {
                 card = new CardWithGameProperties(ctrl.getCardWithGamePropertiesByID(arguments[i]));
 
                 animateDrawCardOWN(card);
-                events.Add(new Event(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace)));
+                //events.Add(new Event(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace)));
 
                 // if we drew a card during our own Summon phase we add it to the ableToSelect list
                 if (Phase == "Summon phase" && itIsOwnTurn)
@@ -567,7 +567,7 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("hand", OWN, 1);
                 updateInfoBoard("deck", OWN, -1);
             }
-            addEvents(events);
+            //addEvents(events);
         }
 
         public void processOppDrew(GameMessage message)

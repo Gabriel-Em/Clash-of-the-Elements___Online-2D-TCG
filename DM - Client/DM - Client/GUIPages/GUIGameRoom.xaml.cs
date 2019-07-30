@@ -500,6 +500,8 @@ namespace DM___Client.GUIPages
 
         private void AnimationTimer_Tick(object sender, EventArgs e)
         {
+            Event ev;
+
             lock(animationsAndEventsQueueLock)
             {
                 if (animationsAndEvents.Count != 0)
@@ -528,16 +530,19 @@ namespace DM___Client.GUIPages
                                 animationsAndEvents[0].alignAnimation.startAnimation();
                             break;
                         case AnimationAndEventsConstants.TYPERUNMETHOD:
+                            ev = animationsAndEvents[0];
                             animationsAndEvents.RemoveAt(0);
-                            animationsAndEvents[0].runMethod();
+                            ev.runMethod();
                             break;
                         case AnimationAndEventsConstants.TYPETRIGGER:
+                            ev = animationsAndEvents[0];
                             animationsAndEvents.RemoveAt(0);
-                            animationsAndEvents[0].triggerEffect();
+                            ev.triggerEffect();
                             break;
                         case AnimationAndEventsConstants.TYPEPROCESSSHIELD:
+                            ev = animationsAndEvents[0];
                             animationsAndEvents.RemoveAt(0);
-                            animationsAndEvents[0].triggerProcessShield();
+                            ev.triggerProcessShield();
                             break;
                         case AnimationAndEventsConstants.TYPEWAIT:
                             break;
@@ -546,36 +551,51 @@ namespace DM___Client.GUIPages
             }
         }
 
-        private void addEvent(Event e, bool withWait = false)
+        private void addEvent(Event e)
         {
             lock (animationsAndEventsQueueLock)
             {
                 if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
                 {
-                    if (!withWait)
+                    if (animationsAndEvents[0].WaitCount == 1)
+                    {
                         animationsAndEvents.RemoveAt(0);
-                    animationsAndEvents.Insert(0, e);
+                        animationsAndEvents.Insert(0, e);
+                    }
+                    else
+                    {
+                        animationsAndEvents[0].WaitCount--;
+                        animationsAndEvents.Insert(1, e);
+                    }
                 }
                 else
                 {
                     animationsAndEvents.Add(e);
-                    if (withWait)
-                        addWaitEvent();
                 }
             }
         }
 
-        private void addEvents(List<Event> events, bool withWait=false)
+        private void addEvents(List<Event> events)
         {
             lock (animationsAndEventsQueueLock)
             {
                 if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
                 {
-                    if (!withWait)
-                        animationsAndEvents.RemoveAt(0);
-                    for (int i = 0; i < events.Count; i++)
+                    if (animationsAndEvents[0].WaitCount == 1)
                     {
-                        animationsAndEvents.Insert(i, events[i]);
+                        animationsAndEvents.RemoveAt(0);
+                        for (int i = 0; i < events.Count; i++)
+                        {
+                            animationsAndEvents.Insert(i, events[i]);
+                        }
+                    }
+                    else
+                    {
+                        animationsAndEvents[0].WaitCount--;
+                        for (int i = 0; i < events.Count; i++)
+                        {
+                            animationsAndEvents.Insert(i + 1, events[i]);
+                        }
                     }
                 }
                 else
@@ -584,8 +604,6 @@ namespace DM___Client.GUIPages
                     {
                         animationsAndEvents.Add(e);
                     }
-                    if (withWait)
-                        addWaitEvent();
                 }
             }
         }
@@ -596,28 +614,37 @@ namespace DM___Client.GUIPages
             {
                 if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
                 {
-                    animationsAndEvents.RemoveAt(0);
-                    animationsAndEvents.Insert(0, e);
+                    if (animationsAndEvents[0].WaitCount == 1)
+                    {
+                        animationsAndEvents.RemoveAt(0);
+                        animationsAndEvents.Insert(0, e);
+                    }
+                    else
+                    {
+                        animationsAndEvents[0].WaitCount--;
+                        animationsAndEvents.Insert(1, e);
+                    }
                 }
                 else
                     animationsAndEvents.Add(e);
             }
         }
 
-        public void addTriggerEvent(SpecialEffect se, CardWithGameProperties card)
+        public void addTriggerEvent(SpecialEffect se, CardWithGameProperties card, int position, int waitCount)
         {
             Event e = new Event(triggerEffect, se, card);
 
             lock (animationsAndEventsQueueLock)
             {
-                if (animationsAndEvents.Count > 0 && animationsAndEvents[0].type == AnimationAndEventsConstants.TYPEWAIT)
+                if (position == -1)
                 {
-                    animationsAndEvents.Insert(0, e);
+                    animationsAndEvents.Add(e);
+                    addWaitEvent(waitCount);
                 }
                 else
                 {
-                    animationsAndEvents.Add(e);
-                    addWaitEvent();
+                    animationsAndEvents.Insert(position++, e);
+                    addWaitEvent(waitCount, position);
                 }
             }
         }
@@ -629,18 +656,18 @@ namespace DM___Client.GUIPages
             lock (animationsAndEventsQueueLock)
             {
                 animationsAndEvents.Add(e);
-                addWaitEvent();
+                addWaitEvent(1);
             }
         }
 
-        private void addWaitEvent(bool inFront=false)
+        private void addWaitEvent(int waitCount, int position=-1)
         {
-            Event e = new Event(AnimationAndEventsConstants.TYPEWAIT);
+            Event e = new Event(AnimationAndEventsConstants.TYPEWAIT, waitCount);
 
             lock (animationsAndEventsQueueLock)
             {
-                if (inFront)
-                    animationsAndEvents.Insert(0, e);
+                if (position != -1)
+                    animationsAndEvents.Insert(position, e);
                 else
                     animationsAndEvents.Add(e);
             }
