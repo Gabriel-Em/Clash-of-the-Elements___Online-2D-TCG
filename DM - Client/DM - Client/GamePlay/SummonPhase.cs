@@ -141,7 +141,7 @@ namespace DM___Client.GUIPages
                 foreach (Models.SpecialEffect se in cardGUI.Card.SpecialEffects)
                 {
                     if (se.Trigger == "Summon")
-                        addTriggerEvent(se, cardGUI.Card);
+                        addTriggerEvent(se, cardGUI.Card, -1, getWaitCountForEffect(se));
                 }
             }
         }

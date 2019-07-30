@@ -189,7 +189,7 @@ namespace DM___Client.GUIPages
             addEvent(new Event(animation));
         }
 
-        private void animateSafeguardToGroundOwn(int index, int cardID, bool withWait=false)
+        private void animateSafeguardToGroundOwn(int index, int cardID)
         {
             Models.CardGUIModel safeGuard;
             Animations.MoveAnimation animation;
@@ -210,7 +210,7 @@ namespace DM___Client.GUIPages
                 safeGuard,
                 AnimationAndEventsConstants.DESTINATIONBATTLE,
                 true);
-            addEvent(new Event(animation), withWait);
+            addEvent(new Event(animation));
         }
 
         private void animateSafeguardToGroundOpp(int index, int cardID)
