@@ -696,11 +696,14 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("hand", own, 1);
             }
             else
+            if (hasEffect(card, "Recyclable"))
             {
-                if (own)
-                    animateBattleToGraveyard(cardIndex, own);
-                else
-                    animateBattleToGraveyard(cardIndex, own);
+                animateBattleToMana(cardIndex, own);
+                updateInfoBoard("mana", own, 1);
+            }
+            else
+            {
+                animateBattleToGraveyard(cardIndex, own);
                 updateInfoBoard("grave", own, 1);
             }
         }

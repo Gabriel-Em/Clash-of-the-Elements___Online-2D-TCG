@@ -84,6 +84,12 @@ namespace DM___Client.Controllers
                     send(new ClientMessage("CLOSEROOM", new List<string>() { GameRoomID.ToString() }));
                     parent.loadEndGame(true);
                     break;
+                case "YOURDECKTOMANA":
+                    processYourDeckToMana(message);
+                    break;
+                case "OPPSDECKTOMANA":
+                    processOppsDeckToMana(message);
+                    break;
                 default: break;
             }
         }
@@ -157,6 +163,16 @@ namespace DM___Client.Controllers
         private void processReceivedCard(GameMessage message)
         {
             parent.DrawCards(message.intArguments);
+        }
+
+        private void processYourDeckToMana(GameMessage message)
+        {
+            parent.processDeckToMana(message.intArguments, true);
+        }
+
+        private void processOppsDeckToMana(GameMessage message)
+        {
+            parent.processDeckToMana(message.intArguments, false);
         }
 
         private void processSummon(GameMessage message)

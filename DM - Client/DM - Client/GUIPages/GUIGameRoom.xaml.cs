@@ -639,12 +639,14 @@ namespace DM___Client.GUIPages
                 if (position == -1)
                 {
                     animationsAndEvents.Add(e);
-                    addWaitEvent(waitCount);
+                    if (waitCount > 0)
+                        addWaitEvent(waitCount);
                 }
                 else
                 {
                     animationsAndEvents.Insert(position++, e);
-                    addWaitEvent(waitCount, position);
+                    if (waitCount > 0)
+                        addWaitEvent(waitCount, position);
                 }
             }
         }

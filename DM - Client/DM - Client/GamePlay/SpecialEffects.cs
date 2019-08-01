@@ -120,6 +120,18 @@ namespace DM___Client.GUIPages
             string selectMessage, friendlyFrom;
             bool treatCountAsOne;
 
+            if (se.TargetFrom == "OwnDeck")
+            {
+                switch(se.TargetTo)
+                {
+                    case "OwnMana":
+                        ctrl.send(new GameMessage("DECKTOMANA", ctrl.GameRoomID, se.Arguments));
+                        return;
+                    default:
+                        return;
+                }
+            }
+
             tuple = getValidSelections(se, out friendlyFrom);
             treatCountAsOne = se.TargetFrom.Contains("Any") ? true : false;
 
@@ -272,8 +284,7 @@ namespace DM___Client.GUIPages
 
                         foreach (int index in selectedTargetIndexesOwn)
                         {
-                            animateBattleToGraveyard(index, true);
-                            updateInfoBoard("grave", OWN, 1);
+                            killCreature(listOwnBattleGround[index].Card, index, OWN);
                         }
                     }
                     break;
@@ -349,8 +360,7 @@ namespace DM___Client.GUIPages
                     sendSendTo(selectedTargetIndexesOpp, "OwnGround", "OwnGrave");
                     foreach (int index in selectedTargetIndexesOpp)
                     {
-                        animateBattleToGraveyard(index, OPP);
-                        updateInfoBoard("grave", OPP, 1);
+                        killCreature(listOppBattleGround[index].Card, index, OPP);
                     }
                     break;
             }
@@ -548,16 +558,12 @@ namespace DM___Client.GUIPages
         public void DrawCards(List<int> arguments)
         {
             CardWithGameProperties card;
-            //List<Event> events;
-
-            //events = new List<Event>();
 
             for (int i = 0; i < arguments.Count; i++)
             {
                 card = new CardWithGameProperties(ctrl.getCardWithGamePropertiesByID(arguments[i]));
 
                 animateDrawCardOWN(card);
-                //events.Add(new Event(new Animations.AlignAnimation(listHand, AnimationAndEventsConstants.handInitialPosition, AnimationAndEventsConstants.handAlignPace)));
 
                 // if we drew a card during our own Summon phase we add it to the ableToSelect list
                 if (Phase == "Summon phase" && itIsOwnTurn)
@@ -567,7 +573,6 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("hand", OWN, 1);
                 updateInfoBoard("deck", OWN, -1);
             }
-            //addEvents(events);
         }
 
         public void processOppDrew(GameMessage message)
@@ -577,6 +582,22 @@ namespace DM___Client.GUIPages
                 updateInfoBoard("hand", OPP, 1);
                 updateInfoBoard("deck", OPP, -1);
                 animateDrawCardOPP();
+            }
+        }
+
+        public void processDeckToMana(List<int> intArguments, bool own)
+        {
+            CardWithGameProperties card;
+
+            for (int i = 0; i < intArguments.Count; i++)
+            {
+                card = new CardWithGameProperties(ctrl.getCardWithGamePropertiesByID(intArguments[i]));
+
+                animateDeckToMana(card, own);
+
+                // we update the info board
+                updateInfoBoard("mana", own, 1);
+                updateInfoBoard("deck", own, -1);
             }
         }
     }

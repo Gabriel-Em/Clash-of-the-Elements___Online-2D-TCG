@@ -104,6 +104,9 @@ namespace DM___Server
                 case "ISURRENDER":
                     response = ctrlOnGoingGame.processISurrender(message, sender);
                     break;
+                case "DECKTOMANA":
+                    response = ctrlOnGoingGame.processDeckToMana(message, sender);
+                    break;
                 default:
                     response = null;
                     break;
