@@ -307,6 +307,40 @@ namespace DM___Client.GUIPages
             addEvents(events);
         }
 
+        private void animateBattleToMana(int cardIndex, bool own)
+        {
+            Models.CardGUIModel card;
+            Animations.MoveAnimation moveAnimation;
+            Animations.RotateAnimation rotateAnimation;
+            List<Event> events;
+
+            events = new List<Event>();
+
+            // select origin and create destination
+
+            card = listOwnBattleGround[cardIndex];
+            moveAnimation = new Animations.MoveAnimation(
+                own == OWN ? grdOwnBattle : grdOppBattle,
+                own == OWN ? grdOwnMana : grdOppMana,
+                grdParent,
+                own == OWN ? listOwnBattleGround : listOppBattleGround,
+                own == OWN ? listOwnManaZone : listOppManaZone,
+                card,
+                AnimationAndEventsConstants.DESTINATIONMANA);
+
+            if (card.Card.isEngaged)
+            {
+                rotateAnimation = new Animations.RotateAnimation(false);
+                rotateAnimation.border = card.Border;
+                events.Add(new Event(rotateAnimation));
+            }
+
+            card.Card.resetProperties();
+
+            events.Add(new Event(moveAnimation));
+            addEvents(events);
+        }
+
         // Engage
 
         private void animateEngageManaOWN(List<int> selectedMana)
@@ -701,6 +735,33 @@ namespace DM___Client.GUIPages
                 card,
                 AnimationAndEventsConstants.DESTINATIONOPPHAND);
             animation.removeOrigin = true;
+            addEvent(new Event(animation));
+        }
+
+        private void animateDeckToMana(Models.CardWithGameProperties card, bool own)
+        {
+            Models.CardGUIModel drawnCard;
+            Animations.MoveAnimation animation;
+
+            drawnCard = new Models.CardGUIModel(
+                card, 
+                this, 
+                own == OWN ? AnimationAndEventsConstants.ownDeckLocation : AnimationAndEventsConstants.oppDeckLocation, 
+                Visibility.Hidden);
+
+            // add cards to grids
+            grdParent.Children.Add(drawnCard.Border);
+
+            animation = new Animations.MoveAnimation(
+                grdParent,
+                own == OWN ? grdOwnMana : grdOppMana,
+                grdParent,
+                null,
+                own == OWN ? listOwnManaZone : listOppManaZone,
+                drawnCard,
+                AnimationAndEventsConstants.DESTINATIONMANA);
+
+            animation.startsWithHiddenOrigin = true;
             addEvent(new Event(animation));
         }
     }

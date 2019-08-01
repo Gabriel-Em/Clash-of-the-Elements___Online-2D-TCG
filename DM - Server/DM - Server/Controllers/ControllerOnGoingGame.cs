@@ -406,5 +406,30 @@ namespace DM___Server.Controllers
 
             return response;
         }
+
+        public Response processDeckToMana(GameMessage message, Socket sender)
+        {
+            Response response = new Response(sender);
+
+            Models.Game game = onGoingGamesData.getGameByID(message.GameID);
+
+            if (game.isPlayer1(sender))
+            {
+                for (int i = 0; i < message.intArguments[0]; i++)
+                    response.commandIntArgumentsToSender.Add(game.drawCard(1));
+                response.socketsToNotify.Add(game.Player2Socket);
+            }
+            else
+            {
+                for (int i = 0; i < message.intArguments[0]; i++)
+                    response.commandIntArgumentsToSender.Add(game.drawCard(2));
+                response.socketsToNotify.Add(game.Player1Socket);
+            }
+
+            response.responseCommandToSender = "YOURDECKTOMANA";
+            response.responseCommandToSockets = "OPPSDECKTOMANA";
+            response.commandIntArgumentsToSockets = response.commandIntArgumentsToSender.ToList<int>();
+            return response;
+        }
     }
 }
