@@ -42,6 +42,12 @@ namespace DM___Client.Models.GUIModels
             init(card, parent, margin, clickable);
         }
 
+        public SelectGUI_CardGUIModel(Card card, GUIWindows.GUIPeek parent, Thickness margin, bool clickable = true)
+        {
+            type = 3;
+            init(card, parent, margin, clickable);
+        }
+
         private void init(Card card, Window parent, Thickness margin, bool clickable, int shieldNumber=-1)
         {
             logger = new Log.Logger();
@@ -121,9 +127,7 @@ namespace DM___Client.Models.GUIModels
 
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
-            if (isSelected)
-                deselect();
-            else
+            if (!isSelected)
             {
                 select();
             }
@@ -140,6 +144,12 @@ namespace DM___Client.Models.GUIModels
                     break;
                 case 2:
                     result = ((GUIWindows.GUIDefend)parent).addToSelectedCards(this);
+                    break;
+                case 3:
+                    ((GUIWindows.GUIPeek)parent).deselectAll();
+                    if (Card != null)
+                        ((GUIWindows.GUIPeek)parent).loadCardInfo(Card);
+                    result = 0;
                     break;
                 default:
                     result = -1;

@@ -104,9 +104,11 @@ namespace DM___Client.GUIPages
             foreach(Models.CardGUIModel cardGUI in listOwnManaZone)
             {
                 if (!cardGUI.Card.isEngaged)
+                {
                     count += 1;
-                if (cardGUI.Card.Element == card.Card.Element)
-                    found_element = true;
+                    if (cardGUI.Card.Element == card.Card.Element)
+                        found_element = true;
+                }
             }
 
             if (card.Card.Cost <= count && found_element)

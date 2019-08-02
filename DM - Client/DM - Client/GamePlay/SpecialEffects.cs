@@ -116,7 +116,7 @@ namespace DM___Client.GUIPages
         private void triggerOwnSendTo(SpecialEffect se)
         {
             GUIWindows.GUISelect gUISelect;
-            Tuple<List<CardGUIModel>, List<CardGUIModel>> tuple;
+            Tuple<List<CardGUIModel>, List<CardGUIModel>> validSelections, fullSelections;
             string selectMessage, friendlyFrom;
             bool treatCountAsOne;
 
@@ -132,51 +132,64 @@ namespace DM___Client.GUIPages
                 }
             }
 
-            tuple = getValidSelections(se, out friendlyFrom);
+            fullSelections = getValidSelections(se, out friendlyFrom);
             treatCountAsOne = se.TargetFrom.Contains("Any") ? true : false;
 
-            if (tuple.Item1.Count > 0 || tuple.Item2.Count > 0)
+            if (se.Condition == "LessOrEqual")
+            {
+                validSelections = new Tuple<List<CardGUIModel>, List<CardGUIModel>>(
+                    fullSelections.Item1.Where(x => (x.Card.Type == "Creature" && x.Card.Power <= se.Arguments[1])).ToList<CardGUIModel>(),
+                    fullSelections.Item2.Where(x => (x.Card.Type == "Creature" && x.Card.Power <= se.Arguments[1])).ToList<CardGUIModel>());
+            }
+            else
+            {
+                validSelections = new Tuple<List<CardGUIModel>, List<CardGUIModel>>(
+                    fullSelections.Item1,
+                    fullSelections.Item2);
+            }
+
+            if (validSelections.Item1.Count > 0 || validSelections.Item2.Count > 0)
             {
                 gUISelect = null;
-                List<int> selectedTargetIndexesOwn, selectedTargetIndexesOpp;
+                List<int> selectedTargetIndexesOwn, selectedTargetIndexesOpp, translatedIndexesOwn, translatedIndexesOpp;
 
                 // if you must select a number of cards from opponent's mana zone
                 if (se.Arguments[0] != ALL)
                 {
                     selectMessage = "";
-                    if (tuple.Item1.Count > 0)
+                    if (validSelections.Item1.Count > 0)
                     {
-                        if (tuple.Item2.Count > 0)
+                        if (validSelections.Item2.Count > 0)
                         {
                             selectMessage = string.Format("You must select a total of {0} cards from your {3} {1} {2} cards from your opponent's {3}.",
-                                treatCountAsOne ? Math.Min(tuple.Item1.Count + tuple.Item1.Count, se.Arguments[0]) : Math.Min(tuple.Item1.Count, se.Arguments[0]),
+                                treatCountAsOne ? Math.Min(validSelections.Item1.Count + validSelections.Item1.Count, se.Arguments[0]) : Math.Min(validSelections.Item1.Count, se.Arguments[0]),
                                 treatCountAsOne ? "or" : "and",
-                                treatCountAsOne ? Math.Min(tuple.Item1.Count + tuple.Item1.Count, se.Arguments[0]) : Math.Min(tuple.Item2.Count, se.Arguments[0]),
+                                treatCountAsOne ? Math.Min(validSelections.Item1.Count + validSelections.Item1.Count, se.Arguments[0]) : Math.Min(validSelections.Item2.Count, se.Arguments[0]),
                                 friendlyFrom);
                         }
                         else
                         {
                             selectMessage = string.Format("You must select a total of {0} card(s) from your {1}.",
-                                Math.Min(se.Arguments[0], tuple.Item1.Count),
+                                Math.Min(se.Arguments[0], validSelections.Item1.Count),
                                 friendlyFrom);
                         }
                     }
                     else
                     {
-                        if (tuple.Item2.Count > 0)
+                        if (validSelections.Item2.Count > 0)
                         {
                             selectMessage = string.Format("You must select a total of {0} card(s) from your opponent's {1}.",
-                                Math.Min(se.Arguments[0], tuple.Item2.Count),
+                                Math.Min(se.Arguments[0], validSelections.Item2.Count),
                                 friendlyFrom);
                         }
                     }
                     gUISelect = new GUIWindows.GUISelect(
-                        tuple.Item1,
-                        tuple.Item2, 
+                        validSelections.Item1,
+                        validSelections.Item2, 
                         selectMessage,
                         friendlyFrom,
-                        tuple.Item1.Count == 0 ? 0 : Math.Min(tuple.Item1.Count, se.Arguments[0]),
-                        tuple.Item2.Count == 0 ? 0 : Math.Min(tuple.Item2.Count, se.Arguments[0]),
+                        validSelections.Item1.Count == 0 ? 0 : Math.Min(validSelections.Item1.Count, se.Arguments[0]),
+                        validSelections.Item2.Count == 0 ? 0 : Math.Min(validSelections.Item2.Count, se.Arguments[0]),
                         se.TargetFrom.Contains("Any") ? true : false);
                     gUISelect.removeCancelButton();
                     gUISelect.ShowDialog();
@@ -189,31 +202,41 @@ namespace DM___Client.GUIPages
                     selectedTargetIndexesOwn = new List<int>();
                     selectedTargetIndexesOpp = new List<int>();
 
-                    for (int i = 0; i < tuple.Item1.Count; i++)
+                    for (int i = 0; i < validSelections.Item1.Count; i++)
                         selectedTargetIndexesOwn.Add(i);
-                    for (int i = 0; i < tuple.Item2.Count; i++)
+                    for (int i = 0; i < validSelections.Item2.Count; i++)
                         selectedTargetIndexesOpp.Add(i);
                 }
+
+                // translate indexes
+
+                translatedIndexesOwn = new List<int>();
+                translatedIndexesOpp = new List<int>();
+
+                foreach (int index in selectedTargetIndexesOwn)
+                    translatedIndexesOwn.Add(fullSelections.Item1.IndexOf(validSelections.Item1[index]));
+                foreach (int index in selectedTargetIndexesOpp)
+                    translatedIndexesOpp.Add(fullSelections.Item2.IndexOf(validSelections.Item2[index]));
 
                 switch (se.TargetTo)
                 {
                     case "OppHand":
-                        sendToOppHand(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOppHand(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                     case "OwnHand":
-                        sendToOwnHand(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOwnHand(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                     case "OwnGrave":
-                        sendToOwnGrave(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOwnGrave(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                     case "OppGrave":
-                        sendToOppGrave(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOppGrave(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                     case "OwnGround":
-                        sendToOwnGround(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOwnGround(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                     case "OwnersHand":
-                        sendToOwnersHand(se, selectedTargetIndexesOwn, selectedTargetIndexesOpp);
+                        sendToOwnersHand(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
                 }
             }

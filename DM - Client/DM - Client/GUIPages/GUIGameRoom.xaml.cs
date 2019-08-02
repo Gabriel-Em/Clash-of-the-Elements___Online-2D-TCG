@@ -703,5 +703,20 @@ namespace DM___Client.GUIPages
                 loadEndGame(false);
             }
         }
+
+        public bool isPartOfGraveyard(CardGUIModel card)
+        {
+            if (listOwnGraveyard.Contains(card) || listOppGraveyard.Contains(card))
+                return true;
+            return false;
+
+        }
+
+        public void peekIntoGraveyard()
+        {
+            GUIWindows.GUIPeek guiPeek = new GUIWindows.GUIPeek(listOwnGraveyard, listOppGraveyard, "Graveyard");
+
+            guiPeek.Show();
+        }
     }
 }

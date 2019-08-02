@@ -115,6 +115,9 @@
     <Compile Include="GUIWindows\GUIUserData.xaml.cs">
       <DependentUpon>GUIUserData.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GUIWindows\GUIPeek.xaml.cs">
+      <DependentUpon>GUIPeek.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Log\Logger.cs" />
     <Compile Include="Animations\MoveAnimation.cs" />
     <Compile Include="Models\Collection\Card.cs" />
@@ -250,6 +253,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="GUIWindows\GUIUserData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GUIWindows\GUIPeek.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
