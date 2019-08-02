@@ -110,9 +110,6 @@ namespace DM___Client.Animations
                     destinationList.Insert(emptySpaceIndex, origin);
             }
 
-            if (wasSafeguard)
-                origin.removeTextBlock();
-
             isFinished = true;
             isRunning = false;
         }
@@ -120,6 +117,9 @@ namespace DM___Client.Animations
         private void RunAnimation_Tick(object sender, EventArgs e)
         {
             runAnimation.Stop();
+
+            if (wasSafeguard)
+                origin.removeTextBlock();
 
             if (startsWithHiddenOrigin)
                 origin.turnVisibilityON();

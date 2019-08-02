@@ -318,7 +318,7 @@ namespace DM___Client.GUIPages
 
             // select origin and create destination
 
-            card = listOwnBattleGround[cardIndex];
+            card = own == OWN ? listOwnBattleGround[cardIndex] : listOppBattleGround[cardIndex];
             moveAnimation = new Animations.MoveAnimation(
                 own == OWN ? grdOwnBattle : grdOppBattle,
                 own == OWN ? grdOwnMana : grdOppMana,

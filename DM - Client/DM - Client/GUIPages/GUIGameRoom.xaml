@@ -234,7 +234,6 @@
             </Border>
             <Border Grid.Row="1" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource GraveyardColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
             <Grid Grid.Row="1" Grid.Column="3" Name="grdOppGrave" VerticalAlignment="Center" HorizontalAlignment="Center">
-
             </Grid>
             <Border Name="oppDeckBorder" Grid.Row="1" Grid.Column="4"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
             <Image Grid.Row="1" Grid.Column="4" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
@@ -249,7 +248,6 @@
             </Border>
             <Border Grid.Row="4" Grid.Column="10"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource GraveyardColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
             <Grid Grid.Row="4" Grid.Column="10" Name="grdOwnGrave" VerticalAlignment="Center" HorizontalAlignment="Center">
-
             </Grid>
             
             <Border Name ="ownDeckBorder" Grid.Row="4" Grid.Column="9"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>

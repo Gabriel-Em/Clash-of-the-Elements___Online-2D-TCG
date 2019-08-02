@@ -115,6 +115,12 @@ namespace DM___Client.Models
         {
             if (Card != null)
             {
+                if (parent.isPartOfGraveyard(this))
+                {
+                    parent.peekIntoGraveyard();
+                    return;
+                }
+
                 parent.loadCardInfo(Card);
                 if (isSelected)
                     deselect();
