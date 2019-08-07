@@ -131,6 +131,7 @@ namespace DM___Server
                         {
                             cm = new Models.ClientMessage(
                                 response.responseCommandToSockets,
+                                response.commandIntArgumentsToSockets,
                                 response.commandStringArgumentsToSockets
                                 );
                             foreach (Socket s in response.socketsToNotify)

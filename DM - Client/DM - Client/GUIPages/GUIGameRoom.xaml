@@ -9,7 +9,6 @@
       d:DesignHeight="700" d:DesignWidth="1200"
       Height="700" Width="1200"
       Title="GameRoom">
-    
     <Page.Resources>
         <Style x:Key="buttonStyle" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -79,8 +78,28 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <ImageBrush x:Key="InfoBoardForegroundColor">#000000</ImageBrush>
-        <ImageBrush x:Key="InfoBoardBackgroundColor">#F6AEE3</ImageBrush>
+        <Style x:Key="txtChatStyle" TargetType="RichTextBox">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RichTextBox}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="true">
+                                <Setter Property="BorderBrush" TargetName="border" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <ImageBrush x:Key="ManaColor">#088A29</ImageBrush>
         <ImageBrush x:Key="SafeguardColor">Transparent</ImageBrush>
         <ImageBrush x:Key="BattlegroundColor">#DF0101</ImageBrush>
@@ -88,11 +107,11 @@
         <ImageBrush x:Key="DeckColor">Transparent</ImageBrush>
         <ImageBrush x:Key="HandColor">#F6EEE3</ImageBrush>
         <ImageBrush x:Key="BackgroundColor">#151515</ImageBrush>
-        <ImageBrush x:Key="TurnAndPhase">#F6EEE3</ImageBrush>
+        <ImageBrush x:Key="TurnAndPhase">#10E0E0</ImageBrush>
         <ImageBrush x:Key="ButtonsAndCardInfo">#F6EEE3</ImageBrush>
+        <ImageBrush x:Key="ChatColor">#F6AEE3</ImageBrush>
     </Page.Resources>
     <Grid x:Name="grdParent">
-        
         <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/Background.jpg" Stretch="UniformToFill"></Image>
         <Border Background="{DynamicResource BackgroundColor}" Opacity="0.8" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <Grid Margin="20">
@@ -117,7 +136,6 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-
             <Border Grid.Column="3" Grid.ColumnSpan="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ManaColor}" Opacity="0.5" CornerRadius="5" Margin="0,0,0,0"/>
             <Border Grid.Column="3" Grid.ColumnSpan="8" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="3" BorderBrush="Black" Margin="0,0,0,0">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
@@ -152,19 +170,42 @@
                     </Grid>
                 </ScrollViewer>
             </Border>
-            <Border Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="0,0,70,0"/>
-            <Border Grid.Row="2" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,0,70,0">
+            <Border Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ChatColor}" Opacity="0.8" CornerRadius="5" Margin="0,10,20,10"/>
+            <Border Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="0,10,20,10" BorderThickness="5" BorderBrush="Black">
+                <StackPanel Margin="10,0,10,0">
+                    <RichTextBox x:Name="richTextboxChat" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="10" Height="130" VerticalScrollBarVisibility="Auto" FontSize="15" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
+                        <RichTextBox.Resources>
+                            <Style TargetType="{x:Type Paragraph}">
+                                <Setter Property="Margin" Value="0"/>
+                            </Style>
+                        </RichTextBox.Resources>
+                        <RichTextBox.Style>
+                            <StaticResource ResourceKey="txtChatStyle"/>
+                        </RichTextBox.Style>
+                    </RichTextBox>
+                    <DockPanel Margin="10,0,10,0">
+                        <Grid>
+                            <Border Background="White" Opacity="0.3" CornerRadius="3" Height="25"/>
+                            <Border CornerRadius="3" Height="25">
+                            <TextBox HorizontalAlignment="Left" x:Name="txtTypeInChat" TextWrapping="NoWrap" AcceptsReturn="False" Background="Transparent" BorderThickness="0" Width="180" MaxLength="150" FontSize="18" KeyUp="TextBox_KeyUp"/>
+                            </Border>
+                        </Grid>
+                        <Button x:Name="btnSubmitText" Style="{StaticResource buttonStyle}" Content="Send" Cursor="Hand" Opacity="1" Background="Black" Foreground="White" FontSize="15" Margin="0" Height="30" Width="60" HorizontalAlignment="Right" Click="btnSubmitText_Click"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="0,20,70,0"/>
+            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,20,70,0">
                 <Grid>
                     <StackPanel x:Name="actionButtons" HorizontalAlignment="Stretch" Margin="5,5,5,40" VerticalAlignment="Stretch" Background="Transparent">
-
                     </StackPanel>
                     <StackPanel VerticalAlignment="Bottom" Margin="0,0,0,5">
                         <Button x:Name="btnSurrender" Style="{StaticResource buttonStyle}" Content="Surrender" Cursor="Hand" Opacity="0.9" Background="Black" Foreground="White" FontSize="15" Height="30" Width="130" HorizontalAlignment="Center" Click="BtnSurrender_Click"/>
                     </StackPanel>
                 </Grid>
             </Border>
-            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="45,0,20,0"/>
-            <Border Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="45,0,20,0">
+            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="45,20,20,0"/>
+            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="45,20,20,0">
                 <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
                     <Label FontSize="15" Foreground="Black" Content="Card information:" HorizontalAlignment="Center"/>
                     <RichTextBox x:Name="rchCardInfo" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="2,0,2,0" Height="180" VerticalScrollBarVisibility="Auto" FontSize="12" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
@@ -179,46 +220,8 @@
                     </RichTextBox>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource InfoBoardBackgroundColor}" Opacity="0.8" CornerRadius="2" Margin="0,20,20,20.4"/>
-            <Border Grid.Row="4" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,20,20,20.4">
-                <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
-                    <Label FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Content="Own information:" HorizontalAlignment="Center"/>
-                    <Separator Background="{DynamicResource InfoBoardForegroundColor}" Margin="0,5,0,5"></Separator>
-                    <DockPanel HorizontalAlignment="Center">
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Hand: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOwnHand" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="5" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Mana: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOwnMana" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="0" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Grave: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOwnGrave" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="0" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Deck: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOwnDeck" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="30" HorizontalAlignment="Left"/>
-                    </DockPanel>
-                </StackPanel>
-            </Border>
-            <Border Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource InfoBoardBackgroundColor}" Opacity="0.8" CornerRadius="2" Margin="0,19.6,20,19.8"/>
-            <Border Grid.Row="1" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,19.6,20,19.8">
-                <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
-                    <Label FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Content="Opponent's information:" HorizontalAlignment="Center"/>
-                    <Separator Background="{DynamicResource InfoBoardForegroundColor}" Margin="0,5,0,5"></Separator>
-                    <DockPanel HorizontalAlignment="Center">
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Hand: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOppHand" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="5" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Mana: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOppMana" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="0" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Grave: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOppGrave" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="0" HorizontalAlignment="Left"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="|" HorizontalAlignment="Left" Margin="5,0,5,0"/>
-                        <TextBlock FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" FontWeight="Bold" Text="Deck: " HorizontalAlignment="Left"/>
-                        <TextBlock x:Name="txtOppDeck" FontSize="15" Foreground="{DynamicResource InfoBoardForegroundColor}" Text="30" HorizontalAlignment="Left"/>
-                    </DockPanel>
-                </StackPanel>
-            </Border>
+            
+            
             <Border  Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource TurnAndPhase}" Opacity="0.8" CornerRadius="5" Margin="0,0,20,0.4"/>
             <Border Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="5" BorderBrush="Black" Margin="0,0,20,0.4">
                 <StackPanel HorizontalAlignment="Stretch" Margin="10,5,10,5" VerticalAlignment="Stretch" Background="Transparent">
@@ -241,24 +244,18 @@
             <Border Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
                     <Grid x:Name="grdOppSafeguards">
-
-
                     </Grid>
                 </ScrollViewer>
             </Border>
             <Border Grid.Row="4" Grid.Column="10"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource GraveyardColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
             <Grid Grid.Row="4" Grid.Column="10" Name="grdOwnGrave" VerticalAlignment="Center" HorizontalAlignment="Center">
             </Grid>
-            
             <Border Name ="ownDeckBorder" Grid.Row="4" Grid.Column="9"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
             <Image Grid.Row="4" Grid.Column="9" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
-
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SafeguardColor}" Opacity="0.8" CornerRadius="5" Margin="15,5,15,5"/>
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
                     <Grid x:Name="grdOwnSafeguards">
-
-
                     </Grid>
                 </ScrollViewer>
             </Border>

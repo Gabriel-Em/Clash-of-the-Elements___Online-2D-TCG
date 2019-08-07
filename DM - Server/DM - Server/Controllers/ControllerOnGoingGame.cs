@@ -26,7 +26,7 @@ namespace DM___Server.Controllers
             Models.Response response = new Models.Response(sender);
             Models.Game game;
 
-            game = onGoingGamesData.getGameByID(Int32.Parse(message.stringArguments[0]));
+            game = onGoingGamesData.getGameByID(message.intArguments[0]);
 
             if (game.isPlayer1(sender))
                 game.isP1Ready = true;
@@ -65,7 +65,7 @@ namespace DM___Server.Controllers
             Response response = new Response(sender);
             Models.Game game;
 
-            game = onGoingGamesData.getGameByID(Int32.Parse(message.stringArguments[0]));
+            game = onGoingGamesData.getGameByID(message.intArguments[0]);
             if (game.isPlayer1(sender))
                 response.commandStringArgumentsToSender = game.listPlayer1Hand.Select(x => x.ToString()).ToList<string>();
             else
@@ -131,6 +131,27 @@ namespace DM___Server.Controllers
 
             response.responseCommandToSockets = "SETPHASE";
             response.commandStringArgumentsToSockets = message.stringArguments;
+
+            return response;
+        }
+
+        public Response processInGameChatMessage(GameMessage message, Socket sender)
+        {
+            Response response = new Response(sender);
+
+            Models.Game game = onGoingGamesData.getGameByID(message.GameID);
+
+            if (game.isPlayer1(sender))
+                response.socketsToNotify.Add(game.Player2Socket);
+            else
+                response.socketsToNotify.Add(game.Player1Socket);
+
+            response.responseCommandToSender = "NEWINGAMECHATMESSAGE";
+            response.responseCommandToSockets = "NEWINGAMECHATMESSAGE";
+            response.commandStringArgumentsToSender = message.stringArguments.ToList<string>();
+            response.commandStringArgumentsToSockets = message.stringArguments.ToList<string>();
+            response.commandIntArgumentsToSender.Add(1);
+            response.commandIntArgumentsToSockets.Add(0);
 
             return response;
         }

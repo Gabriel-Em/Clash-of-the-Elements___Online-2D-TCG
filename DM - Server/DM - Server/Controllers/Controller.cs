@@ -107,6 +107,9 @@ namespace DM___Server
                 case "DECKTOMANA":
                     response = ctrlOnGoingGame.processDeckToMana(message, sender);
                     break;
+                case "INGAMECHATMESSAGE":
+                    response = ctrlOnGoingGame.processInGameChatMessage(message, sender);
+                    break;
                 default:
                     response = null;
                     break;

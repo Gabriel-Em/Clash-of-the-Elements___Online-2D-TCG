@@ -27,16 +27,20 @@ namespace DM___Client.GUIPages
         private List<Models.PreGameDeckGUIModel> DecksGUI;
         private int selectedDeckID;
         private int GameRoomID;
+        private string OwnNickName;
+        private string OppNickName;
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
 
-        public GUIPreGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_)
+        public GUIPreGameRoom(GUIWindows.GUI parent, Communication com, int GameRoomID, string OwnNickName, string OppNickName)
         {
             InitializeComponent();
 
             // attach parent, GameRoomID and controller 
-            parent = parent_;
-            GameRoomID = GameRoomID_;
-            ctrl = new Controllers.PreGameRoomController(this, com_);
+            this.parent = parent;
+            this.GameRoomID = GameRoomID;
+            this.OwnNickName = OwnNickName;
+            this.OppNickName = OppNickName;
+            ctrl = new Controllers.PreGameRoomController(this, com);
 
             // initailize uninitialized adta
             DecksGUI = new List<Models.PreGameDeckGUIModel>();
@@ -119,7 +123,7 @@ namespace DM___Client.GUIPages
             else
             {
                 stopListening();
-                parent.loadGameRoom(GameRoomID, selectedDeckID);
+                parent.loadGameRoom(GameRoomID, selectedDeckID, OwnNickName, OppNickName);
             }
         }
     }
