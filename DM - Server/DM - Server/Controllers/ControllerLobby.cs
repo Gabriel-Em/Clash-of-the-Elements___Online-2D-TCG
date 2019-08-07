@@ -234,21 +234,40 @@ namespace DM___Server.Controllers
                     // if both players are set to ready they receive permission to start the match
                     if (gr.OwnerIsReady && gr.GuestIsReady)
                     {
+                        response.responseCommandToSender = "JOINPREGAMEROOM";
                         response.responseCommandToSockets = "JOINPREGAMEROOM";
-                        response.commandStringArgumentsToSockets.Add(gr.roomID.ToString());
+
+                        response.commandIntArgumentsToSender.Add(gr.roomID);
+                        response.commandIntArgumentsToSockets.Add(gr.roomID);
+
                         gr.State = "Battle in progress...";
+
                         onGoingGamesData.createNewGame(gr.roomID, gr.Owner.Socket, gr.Guest.Socket);
+
+                        if (sender == gr.Owner.Socket)
+                        {
+                            response.commandStringArgumentsToSender.Add(lobbyRoomData.getNickNameBySocket(gr.Guest.Socket));
+                            response.commandStringArgumentsToSockets.Add(lobbyRoomData.getNickNameBySocket(gr.Owner.Socket));
+                            response.socketsToNotify.Add(gr.Guest.Socket);
+                        }
+                        else
+                        {
+                            response.commandStringArgumentsToSender.Add(lobbyRoomData.getNickNameBySocket(gr.Owner.Socket));
+                            response.commandStringArgumentsToSockets.Add(lobbyRoomData.getNickNameBySocket(gr.Guest.Socket));
+                            response.socketsToNotify.Add(gr.Owner.Socket);
+                        }
                     }
                     else
                     {
                         // otherwise just notify both players about the one that hit ready
                         response.responseCommandToSockets = "SETREADY";
-                        response.commandStringArgumentsToSockets.Add(roomID.ToString());
+                        response.commandIntArgumentsToSockets.Add(roomID);
                         response.commandStringArgumentsToSockets.Add(user.NickName);
+                        response.socketsToNotify.Add(gr.Owner.Socket);
+                        response.socketsToNotify.Add(gr.Guest.Socket);
                     }
                 }
-                response.socketsToNotify.Add(gr.Owner.Socket);
-                response.socketsToNotify.Add(gr.Guest.Socket);
+                
             }
 
             return response;

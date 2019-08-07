@@ -38,12 +38,12 @@ namespace DM___Server.Models
             intArguments = null;
         }
 
-        public ClientMessage(string Command)
+        public ClientMessage(string Command, List<int> intArguments, List<string> stringArguments)
         {
             this.Command = Command;
-            stringArguments = null;
+            this.intArguments = intArguments;
+            this.stringArguments = stringArguments;
             CardCollection = null;
-            intArguments = null;
         }
     }
 }

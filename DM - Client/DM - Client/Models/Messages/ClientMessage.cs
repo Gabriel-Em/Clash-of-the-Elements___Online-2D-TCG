@@ -22,20 +22,20 @@ namespace DM___Client.Models
             intArguments = null;
         }
 
-        public ClientMessage(string Command, List<string> stringArguments, List<int> intArguments, List<Card> CardCollection)
-        {
-            this.Command = Command;
-            this.stringArguments = stringArguments;
-            this.CardCollection = CardCollection;
-            this.intArguments = intArguments;
-        }
-
         public ClientMessage(string Command, List<string> stringArguments)
         {
             this.Command = Command;
             this.stringArguments = stringArguments;
             CardCollection = null;
             intArguments = null;
+        }
+
+        public ClientMessage(string Command, List<int> intArguments)
+        {
+            this.Command = Command;
+            this.intArguments = intArguments;
+            stringArguments = null;
+            CardCollection = null;
         }
 
         public ClientMessage(string Command)

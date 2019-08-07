@@ -90,6 +90,9 @@ namespace DM___Client.Controllers
                 case "OPPSDECKTOMANA":
                     processOppsDeckToMana(message);
                     break;
+                case "NEWINGAMECHATMESSAGE":
+                    parent.processNewChatMessage(message.stringArguments[0], message.intArguments[0] != 0);
+                    break;
                 default: break;
             }
         }
@@ -106,12 +109,12 @@ namespace DM___Client.Controllers
                     break;
                 case "DECKSET":
                     loadedDataChecklist[0] = true;
-                    send(new Models.ClientMessage("GETHAND", new List<string>() { GameRoomID.ToString() }));
+                    send(new Models.ClientMessage("GETHAND", new List<int>() { GameRoomID }));
                     break;
                 case "HANDRECEIVED":
                     InitialHand = argumentsToCards(message.stringArguments);
                     loadedDataChecklist[1] = true;
-                    send(new Models.ClientMessage("READYTOSTART", new List<string>() { GameRoomID.ToString() }));
+                    send(new Models.ClientMessage("READYTOSTART", new List<int>() { GameRoomID }));
                     break;
                 case "READYTOGO":
                     loadedDataChecklist[2] = true;
@@ -155,8 +158,8 @@ namespace DM___Client.Controllers
 
         private void processPlayedAsMana(GameMessage message)
         {
-            parent.txtOppHand.Text = (Int32.Parse(parent.txtOppHand.Text) - 1).ToString();
-            parent.txtOppMana.Text = (Int32.Parse(parent.txtOppMana.Text) + 1).ToString();
+            parent.updateInfoBoard("hand", false, -1);
+            parent.updateInfoBoard("mana", false, 1);
             parent.animatePlayAsManaOPP(message.intArguments[0]);
         }
 
@@ -203,6 +206,14 @@ namespace DM___Client.Controllers
         private void processSendTo(GameMessage message)
         {
             parent.processOppSendTo(message.intArguments, message.stringArguments[0], message.stringArguments[1]);
+        }
+
+        public bool notEmpty(string text)
+        {
+            for (int i = 0; i < text.Length; i++)
+                if (text[i] != ' ')
+                    return true;
+            return false;
         }
     }
 }

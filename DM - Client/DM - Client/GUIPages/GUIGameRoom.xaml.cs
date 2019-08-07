@@ -64,18 +64,23 @@ namespace DM___Client.GUIPages
         private const bool OPP = false;
         private DispatcherTimer animationTimer;
         private DispatcherTimer checkInitialAnimationsFinished;
-        private object animationsAndEventsQueueLock = new object();
+        private object animationsAndEventsQueueLock;
+        private bool chatWindowEmpty;
+        private string ownNickName;
+        private string oppNickName;
 
         public string Phase;
         public ImageSource BackgroundImageSource { get { return backgroundImage.Source; } }
 
-        public GUIGameRoom(GUIWindows.GUI parent_, Communication com_, int GameRoomID_, int DeckID_, Models.CardCollection CardCollection_)
+        public GUIGameRoom(GUIWindows.GUI parent, Communication com, int GameRoomID, int DeckID, string OwnNickName, string OppNickName, Models.CardCollection CardCollection)
         {
             InitializeComponent();
 
-            parent = parent_;
-            ctrl = new Controllers.GameRoomController(this, com_, GameRoomID_, DeckID_, CardCollection_);
+            this.parent = parent;
+            ownNickName = OwnNickName;
+            oppNickName = OppNickName;
 
+            ctrl = new Controllers.GameRoomController(this, com, GameRoomID, DeckID, CardCollection);
             logger = new Log.Logger();
 
             grdOwnGrave.Children.Add(new Models.CardGUIModel(null, this, AnimationAndEventsConstants.graveInitialPosition, Visibility.Hidden).Border);
@@ -85,6 +90,7 @@ namespace DM___Client.GUIPages
             initTimers();
             initLists();
             initZoomedInImage();
+            initOtherVariables();
 
             ctrl.loadPageData();
             beginListening();
@@ -156,6 +162,12 @@ namespace DM___Client.GUIPages
             zoomedImage.Visibility = Visibility.Hidden;
             zoomedImage.Stretch = Stretch.UniformToFill;
             grdParent.Children.Add(zoomedImage);
+        }
+
+        private void initOtherVariables()
+        {
+            animationsAndEventsQueueLock = new object();
+            chatWindowEmpty = true;
         }
 
         private Button getActionButton()
@@ -391,27 +403,27 @@ namespace DM___Client.GUIPages
         {
             TextBlock value;
 
-            switch(type)
-            {
-                case "mana":
-                    value = own ? txtOwnMana : txtOppMana;
-                    break;
-                case "deck":
-                    value = own ? txtOwnDeck : txtOppDeck;
-                    break;
-                case "hand":
-                    value = own ? txtOwnHand : txtOppHand;
-                    break;
-                case "grave":
-                    value = own ? txtOwnGrave : txtOppGrave;
-                    break;
-                default:
-                    value = null;
-                    break;
-            }
+            //switch(type)
+            //{
+            //    case "mana":
+            //        value = own ? txtOwnMana : txtOppMana;
+            //        break;
+            //    case "deck":
+            //        value = own ? txtOwnDeck : txtOppDeck;
+            //        break;
+            //    case "hand":
+            //        value = own ? txtOwnHand : txtOppHand;
+            //        break;
+            //    case "grave":
+            //        value = own ? txtOwnGrave : txtOppGrave;
+            //        break;
+            //    default:
+            //        value = null;
+            //        break;
+            //}
 
-            if (value != null)
-                value.Text = (Int32.Parse(value.Text) + ammount).ToString();
+            //if (value != null)
+            //    value.Text = (Int32.Parse(value.Text) + ammount).ToString();
         }
 
         // select/deselect methods
@@ -717,6 +729,55 @@ namespace DM___Client.GUIPages
             GUIWindows.GUIPeek guiPeek = new GUIWindows.GUIPeek(listOwnGraveyard, listOppGraveyard, "Graveyard");
 
             guiPeek.Show();
+        }
+
+        // CHAT
+
+        private void TextBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key != System.Windows.Input.Key.Enter)
+                return;
+            sendChatMessage();
+        }
+
+        private void sendChatMessage()
+        {
+            string message = txtTypeInChat.Text;
+            message = message.Replace("\r", "");
+            message = message.Replace("\n", "");
+
+            if (ctrl.notEmpty(message))
+            {
+                Models.GameMessage gm = new GameMessage();
+
+                gm.GameID = ctrl.GameRoomID;
+                gm.Command = "INGAMECHATMESSAGE";
+                gm.stringArguments = new List<string>() { message };
+
+                ctrl.send(gm);
+
+                txtTypeInChat.Clear();
+            }
+        }
+        public void processNewChatMessage(string message, bool own)
+        {
+            TextRange tr = new TextRange(richTextboxChat.Document.ContentEnd, richTextboxChat.Document.ContentEnd);
+            if (!chatWindowEmpty)
+                tr.Text = "\n";
+            chatWindowEmpty = false;
+            tr.Text += (own == OWN ? ownNickName : oppNickName) + ": ";
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
+            tr.ApplyPropertyValue(TextElement.ForegroundProperty, own == OWN ? Brushes.DarkOliveGreen : Brushes.YellowGreen);
+            tr = new TextRange(richTextboxChat.Document.ContentEnd, richTextboxChat.Document.ContentEnd);
+            tr.Text = message;
+            tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
+            tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Black);
+            richTextboxChat.ScrollToEnd();
+        }
+
+        private void btnSubmitText_Click(object sender, RoutedEventArgs e)
+        {
+            sendChatMessage();
         }
     }
 }

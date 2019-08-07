@@ -91,7 +91,7 @@ namespace DM___Client.Controllers
                     removeUserFromRoom(message.stringArguments);
                     break;
                 case "SETREADY":
-                    setReadyInRoom(message.stringArguments);
+                    setReadyInRoom(message.intArguments[0], message.stringArguments[0]);
                     break;
                 case "DECKSREQUIREDTOJOIN":
                     parent.noRoomsForMe();
@@ -211,21 +211,18 @@ namespace DM___Client.Controllers
             parent.removePlayerFromRoom(id, commandArguments[0]);
         }
 
-        private void setReadyInRoom(List<string> commandArguments)
+        private void setReadyInRoom(int RoomId, string NickName)
         {
-            int id = Int32.Parse(commandArguments[0]);
-            string playerNickName = commandArguments[1];
-
             for (int i = 0; i < GameRooms.Count; i++)
-                if (GameRooms[i].RoomID == id)
+                if (GameRooms[i].RoomID == RoomId)
                 {
-                    if (GameRooms[i].Owner == playerNickName)
+                    if (GameRooms[i].Owner == NickName)
                         GameRooms[i].OwnerIsReady = true;
                     else
                         GameRooms[i].GuestIsReady = true;
                     break;
                 }
-            parent.setReady(id, playerNickName);
+            parent.setReady(RoomId, NickName);
         }
 
         // USER DATA
@@ -264,7 +261,7 @@ namespace DM___Client.Controllers
         {
             int roomID;
 
-            roomID = Int32.Parse(message.stringArguments[0]);
+            roomID = message.intArguments[0];
 
             foreach(Models.GameRoom gameRoom in GameRooms)
                 if (gameRoom.RoomID == roomID)
@@ -275,7 +272,7 @@ namespace DM___Client.Controllers
                     }
                     break;
                 }
-            parent.joinPreGameRoom(Int32.Parse(message.stringArguments[0]));
+            parent.joinPreGameRoom(roomID, message.stringArguments[0]);
         }
 
         private void processSetRoomState(Models.ClientMessage message)

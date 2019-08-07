@@ -157,11 +157,11 @@ namespace DM___Client.GUIPages
         }
 
         // executes when a match is about to start
-        public void joinPreGameRoom(int RoomID)
+        public void joinPreGameRoom(int RoomID, string OppNickName)
         {
             stopListening();
             ctrl.send(new Models.ClientMessage("LEAVELOBBY", new List<string>() { "PreGameRoom" }));
-            parent.loadPreGameRoom(RoomID);
+            parent.loadPreGameRoom(RoomID, ctrl.userData.NickName, OppNickName);
         }
 
         private void sendChatMessage()

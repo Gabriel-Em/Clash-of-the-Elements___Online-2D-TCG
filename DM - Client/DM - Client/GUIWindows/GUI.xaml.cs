@@ -143,9 +143,9 @@ namespace DM___Client.GUIWindows
 
         // GAME ROOM
 
-        public void loadGameRoom(int GameRoomID,int DeckID)
+        public void loadGameRoom(int GameRoomID, int DeckID, string OwnNickName, string OppNickName)
         {
-            GUIgameRoom = new GUIPages.GUIGameRoom(this, com, GameRoomID, DeckID, CardCollection);
+            GUIgameRoom = new GUIPages.GUIGameRoom(this, com, GameRoomID, DeckID, OwnNickName, OppNickName, CardCollection);
             List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Setting up initial conditions",
@@ -160,9 +160,9 @@ namespace DM___Client.GUIWindows
 
         // PRE GAME ROOM
 
-        internal void loadPreGameRoom(int GameRoomID)
+        internal void loadPreGameRoom(int GameRoomID, string OwnNickName, string OppNickName)
         {
-            GUIpreGameRoom = new GUIPages.GUIPreGameRoom(this, com, GameRoomID);
+            GUIpreGameRoom = new GUIPages.GUIPreGameRoom(this, com, GameRoomID, OwnNickName, OppNickName);
             List<string> loadedDataChecklistTitles = new List<string>()
             {
                 "Fetching Decks"
