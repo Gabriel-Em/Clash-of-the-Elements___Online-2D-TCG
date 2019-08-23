@@ -108,8 +108,8 @@
         <ImageBrush x:Key="HandColor">#F6EEE3</ImageBrush>
         <ImageBrush x:Key="BackgroundColor">#151515</ImageBrush>
         <ImageBrush x:Key="TurnAndPhase">#10E0E0</ImageBrush>
-        <ImageBrush x:Key="ButtonsAndCardInfo">#F6EEE3</ImageBrush>
-        <ImageBrush x:Key="ChatColor">#F6AEE3</ImageBrush>
+        <ImageBrush x:Key="ButtonsAndCardInfo">#F6AEE3</ImageBrush>
+        <ImageBrush x:Key="ChatColor">#F6EEE3</ImageBrush>
     </Page.Resources>
     <Grid x:Name="grdParent">
         <Image x:Name="backgroundImage" Source="/DM - Client;component/Resources/Background.jpg" Stretch="UniformToFill"></Image>
@@ -170,8 +170,8 @@
                     </Grid>
                 </ScrollViewer>
             </Border>
-            <Border Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ChatColor}" Opacity="0.8" CornerRadius="5" Margin="0,10,20,10"/>
-            <Border Grid.Row="3" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="0,10,20,10" BorderThickness="5" BorderBrush="Black">
+            <Border Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ChatColor}" Opacity="0.8" CornerRadius="5" Margin="0,10,20,10"/>
+            <Border Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="0,10,20,10" BorderThickness="5" BorderBrush="Black">
                 <StackPanel Margin="10,0,10,0">
                     <RichTextBox x:Name="richTextboxChat" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="10" Height="130" VerticalScrollBarVisibility="Auto" FontSize="15" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
                         <RichTextBox.Resources>
@@ -194,8 +194,8 @@
                     </DockPanel>
                 </StackPanel>
             </Border>
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="0,20,70,0"/>
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,20,70,0">
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="0,0,70,20"/>
+            <Border Grid.Row="3" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="0,0,70,20">
                 <Grid>
                     <StackPanel x:Name="actionButtons" HorizontalAlignment="Stretch" Margin="5,5,5,40" VerticalAlignment="Stretch" Background="Transparent">
                     </StackPanel>
@@ -204,8 +204,8 @@
                     </StackPanel>
                 </Grid>
             </Border>
-            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="45,20,20,0"/>
-            <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="45,20,20,0">
+            <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource ButtonsAndCardInfo}" Opacity="0.8" CornerRadius="2" Margin="45,00,20,20"/>
+            <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="2" BorderThickness="1" BorderBrush="Black" Margin="45,00,20,20">
                 <StackPanel HorizontalAlignment="Stretch" Margin="10,0,10,0" VerticalAlignment="Stretch" Background="Transparent">
                     <Label FontSize="15" Foreground="Black" Content="Card information:" HorizontalAlignment="Center"/>
                     <RichTextBox x:Name="rchCardInfo" AcceptsReturn="True" Background="Transparent" BorderThickness="0,2,0,2" Margin="2,0,2,0" Height="180" VerticalScrollBarVisibility="Auto" FontSize="12" Foreground="Black" BorderBrush="Black" IsReadOnly="True" SelectionBrush="Black">
@@ -220,8 +220,6 @@
                     </RichTextBox>
                 </StackPanel>
             </Border>
-            
-            
             <Border  Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource TurnAndPhase}" Opacity="0.8" CornerRadius="5" Margin="0,0,20,0.4"/>
             <Border Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" BorderThickness="5" BorderBrush="Black" Margin="0,0,20,0.4">
                 <StackPanel HorizontalAlignment="Stretch" Margin="10,5,10,5" VerticalAlignment="Stretch" Background="Transparent">
@@ -236,10 +234,14 @@
                 </StackPanel>
             </Border>
             <Border Grid.Row="1" Grid.Column="3"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource GraveyardColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
+            <Label x:Name="lblOppGrave" FontSize="20" Foreground="White" FontWeight="Medium" FontFamily="Consolas" Content="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="43,0,41,12" Grid.Column="3" Grid.Row="1"/>
             <Grid Grid.Row="1" Grid.Column="3" Name="grdOppGrave" VerticalAlignment="Center" HorizontalAlignment="Center">
             </Grid>
             <Border Name="oppDeckBorder" Grid.Row="1" Grid.Column="4"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
-            <Image Grid.Row="1" Grid.Column="4" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
+            <Grid Grid.Row="1" Grid.Column="4" Margin="0,7,0,7">
+                <Image Grid.Row="1" Grid.Column="4" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform"></Image>
+                <Label x:Name="lblOppDeck" FontSize="20" Foreground="White" FontWeight="Medium" FontFamily="Consolas" Content="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+            </Grid>
             <Border Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SafeguardColor}" Opacity="0.8" CornerRadius="5" Margin="15,5,15,5"/>
             <Border Grid.Row="1" Grid.Column="5" Grid.ColumnSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
@@ -251,7 +253,10 @@
             <Grid Grid.Row="4" Grid.Column="10" Name="grdOwnGrave" VerticalAlignment="Center" HorizontalAlignment="Center">
             </Grid>
             <Border Name ="ownDeckBorder" Grid.Row="4" Grid.Column="9"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource DeckColor}" Opacity="0.8" CornerRadius="5" Margin="10,5,10,5"/>
-            <Image Grid.Row="4" Grid.Column="9" Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform" Margin="0,5,0,5"></Image>
+            <Grid Grid.Row="4" Grid.Column="9" Margin="0,7,0,7">
+                <Image Source="/DM - Client;component/Resources/Deck.png" Stretch="Uniform"></Image>
+                <Label x:Name="lblOwnDeck" FontSize="20" Foreground="White" FontWeight="Medium" FontFamily="Consolas" Content="30" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+            </Grid>
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="{DynamicResource SafeguardColor}" Opacity="0.8" CornerRadius="5" Margin="15,5,15,5"/>
             <Border Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="6"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Transparent" CornerRadius="5" Margin="15,5,15,5">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Hidden">
