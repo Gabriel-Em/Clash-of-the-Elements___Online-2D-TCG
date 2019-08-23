@@ -401,29 +401,29 @@ namespace DM___Client.GUIPages
         // update info board
         public void updateInfoBoard(string type, bool own, int ammount)
         {
-            TextBlock value;
+            Label value;
 
-            //switch(type)
-            //{
-            //    case "mana":
-            //        value = own ? txtOwnMana : txtOppMana;
-            //        break;
-            //    case "deck":
-            //        value = own ? txtOwnDeck : txtOppDeck;
-            //        break;
-            //    case "hand":
-            //        value = own ? txtOwnHand : txtOppHand;
-            //        break;
-            //    case "grave":
-            //        value = own ? txtOwnGrave : txtOppGrave;
-            //        break;
-            //    default:
-            //        value = null;
-            //        break;
-            //}
+            switch (type)
+            {
+                //case "mana":
+                //    value = own ? txtOwnMana : txtOppMana;
+                //    break;
+                case "deck":
+                    value = own ? lblOwnDeck : lblOppDeck;
+                    break;
+                //case "hand":
+                //    value = own ? txtOwnHand : txtOppHand;
+                //    break;
+                case "grave":
+                    value = own ? lblOppGrave : lblOppGrave;
+                    break;
+                default:
+                    value = null;
+                    break;
+            }
 
-            //if (value != null)
-            //    value.Text = (Int32.Parse(value.Text) + ammount).ToString();
+            if (value != null)
+                value.Content = (Int32.Parse(value.Content.ToString()) + ammount).ToString();
         }
 
         // select/deselect methods
@@ -767,7 +767,7 @@ namespace DM___Client.GUIPages
             chatWindowEmpty = false;
             tr.Text += (own == OWN ? ownNickName : oppNickName) + ": ";
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Bold);
-            tr.ApplyPropertyValue(TextElement.ForegroundProperty, own == OWN ? Brushes.DarkOliveGreen : Brushes.YellowGreen);
+            tr.ApplyPropertyValue(TextElement.ForegroundProperty, own == OWN ? Brushes.DarkOliveGreen : Brushes.LightSeaGreen);
             tr = new TextRange(richTextboxChat.Document.ContentEnd, richTextboxChat.Document.ContentEnd);
             tr.Text = message;
             tr.ApplyPropertyValue(TextElement.FontWeightProperty, FontWeights.Normal);
