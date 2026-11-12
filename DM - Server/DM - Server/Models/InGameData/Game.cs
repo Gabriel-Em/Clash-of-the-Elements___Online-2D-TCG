@@ -65,7 +65,7 @@ namespace DM___Server.Models
             listPlayer2ManaZone = new List<int>();
             listPlayer1Graveyard = new List<int>();
             listPlayer2Graveyard = new List<int>();
-            listPlayer1Safeguards = new List<int>();
+            listPlayer1BattleGround = new List<int>();
             listPlayer2BattleGround = new List<int>();
             listPlayer1Safeguards = new List<int>();
             listPlayer2Safeguards = new List<int>();
@@ -190,7 +190,7 @@ namespace DM___Server.Models
             if (player == 1)
             {
                 listPlayer1Hand.Remove(cardID);
-                listPlayer1Safeguards.Add(cardID);
+                listPlayer1BattleGround.Add(cardID);
             }
             else
             {
