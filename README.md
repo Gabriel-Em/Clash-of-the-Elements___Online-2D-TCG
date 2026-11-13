@@ -12,7 +12,7 @@ Each player starts the match protected by **5 safeguards**, which are face-down 
 
 | Term | Meaning |
 |---|---|
-| Element | Every card belongs to one of five elements: **Fire**, **Water**, **Nature**, **Darkness** or **Light** |
+| Element | Every card belongs to one of five elements: **Air**, **Earth**, **Ether**, **Fire** or **Water** |
 | Safeguards | Face-down cards that protect a player. A broken safeguard goes to its owner's hand |
 | Battle zone | Where creatures are played and fight |
 | Mana zone | Your resource pool, built from cards in your hand |
@@ -72,17 +72,19 @@ The player who goes first skips this step on their first turn, so **they don't d
 
 Each of your creatures without summoning sickness may attack **once** per turn. Attacking engages the creature. For each attack, choose one:
 
-- **Attack safeguards:** break one of your opponent's safeguards (more if the creature has *Safeguard Breaker*). You choose which ones.
+- **Attack safeguards:** break one of your opponent's safeguards (some creatures break 2 at once). You choose which ones.
 - **Attack a creature:** battle one of your opponent's **engaged** creatures. Ready creatures can't be attacked.
 - **Attack the opponent:** only possible once your opponent has **no safeguards left**. If the attack isn't blocked, you win.
 
+Some creatures have effects that happen whenever they attack. These take effect before your opponent can block.
+
 #### Breaking safeguards
 
-A broken safeguard goes into its owner's hand. If several break at once, the defending player chooses the order they are revealed in. If a broken card has a **Safeguard Trigger**, its owner can instead play it immediately **for free**, even though it's the opponent's turn.
+A broken safeguard goes into its owner's hand. If several break at once, the defending player chooses the order they are revealed in. If a broken card has **Safeguard Active**, its owner can instead play it immediately **for free**, even though it's the opponent's turn.
 
 #### Blocking
 
-When one of your creatures or safeguards, or you yourself, are attacked, you may block with one of your ready creatures that has **Defender**. The blocker battles the attacker instead, and blocking engages it. Creatures with **Slippery** can't be blocked.
+When one of your creatures or safeguards, or you yourself, are attacked, you may block with one of your ready creatures that has **Defender**. The blocker battles the attacker instead, and blocking engages it. Some creatures can't be blocked.
 
 ### 5. End of Turn
 
@@ -98,20 +100,16 @@ Mana cards stay in your mana zone unless an effect moves them. Engaged mana beco
 
 ## Elements
 
-Elements have no strengths or weaknesses against each other, so a battle only compares Power. Elements matter in two ways:
-
-- **Paying costs:** you need mana of a card's element to play it.
-- **Card abilities:** some abilities grow stronger based on how many cards of a given element are in your graveyard.
+Elements have no strengths or weaknesses against each other, so a battle only compares Power. An element only matters when paying costs: you need mana of a card's element to play it.
 
 ## Battles
 
 - The creature with **higher Power wins**, and the loser is destroyed.
 - On a **tie**, both creatures are destroyed.
-- Power bonuses from attacking abilities (*Blood Thirst*, *Blood Thirst Revenge*) only apply while the creature is attacking.
-- If a **Poisonous** creature loses a battle, the creature that beat it is destroyed too.
-- A **One Punch** creature is destroyed after it wins a battle.
+- Power bonuses from **Bloodthirst** only apply while the creature is attacking.
+- Some creatures change how a battle ends. For example, Araneidae always takes the other creature down with it.
 
-A destroyed creature goes to its owner's graveyard, unless it is **Unkillable** (it returns to its owner's hand) or **Recyclable** (it goes to its owner's mana zone).
+A destroyed creature goes to its owner's graveyard, unless an effect sends it somewhere else.
 
 ## Winning the Game
 
@@ -127,19 +125,17 @@ Running out of cards in your deck doesn't make you lose. If a player disconnects
 | Ability | Effect |
 |---|---|
 | Defender | Can block attacks |
-| Slippery | Can't be blocked |
-| Cannot Attack | This creature can never attack |
-| Instant Summon | No summoning sickness, so it can attack the turn it's played |
-| Safeguard Breaker | Breaks extra safeguards when it attacks them |
-| Blood Thirst | Extra Power while attacking |
-| Blood Thirst Revenge | Extra Power while attacking for each card of a certain element in your graveyard |
-| Poisonous | Destroys the creature that beats it in battle |
-| One Punch | Destroyed after winning a battle |
-| Unkillable | Returns to your hand instead of being destroyed |
-| Recyclable | Goes to your mana zone instead of being destroyed |
-| Safeguard Trigger | Can be played for free when it's revealed from a broken safeguard |
+| Bloodthirst | Extra Power while attacking |
+| Safeguard Active | Can be played for free when it's revealed from a broken safeguard |
 
-Many cards also have effects that trigger when they are played, such as drawing cards, destroying creatures, returning cards to their owner's hand, adding cards to your mana zone, or bringing creatures back from your graveyard. Each card's text describes exactly what it does.
+Many cards also have their own effects, for example:
+
+- drawing cards, destroying creatures, or returning cards to their owner's hand when played,
+- effects that happen whenever the creature attacks,
+- breaking 2 safeguards at once, or sending broken safeguards to the graveyard instead of the hand,
+- being impossible to block, being unable to attack, or attacking the turn it's played.
+
+Each card's text describes exactly what it does.
 
 ### Interface
 ![](https://github.com/Gabriel-Em/Clash-of-the-Elements___Online-2D-TCG/blob/master/DM%20-%20Client/DM%20-%20Client/Resources/GameInterface.png)
@@ -164,6 +160,12 @@ PM> nuget restore
 Do that for both projects. Reopen the projects if neccessary.
 
 Now you can build and run the projects.
+
+#### Running the tests
+
+Each solution has a test project (`DM - Client.Tests` and `DM - Server.Tests`). They need Visual Studio 2019 or newer and the .NET Framework 4.8 Developer Pack. Open a solution and run the tests from **Test -> Test Explorer**.
+
+The server's `Integration` tests read the card database, so they also need SQL Server Express LocalDB, which the server uses as well.
 
 # Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.

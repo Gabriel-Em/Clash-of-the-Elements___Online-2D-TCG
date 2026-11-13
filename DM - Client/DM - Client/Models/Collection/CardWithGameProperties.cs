@@ -11,16 +11,21 @@ namespace DM___Client.Models
         public bool hasCompletelyBeenSummoned { get; set; }
         public bool isEngaged { get; set; }
 
+        // abilities given to this card by other cards' effects while it is in the battle zone
+        public List<string> grantedEffects { get; private set; }
+
         public CardWithGameProperties(Card card) : base(card)
         {
             hasCompletelyBeenSummoned = false;
             isEngaged = false;
+            grantedEffects = new List<string>();
         }
 
         public void resetProperties()
         {
             hasCompletelyBeenSummoned = false;
             isEngaged = false;
+            grantedEffects.Clear();
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using DM___Client.Animations;
+using DM___Client.GamePlay;
 
 namespace DM___Client.GUIPages
 {
@@ -95,25 +96,7 @@ namespace DM___Client.GUIPages
 
         private bool checkCanSummon(Models.CardGUIModel card)
         {
-            int count;
-            bool found_element;
-
-            count = 0;
-            found_element = false;
-
-            foreach(Models.CardGUIModel cardGUI in listOwnManaZone)
-            {
-                if (!cardGUI.Card.isEngaged)
-                {
-                    count += 1;
-                    if (cardGUI.Card.Element == card.Card.Element)
-                        found_element = true;
-                }
-            }
-
-            if (card.Card.Cost <= count && found_element)
-                return true;
-            return false;
+            return GameRules.CanPayCost(card.Card, listOwnManaZone.Select(x => x.Card));
         }
 
         private void summonOWN(List<int> selectedMana, int selectedCardIndex)

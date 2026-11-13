@@ -49,10 +49,9 @@ namespace DM___Client.Models.GUIModels
                 else
                     Image.Source = new System.Windows.Media.Imaging.BitmapImage(
                         new Uri(
-                            string.Format("{0}{1}{2}/{3}.jpg",
+                            string.Format("{0}{1}{2}.png",
                             AppDomain.CurrentDomain.BaseDirectory,
                             cardsPath,
-                            card.Set,
                             card.Name),
                             UriKind.Absolute));
 

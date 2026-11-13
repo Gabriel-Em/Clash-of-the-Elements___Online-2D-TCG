@@ -80,6 +80,9 @@ namespace DM___Client.Controllers
                 case "SENDTO":
                     processSendTo(message);
                     break;
+                case "GRANTEFFECT":
+                    parent.processOppGrantEffect(message.stringArguments[0]);
+                    break;
                 case "OPPSURRENDERED":
                     send(new ClientMessage("CLOSEROOM", new List<string>() { GameRoomID.ToString() }));
                     parent.loadEndGame(true);

@@ -82,14 +82,26 @@ namespace DM___Server
 
         private List<Models.SpecialEffect> parseDBSpecialEffects(SqlDataReader reader)
         {
+            return parseSpecialEffects(
+                reader["Special Effect"].ToString(),
+                reader["Effect Arguments"].ToString(),
+                reader["Trigger"].ToString(),
+                reader["Condition"].ToString(),
+                reader["Effect Target From"].ToString(),
+                reader["Effect Target To"].ToString());
+        }
+
+        // each column holds one ';'-separated entry per effect; arguments of one effect are separated by '&' and "None" means no value
+        public static List<Models.SpecialEffect> parseSpecialEffects(string effectsColumn, string argumentsColumn, string triggersColumn, string conditionsColumn, string targetFromColumn, string targetToColumn)
+        {
             List<Models.SpecialEffect> SpecialEffects = new List<Models.SpecialEffect>();
 
-            string[] effects = reader["Special Effect"].ToString().Split(';');
-            string[] rawArguments = reader["Effect Arguments"].ToString().Split(';');
-            string[] triggers = reader["Trigger"].ToString().Split(';');
-            string[] conditions = reader["Condition"].ToString().Split(';');
-            string[] targetFrom = reader["Effect Target From"].ToString().Split(';');
-            string[] targetTo = reader["Effect Target To"].ToString().Split(';');
+            string[] effects = effectsColumn.Split(';');
+            string[] rawArguments = argumentsColumn.Split(';');
+            string[] triggers = triggersColumn.Split(';');
+            string[] conditions = conditionsColumn.Split(';');
+            string[] targetFrom = targetFromColumn.Split(';');
+            string[] targetTo = targetToColumn.Split(';');
 
             if (effects[0] != "None")
             {

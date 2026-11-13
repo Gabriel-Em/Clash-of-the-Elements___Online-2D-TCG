@@ -74,10 +74,9 @@ namespace DM___Client.Models
                 else
                     Image.Source = new System.Windows.Media.Imaging.BitmapImage(
                         new Uri(
-                            string.Format("{0}{1}{2}/{3}.jpg",
+                            string.Format("{0}{1}{2}.png",
                             AppDomain.CurrentDomain.BaseDirectory,
                             cardsPath,
-                            Card.Set,
                             Card.Name),
                             UriKind.Absolute));
 
@@ -181,10 +180,9 @@ namespace DM___Client.Models
                 else
                     Image.Source = new System.Windows.Media.Imaging.BitmapImage(
                         new Uri(
-                            string.Format("{0}{1}{2}/{3}.jpg",
+                            string.Format("{0}{1}{2}.png",
                             AppDomain.CurrentDomain.BaseDirectory,
                             cardsPath,
-                            Card.Set,
                             Card.Name),
                             UriKind.Absolute));
 

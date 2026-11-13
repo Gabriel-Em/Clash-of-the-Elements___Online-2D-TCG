@@ -44,6 +44,7 @@ namespace DM___Client.GUIPages
         private List<Models.CardGUIModel> selectedCards;
         private List<Models.CardGUIModel> ableToSelect;
         private List<Event> animationsAndEvents;
+        private HashSet<Event> idleEvents = new HashSet<Event>();
         #endregion
 
         #region BUTTONS
@@ -639,6 +640,33 @@ namespace DM___Client.GUIPages
                 }
                 else
                     animationsAndEvents.Add(e);
+            }
+        }
+
+        // runs an action only once every other queued animation and event has been processed
+
+        public void addEventWhenIdle(Action action)
+        {
+            Event e = null;
+
+            e = new Event(() =>
+            {
+                lock (animationsAndEventsQueueLock)
+                {
+                    if (animationsAndEvents.Any(x => !idleEvents.Contains(x)))
+                    {
+                        animationsAndEvents.Add(e);
+                        return;
+                    }
+                    idleEvents.Remove(e);
+                }
+                action();
+            });
+
+            lock (animationsAndEventsQueueLock)
+            {
+                idleEvents.Add(e);
+                animationsAndEvents.Add(e);
             }
         }
 

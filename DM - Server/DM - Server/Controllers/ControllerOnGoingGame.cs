@@ -376,6 +376,27 @@ namespace DM___Server.Controllers
             return response;
         }
 
+        public Response processGrantEffect(GameMessage message, Socket sender)
+        {
+            Response response = new Response();
+
+            Models.Game game = onGoingGamesData.getGameByID(message.GameID);
+
+            if (game.isPlayer1(sender))
+            {
+                response.socketsToNotify.Add(game.Player2Socket);
+            }
+            else
+            {
+                response.socketsToNotify.Add(game.Player1Socket);
+            }
+
+            response.responseCommandToSockets = "GRANTEFFECT";
+            response.commandStringArgumentsToSockets = message.stringArguments;
+
+            return response;
+        }
+
         public Response processAttackOpponent(GameMessage message, Socket sender)
         {
             Response response = new Response(sender);

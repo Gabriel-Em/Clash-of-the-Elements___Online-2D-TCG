@@ -98,6 +98,9 @@ namespace DM___Server
                 case "SENDTO":
                     response = ctrlOnGoingGame.processSendTo(message, sender);
                     break;
+                case "GRANTEFFECT":
+                    response = ctrlOnGoingGame.processGrantEffect(message, sender);
+                    break;
                 case "ATTACKOPPONENT":
                     response = ctrlOnGoingGame.processAttackOpponent(message, sender);
                     break;

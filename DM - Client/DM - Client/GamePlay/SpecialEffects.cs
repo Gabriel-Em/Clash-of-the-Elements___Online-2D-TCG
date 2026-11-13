@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using DM___Client.Animations;
+using DM___Client.GamePlay;
 using DM___Client.Models;
 
 namespace DM___Client.GUIPages
@@ -15,86 +16,17 @@ namespace DM___Client.GUIPages
 
         private List<CardGUIModel> getOwnDefendersThatCanBlock()
         {
-            List<CardGUIModel> defenders = new List<CardGUIModel>();
-
-            foreach (CardGUIModel cardGUI in listOwnBattleGround)
-            {
-                if (!cardGUI.Card.isEngaged && hasEffect(cardGUI.Card, "Defender"))
-                {
-                    defenders.Add(cardGUI);
-                }
-            }
-
-            return defenders;
+            return listOwnBattleGround.Where(x => GameRules.CanBlock(x.Card)).ToList();
         }
 
         private bool hasEffect(Card card, string effect)
         {
-            foreach (SpecialEffect se in card.SpecialEffects)
-                if (se.Effect == effect)
-                    return true;
-            return false;
-        }
-
-        private int getCreaturePowerWhileAttacking(Card card)
-        {
-            int power = card.Power;
-            foreach (SpecialEffect se in card.SpecialEffects)
-            {
-                switch (se.Effect)
-                {
-                    case "BloodThirst":
-                        power += se.Arguments[0];
-                        break;
-                    case "BloodThirstRevenge":
-                        if (se.Condition == "OwnGraveyardCivilization")
-                        {
-                            int bonus;
-                            string civilization;
-
-                            bonus = se.Arguments[0];
-                            civilization = codeToCivilization(se.Arguments[1]);
-
-                            foreach(CardGUIModel graveyardCard in listOwnGraveyard)
-                            {
-                                if (graveyardCard.Card.Element == civilization)
-                                    power += bonus;
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return power;
-        }
-
-        private string codeToCivilization(int code)
-        {
-            switch(code)
-            {
-                case 1:
-                    return "Fire";
-                case 2:
-                    return "Water";
-                case 3:
-                    return "Nature";
-                case 4:
-                    return "Darkness";
-                case 5:
-                    return "Light";
-            }
-            return "";
+            return GameRules.HasEffect(card, effect);
         }
 
         private bool hasTrigger(Card card, string trigger)
         {
-            foreach (SpecialEffect se in card.SpecialEffects)
-            {
-                if (se.Trigger == trigger)
-                    return true;
-            }
-            return false;
+            return GameRules.HasTrigger(card, trigger);
         }
 
         private void triggerEffect(SpecialEffect se, CardWithGameProperties card)
@@ -102,7 +34,7 @@ namespace DM___Client.GUIPages
             switch (se.Effect)
             {
                 case "SendTo":
-                    triggerOwnSendTo(se);
+                    triggerOwnSendTo(se, card);
                     break;
                 case "InstantSummon":
                     card.hasCompletelyBeenSummoned = true;
@@ -110,10 +42,33 @@ namespace DM___Client.GUIPages
                 case "Draw":
                     ctrl.send(new GameMessage("DRAWCARD", ctrl.GameRoomID, se.Arguments));
                     break;
+                case "GrantRecyclable":
+                    grantEffectToBattleZones("Recyclable");
+
+                    // notify the server so our opponent grants the same effect on their side of the board
+                    ctrl.send(new GameMessage("GRANTEFFECT", ctrl.GameRoomID, new List<string>() { "Recyclable" }));
+                    break;
             }
         }
 
-        private void triggerOwnSendTo(SpecialEffect se)
+        // gives an ability to every creature currently in either battle zone
+
+        private void grantEffectToBattleZones(string effect)
+        {
+            foreach (CardGUIModel cardGUI in listOwnBattleGround.Concat(listOppBattleGround))
+            {
+                if (!cardGUI.Card.grantedEffects.Contains(effect))
+                    cardGUI.Card.grantedEffects.Add(effect);
+            }
+        }
+
+        public void processOppGrantEffect(string effect)
+        {
+            // queued so that it applies after our opponent's summon animation has placed the source card in the battle zone
+            addRunMethodEvent(new Event(() => grantEffectToBattleZones(effect)));
+        }
+
+        private void triggerOwnSendTo(SpecialEffect se, CardWithGameProperties sourceCard)
         {
             GUIWindows.GUISelect gUISelect;
             Tuple<List<CardGUIModel>, List<CardGUIModel>> validSelections, fullSelections;
@@ -135,18 +90,9 @@ namespace DM___Client.GUIPages
             fullSelections = getValidSelections(se, out friendlyFrom);
             treatCountAsOne = se.TargetFrom.Contains("Any") ? true : false;
 
-            if (se.Condition == "LessOrEqual")
-            {
-                validSelections = new Tuple<List<CardGUIModel>, List<CardGUIModel>>(
-                    fullSelections.Item1.Where(x => (x.Card.Type == "Creature" && x.Card.Power <= se.Arguments[1])).ToList<CardGUIModel>(),
-                    fullSelections.Item2.Where(x => (x.Card.Type == "Creature" && x.Card.Power <= se.Arguments[1])).ToList<CardGUIModel>());
-            }
-            else
-            {
-                validSelections = new Tuple<List<CardGUIModel>, List<CardGUIModel>>(
-                    fullSelections.Item1,
-                    fullSelections.Item2);
-            }
+            validSelections = new Tuple<List<CardGUIModel>, List<CardGUIModel>>(
+                fullSelections.Item1.Where(x => GameRules.IsValidEffectTarget(se, x.Card, sourceCard)).ToList<CardGUIModel>(),
+                fullSelections.Item2.Where(x => GameRules.IsValidEffectTarget(se, x.Card, sourceCard)).ToList<CardGUIModel>());
 
             if (validSelections.Item1.Count > 0 || validSelections.Item2.Count > 0)
             {
@@ -238,7 +184,55 @@ namespace DM___Client.GUIPages
                     case "OwnersHand":
                         sendToOwnersHand(se, translatedIndexesOwn, translatedIndexesOpp);
                         break;
+                    case "OwnersGrave":
+                        sendToOwnersGrave(se, translatedIndexesOwn, translatedIndexesOpp);
+                        break;
+                    case "OppMana":
+                        sendToOppMana(se, translatedIndexesOwn, translatedIndexesOpp);
+                        break;
                 }
+            }
+        }
+
+        private void sendToOwnersGrave(SpecialEffect se, List<int> selectedTargetIndexesOwn, List<int> selectedTargetIndexesOpp)
+        {
+            switch (se.TargetFrom)
+            {
+                case "AnyGround":
+                    // note: if the opponent is the one that will have their cards sent from a zone to another we must send commands preceeded by "Own" because it's our opponent that will receive them
+
+                    if (selectedTargetIndexesOwn.Count > 0)
+                    {
+                        sendSendTo(selectedTargetIndexesOwn, "OppGround", "OppGrave");
+                        foreach (int index in selectedTargetIndexesOwn)
+                        {
+                            killCreature(listOwnBattleGround[index].Card, index, OWN);
+                        }
+                    }
+
+                    if (selectedTargetIndexesOpp.Count > 0)
+                    {
+                        sendSendTo(selectedTargetIndexesOpp, "OwnGround", "OwnGrave");
+                        foreach (int index in selectedTargetIndexesOpp)
+                        {
+                            killCreature(listOppBattleGround[index].Card, index, OPP);
+                        }
+                    }
+                    break;
+            }
+        }
+
+        private void sendToOppMana(SpecialEffect se, List<int> selectedTargetIndexesOwn, List<int> selectedTargetIndexesOpp)
+        {
+            switch (se.TargetFrom)
+            {
+                case "OppGround":
+                    sendSendTo(selectedTargetIndexesOpp, "OwnGround", "OwnMana");
+                    foreach (int index in selectedTargetIndexesOpp)
+                    {
+                        animateBattleToMana(index, OPP);
+                    }
+                    break;
             }
         }
 
@@ -515,8 +509,13 @@ namespace DM___Client.GUIPages
                             case "OwnGrave":
                                 foreach (int index in arguments)
                                 {
-                                    updateInfoBoard("grave", OWN, 1);
-                                    animateBattleToGraveyard(index, OWN);
+                                    killCreature(listOwnBattleGround[index].Card, index, OWN);
+                                }
+                                break;
+                            case "OwnMana":
+                                foreach (int index in arguments)
+                                {
+                                    animateBattleToMana(index, OWN);
                                 }
                                 break;
                         }
@@ -558,8 +557,7 @@ namespace DM___Client.GUIPages
                             case "OppGrave":
                                 foreach (int index in arguments)
                                 {
-                                    updateInfoBoard("grave", OPP, 1);
-                                    animateBattleToGraveyard(index, false);
+                                    killCreature(listOppBattleGround[index].Card, index, OPP);
                                 }
                                 break;
                         }
@@ -571,6 +569,14 @@ namespace DM___Client.GUIPages
                         {
                             case "OppGround":
                                 animateSafeguardToGroundOpp(arguments[0], arguments[1]);
+                                break;
+                            case "OppGrave":
+                                // if you're crushing the last safeguard your opponent has
+                                if (listOppSafeGuardZone.Count == 1)
+                                    loadAttackPhaseButtons(true);
+
+                                animateSafeguardToGraveOpp(arguments[0], arguments[1]);
+                                updateInfoBoard("grave", OPP, 1);
                                 break;
                         }
                     }

@@ -237,6 +237,54 @@ namespace DM___Client.GUIPages
             addEvent(new Event(animation));
         }
 
+        private void animateSafeguardToGraveOwn(int index, int cardID)
+        {
+            Models.CardGUIModel safeGuard;
+            Animations.MoveAnimation animation;
+
+            // select origin and create destination
+
+            safeGuard = listOwnSafeGuardZone[index];
+
+            // reveal the safeguard
+            safeGuard.setCard(ctrl.getCardWithGamePropertiesByID(cardID));
+
+            animation = new Animations.MoveAnimation(
+                grdOwnSafeguards,
+                grdOwnGrave,
+                grdParent,
+                listOwnSafeGuardZone,
+                listOwnGraveyard,
+                safeGuard,
+                AnimationAndEventsConstants.DESTINATIONGRAVE,
+                true);
+            addEvent(new Event(animation));
+        }
+
+        private void animateSafeguardToGraveOpp(int index, int cardID)
+        {
+            Models.CardGUIModel safeGuard;
+            Animations.MoveAnimation animation;
+
+            // select origin and create destination
+
+            safeGuard = listOppSafeGuardZone[index];
+
+            // reveal the safeguard
+            safeGuard.setCard(ctrl.getCardWithGamePropertiesByID(cardID));
+
+            animation = new Animations.MoveAnimation(
+                grdOppSafeguards,
+                grdOppGrave,
+                grdParent,
+                listOppSafeGuardZone,
+                listOppGraveyard,
+                safeGuard,
+                AnimationAndEventsConstants.DESTINATIONGRAVE,
+                true);
+            addEvent(new Event(animation));
+        }
+
         private void animateSafeguardBrokeOPP(int index)
         {
             Models.CardGUIModel safeGuard;

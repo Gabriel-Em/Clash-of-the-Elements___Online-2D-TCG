@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DM___Client.Animations;
+using DM___Client.GamePlay;
 using DM___Client.GUIWindows;
 using DM___Client.Models;
 
@@ -15,6 +16,15 @@ namespace DM___Client.GUIPages
     public partial class GUIGameRoom : Page
     {
         // Attack Phase
+
+        // set while our opponent's SafeguardCrusher attack is waiting for the server to reveal the broken safeguards
+        private bool crushNextBrokenSafeguards = false;
+
+        // numbers of our broken safeguards that go to the graveyard instead of our hand
+        private HashSet<int> crushedSafeguardNumbers = new HashSet<int>();
+
+        // our opponent's ReturnAfterAttack creature whose attack on our safeguards is still resolving
+        private CardGUIModel pendingReturnAfterAttack = null;
 
         // load Phase
 
@@ -31,7 +41,7 @@ namespace DM___Client.GUIPages
             selectableCards = new List<CardGUIModel>();
             foreach (CardGUIModel cardGUI in listOwnBattleGround)
             {
-                if (cardGUI.Card.hasCompletelyBeenSummoned && !hasEffect(cardGUI.Card, "CannotAttack"))
+                if (GameRules.CanAttack(cardGUI.Card))
                     selectableCards.Add(cardGUI);
             }
 
@@ -92,15 +102,18 @@ namespace DM___Client.GUIPages
 
                     if (!guiSelect.wasCanceled)
                     {
+                        CardGUIModel attacker;
+
                         selectedSafeguards = guiSelect.oppSelected;
+                        attacker = selectedCards[0];
+
+                        index = listOwnBattleGround.IndexOf(attacker);
+                        ableToSelect.Remove(attacker);
+                        attacker.deselect();
+                        engageBattleOWN(index);
 
                         // notify server of our attack so it can notify our opponent
-                        sendAttack(selectedSafeguards, true);
-
-                        index = listOwnBattleGround.IndexOf(selectedCards[0]);
-                        ableToSelect.Remove(selectedCards[0]);
-                        selectedCards[0].deselect();
-                        engageBattleOWN(index);
+                        declareAttack(attacker, () => sendAttack(listOwnBattleGround.IndexOf(attacker), selectedSafeguards, true));
                     }
                 }
             }
@@ -143,17 +156,27 @@ namespace DM___Client.GUIPages
                     guiSelect.ShowDialog();
                     if (!guiSelect.wasCanceled)
                     {
-                        // translate selected card indexes to listOppBattleGround indexes
-                        index = listOppBattleGround.IndexOf(validSelections[guiSelect.oppSelected[0]]);
+                        CardGUIModel attacker, target;
 
-                        // notify server of our attack so it can notify our opponent
-                        sendAttack(new List<int>() { index }, false);
+                        attacker = selectedCards[0];
+                        target = validSelections[guiSelect.oppSelected[0]];
 
                         // deselect card and engage it
-                        index = listOwnBattleGround.IndexOf(selectedCards[0]);
-                        ableToSelect.Remove(selectedCards[0]);
-                        selectedCards[0].deselect();
+                        index = listOwnBattleGround.IndexOf(attacker);
+                        ableToSelect.Remove(attacker);
+                        attacker.deselect();
                         engageBattleOWN(index);
+
+                        // notify server of our attack so it can notify our opponent
+                        declareAttack(attacker, () =>
+                        {
+                            // translate the selected card to its listOppBattleGround index
+                            int targetIndex = listOppBattleGround.IndexOf(target);
+
+                            // the target may have left the battle zone because of the attacker's own effects, in which case the attack ends
+                            if (targetIndex != -1)
+                                sendAttack(listOwnBattleGround.IndexOf(attacker), new List<int>() { targetIndex }, false);
+                        });
                     }
                 }
             }
@@ -165,16 +188,24 @@ namespace DM___Client.GUIPages
 
             if (selectedCards.Count == 1)
             {
-                index = listOwnBattleGround.IndexOf(selectedCards[0]);
-                ableToSelect.Remove(selectedCards[0]);
-                selectedCards[0].deselect();
+                CardGUIModel attacker = selectedCards[0];
+
+                if (!GameRules.CanAttackOpponent(attacker.Card))
+                {
+                    MessageBox.Show("This creature can only attack creatures.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                index = listOwnBattleGround.IndexOf(attacker);
+                ableToSelect.Remove(attacker);
+                attacker.deselect();
                 engageBattleOWN(index);
 
-                ctrl.send(new GameMessage(
+                declareAttack(attacker, () => ctrl.send(new GameMessage(
                     "ATTACKOPPONENT",
                     ctrl.GameRoomID,
-                    new List<int>() { index }
-                    ));
+                    new List<int>() { listOwnBattleGround.IndexOf(attacker) }
+                    )));
             }
             else
                 MessageBox.Show("You must select a creature to attack with.", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -184,17 +215,30 @@ namespace DM___Client.GUIPages
 
         private int getAttackTargetCount()
         {
-            Card card = selectedCards[0].Card;
-
-            foreach(SpecialEffect se in card.SpecialEffects)
-            {
-                if (se.Effect == "SafeguardBreaker")
-                    return 1 + se.Arguments[0];
-            }
-            return 1;
+            return GameRules.GetSafeguardBreakCount(selectedCards[0].Card);
         }
 
-        private void sendAttack(List<int> selectedCards, bool attackSafeguards)
+        // resolves the attacker's "whenever this creature attacks" effects before the attack reaches our opponent
+
+        private void declareAttack(CardGUIModel attacker, Action sendAttackToOpponent)
+        {
+            if (!hasTrigger(attacker.Card, "Attack"))
+            {
+                sendAttackToOpponent();
+                return;
+            }
+
+            foreach (SpecialEffect se in attacker.Card.SpecialEffects)
+            {
+                if (se.Trigger == "Attack")
+                    triggerEffect(se, attacker.Card);
+            }
+
+            // queued so that the attack is sent after the animations of the triggered effects have finished
+            addRunMethodEvent(new Event(() => sendAttackToOpponent()));
+        }
+
+        private void sendAttack(int attackerIndex, List<int> selectedCards, bool attackSafeguards)
         {
             GameMessage gameMessage = new GameMessage();
 
@@ -206,7 +250,7 @@ namespace DM___Client.GUIPages
             gameMessage.GameID = ctrl.GameRoomID;
 
             // the creature that attacks
-            gameMessage.intArguments.Add(listOwnBattleGround.IndexOf(this.selectedCards[0]));
+            gameMessage.intArguments.Add(attackerIndex);
 
             // the target(s)
             foreach(int index in selectedCards)
@@ -281,6 +325,12 @@ namespace DM___Client.GUIPages
             }
             else
             {
+                CardGUIModel attacker = listOppBattleGround[intArguments[0]];
+
+                // remembered until the server reveals the broken safeguards
+                crushNextBrokenSafeguards = hasEffect(attacker.Card, "SafeguardCrusher");
+                pendingReturnAfterAttack = hasEffect(attacker.Card, "ReturnAfterAttack") ? attacker : null;
+
                 // you delete the attacker from the list of arguments
                 intArguments.RemoveAt(0);
                 sendBrokenSafeguards(intArguments);
@@ -353,7 +403,7 @@ namespace DM___Client.GUIPages
         {
             Card card = listOppBattleGround[creatureIndex].Card;
 
-            if (hasEffect(card, "Slippery"))
+            if (!GameRules.CanBeBlocked(card))
                 return false;
 
             if (getOwnDefendersThatCanBlock().Count == 0)
@@ -409,11 +459,42 @@ namespace DM___Client.GUIPages
             else
                 selectedOrder = new List<int>() { brokenGuardsNumbers[0] };
 
+            if (crushNextBrokenSafeguards)
+            {
+                foreach (int shieldNumber in brokenGuardsNumbers)
+                    crushedSafeguardNumbers.Add(shieldNumber);
+                crushNextBrokenSafeguards = false;
+            }
+
             // adding the shield revealing event to the event queue
             foreach(int shieldNumber in selectedOrder)
             {
                 addProcessShieldEvent(guards[shieldNumber], shieldNumber);
             }
+
+            // the attacker returns to its owner's hand once the broken safeguards and their effects have resolved
+            if (pendingReturnAfterAttack != null)
+            {
+                CardGUIModel attacker = pendingReturnAfterAttack;
+
+                pendingReturnAfterAttack = null;
+                addEventWhenIdle(() => returnOppAttackerToHand(attacker));
+            }
+        }
+
+        private void returnOppAttackerToHand(CardGUIModel attacker)
+        {
+            int index = listOppBattleGround.IndexOf(attacker);
+
+            // the attacker already left the battle zone because of the effects of the broken safeguards
+            if (index == -1)
+                return;
+
+            // note: our opponent receives this command so the zones are preceeded by "Own"
+            sendSendTo(new List<int>() { index }, "OwnGround", "OwnHand");
+
+            animateBattleToHandOpp(index);
+            updateInfoBoard("hand", OPP, 1);
         }
 
         private void processShield(int cardID, int shieldNumber)
@@ -427,6 +508,19 @@ namespace DM___Client.GUIPages
 
             card = ctrl.getCardWithGamePropertiesByID(cardID);
             activate = false;
+
+            // a crushed safeguard goes to the graveyard and cannot be activated
+            if (crushedSafeguardNumbers.Remove(shieldNumber))
+            {
+                index = getIndexOfOwnShieldWithNumber(shieldNumber);
+
+                animateSafeguardToGraveOwn(index, cardID);
+                updateInfoBoard("grave", OWN, 1);
+
+                // notify opponent that they crushed this shield
+                sendSendTo(new List<int>() { index, cardID }, "OppGuards", "OppGrave");
+                return;
+            }
 
             if (hasTrigger(card, "SafeguardActive"))
             {
@@ -594,14 +688,13 @@ namespace DM___Client.GUIPages
 
         public void Battle(List<int> arguments, bool iAmTheInitiator)
         {
-            int ownCreaturePower;
-            int oppCreaturePower;
-
             int ownCreatureIndex;
             int oppCreatureIndex;
 
             CardWithGameProperties ownCreature;
             CardWithGameProperties oppCreature;
+
+            BattleOutcome outcome;
 
             /*
              * arguments[0] - index of attaker
@@ -612,99 +705,76 @@ namespace DM___Client.GUIPages
             {
                 ownCreatureIndex = arguments[0];
                 oppCreatureIndex = arguments[1];
-
-                ownCreature = listOwnBattleGround[ownCreatureIndex].Card;
-                oppCreature = listOppBattleGround[oppCreatureIndex].Card;
-
-                ownCreaturePower = getCreaturePowerWhileAttacking(ownCreature);
-                oppCreaturePower = oppCreature.Power;
-
-                if (!oppCreature.isEngaged)
-                    engageBattleOPP(oppCreatureIndex);
-
-                // if we win the battle
-                if (ownCreaturePower > oppCreaturePower)
-                {
-                    killCreature(oppCreature, oppCreatureIndex, OPP);
-
-                    // if his creature was poisonous
-                    if (hasEffect(oppCreature, "Poisonous") || hasEffect(ownCreature, "OnePunch"))
-                    {
-                        killCreature(ownCreature, ownCreatureIndex, OWN);
-                    }
-                }
-                else
-                if (ownCreaturePower < oppCreaturePower)
-                {
-                    killCreature(ownCreature, ownCreatureIndex, OWN);
-                    if (hasEffect(ownCreature, "Poisonous") || hasEffect(oppCreature, "OnePunch"))
-                    {
-                        killCreature(oppCreature, oppCreatureIndex, OPP);
-                    }
-                }
-                else
-                {
-                    killCreature(ownCreature, ownCreatureIndex, OWN);
-                    killCreature(oppCreature, oppCreatureIndex, OPP);
-                }
             }
             else
             {
                 ownCreatureIndex = arguments[1];
                 oppCreatureIndex = arguments[0];
+            }
 
-                ownCreature = listOwnBattleGround[ownCreatureIndex].Card;
-                oppCreature = listOppBattleGround[oppCreatureIndex].Card;
+            ownCreature = listOwnBattleGround[ownCreatureIndex].Card;
+            oppCreature = listOppBattleGround[oppCreatureIndex].Card;
 
-                ownCreaturePower = ownCreature.Power;
-                oppCreaturePower = getCreaturePowerWhileAttacking(oppCreature);
-                
-                if (oppCreaturePower > ownCreaturePower)
-                {
-                    killCreature(ownCreature, ownCreatureIndex, OWN);
-                    if (hasEffect(ownCreature, "Poisonous") || hasEffect(oppCreature, "OnePunch"))
-                    {
-                        killCreature(oppCreature, oppCreatureIndex, OPP);
-                    }
-                }
-                else
-                if (oppCreaturePower < ownCreaturePower)
-                {
+            if (iAmTheInitiator)
+            {
+                if (!oppCreature.isEngaged)
+                    engageBattleOPP(oppCreatureIndex);
+
+                outcome = GameRules.ResolveBattle(
+                    ownCreature, GameRules.GetPowerWhileAttacking(ownCreature, listOwnGraveyard.Select(x => (Card)x.Card)),
+                    oppCreature, oppCreature.Power);
+
+                if (outcome.DefenderDestroyed)
                     killCreature(oppCreature, oppCreatureIndex, OPP);
-                    if (hasEffect(oppCreature, "Poisonous") || hasEffect(ownCreature, "OnePunch"))
-                    {
-                        killCreature(ownCreature, ownCreatureIndex, OWN);
-                    }
-                }
-                else
-                {
+                if (outcome.AttackerDestroyed)
                     killCreature(ownCreature, ownCreatureIndex, OWN);
+
+                // a surviving attacker that returns after attacking goes back to our hand
+                if (!outcome.AttackerDestroyed && hasEffect(ownCreature, "ReturnAfterAttack"))
+                {
+                    animateBattleToHandOwn(ownCreatureIndex);
+                    updateInfoBoard("hand", OWN, 1);
+                }
+            }
+            else
+            {
+                outcome = GameRules.ResolveBattle(
+                    oppCreature, GameRules.GetPowerWhileAttacking(oppCreature, listOppGraveyard.Select(x => (Card)x.Card)),
+                    ownCreature, ownCreature.Power);
+
+                if (outcome.DefenderDestroyed)
+                    killCreature(ownCreature, ownCreatureIndex, OWN);
+                if (outcome.AttackerDestroyed)
                     killCreature(oppCreature, oppCreatureIndex, OPP);
+
+                // a surviving attacker that returns after attacking goes back to our opponent's hand
+                if (!outcome.AttackerDestroyed && hasEffect(oppCreature, "ReturnAfterAttack"))
+                {
+                    animateBattleToHandOpp(oppCreatureIndex);
+                    updateInfoBoard("hand", OPP, 1);
                 }
             }
         }
 
         private void killCreature(Card card, int cardIndex, bool own)
         {
-
-            if (hasEffect(card, "Unkillable"))
+            switch (GameRules.GetDestroyedCardDestination(card))
             {
-                if (own)
-                    animateBattleToHandOwn(cardIndex);
-                else
-                    animateBattleToHandOpp(cardIndex);
-                updateInfoBoard("hand", own, 1);
-            }
-            else
-            if (hasEffect(card, "Recyclable"))
-            {
-                animateBattleToMana(cardIndex, own);
-                updateInfoBoard("mana", own, 1);
-            }
-            else
-            {
-                animateBattleToGraveyard(cardIndex, own);
-                updateInfoBoard("grave", own, 1);
+                case DestroyedCardDestination.Hand:
+                    if (own)
+                        animateBattleToHandOwn(cardIndex);
+                    else
+                        animateBattleToHandOpp(cardIndex);
+                    updateInfoBoard("hand", own, 1);
+                    break;
+                case DestroyedCardDestination.ManaZone:
+                    animateBattleToMana(cardIndex, own);
+                    updateInfoBoard("mana", own, 1);
+                    break;
+                default:
+                    animateBattleToGraveyard(cardIndex, own);
+                    updateInfoBoard("grave", own, 1);
+                    break;
             }
         }
     }
